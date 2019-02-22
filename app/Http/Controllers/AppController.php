@@ -262,6 +262,162 @@ class AppController extends Controller
     // 	return $arr;
     // }
 
+    public function getUser (Request $request)
+    {
+        # code...
+        $user2 = $this->removeWhitespace(DB::table('users')
+            ->select('id','name','username','password_decrypt','codePekerja')
+            ->where('username', $request->username)
+            ->where('password_decrypt', $request->password)
+            ->get());
+
+        // $arr        = array();
+
+        ####################################GET ALL DATA###################################################
+        // $user2      = $this->removeWhitespace(DB::table('users')->select('id','name','username','password_decrypt','codePekerja')->get());
+
+        $pekerja2   = $this->removeWhitespace(DB::table('EWS_PEKERJA')->get());
+        
+        $role2      = $this->removeWhitespace(DB::table('EWS_ROLE_USER')->get());
+
+        $mandor2    = $this->removeWhitespace(DB::table('EWS_MANDOR')->get());
+        
+        $m_pekerja2 = $this->removeWhitespace(DB::table('EWS_MANDOR_PEKERJA')->get());
+        ####################################GET ALL DATA###################################################
+
+        ####################################CREATE ARRAY USER###################################################
+        # memasukkan nama tukang ke setiap code tukang
+        foreach ($m_pekerja2 as $key_mp => $m_pekerja) {
+            # code...
+            foreach ($pekerja2 as $key_p => $pekerja) {
+                # code...
+                if ($pekerja['codePekerja'] == $m_pekerja['codePekerja']) {
+                    # code...
+                    $m_pekerja2[$key_mp]['namaTukang'] = $pekerja['namaPekerja'];
+                    $m_pekerja2[$key_mp]['codePekerjaTukang'] = $pekerja['codePekerja'];
+                    unset($m_pekerja2[$key_mp]['codePekerja']);
+
+                    $m_pekerja2[$key_mp]['idTukang'] = $m_pekerja2[$key_mp]['id'];
+                    unset($m_pekerja2[$key_mp]['id']);
+                    
+                    $this->move_to_top($m_pekerja2[$key_mp], 'idTukang');
+                }
+            }   
+        }
+
+        # memasukkan role [EWS_ROLE_USER(id)] ke dalam list pekerja [EWS_PEKERJA(idRole)]
+        foreach ($pekerja2 as $key_p => $pekerja) {
+            # code...
+            foreach ($role2 as $key_r => $role) {
+                # code...
+                if ($pekerja['idRole'] == $role['id']) {
+                    # code...
+                    $pekerja2[$key_p]['detailRole'] = $role;
+                }
+            }
+        }
+
+        # memasukkan pekerja yang dibawahi mandor [EWS_MANDOR_PEKERJA(codeMandor)] ke dalam mandor [EWS_MANDOR(codeMandor)]
+        # khusus role mandor
+        foreach ($mandor2 as $key_m => $mandor) {
+            # code...
+            foreach ($m_pekerja2 as $key_mp => $m_pekerja) {
+                # code...
+                if ($m_pekerja['codeMandor'] == $mandor['codeMandor']) {
+                    # code...
+                    unset($m_pekerja['codeMandor']);
+                    $mandor2[$key_m]['tukang'][] = $m_pekerja;
+                }
+            }
+        }
+
+        # memasukkan data mandor [EWS_MANDOR(codePekerja)] ke dalam data pekerja [EWS_PEKERJA(codePekerja)]
+        foreach ($pekerja2 as $key_p => $pekerja) {
+            # code...
+            foreach ($mandor2 as $key_m => $mandor) {
+                # code...
+                if ($pekerja['codePekerja'] == $mandor['codePekerja']) {
+                    # code...
+                    $pekerja2[$key_p]['detailPekerja'] = $mandor;
+                }
+            }
+        }
+
+        # memasukkan data pekerja [EWS_PEKERJA(codePekerja)] ke dalam data user [users(codePekerja)]
+        foreach ($user2 as $key_u => $user) {
+
+            foreach ($pekerja2 as $key_p => $pekerja) {
+                # code...
+                if ($user['codePekerja'] == $pekerja['codePekerja']) {
+                    # code...
+                    $user2[$key_u]['identitasPekerja'] = $pekerja;
+                }
+            }
+        }
+
+        # menghilangkan data-data redudansi dan tidak diperlukan
+        foreach ($user2 as $key_u => $user) {
+            # code...
+            unset($user2[$key_u]['identitasPekerja']['codePekerja']);
+            unset($user2[$key_u]['identitasPekerja']['detailPekerja']['codePekerja']);
+            unset($user2[$key_u]['name']);
+
+            $user2[$key_u]['idUser'] = $user2[$key_u]['id'];
+            unset($user2[$key_u]['id']);
+            unset($user2[$key_u]['identitasPekerja']['idRole']);
+
+            $user2[$key_u]['identitasPekerja']['detailRole']['idDetailRole'] = $user2[$key_u]['identitasPekerja']['detailRole']['id'];
+            unset($user2[$key_u]['identitasPekerja']['detailRole']['id']);
+
+            $this->move_to_top($user2[$key_u], 'idUser');
+            $this->move_to_top($user2[$key_u]['identitasPekerja']['detailRole'], 'idDetailRole');
+        }
+        // $arr['USER'] = $user2;
+        ####################################CREATE ARRAY USER###################################################
+
+        ####################################INSERT WORKER PH###################################################
+        $ph_pekerja2 = $this->removeWhitespace(DB::table('EWS_PH_PEKERJA')->get());
+        foreach ($ph_pekerja2 as $key_php => $ph_pekerja) {
+            # code...
+            foreach ($pekerja2 as $key_p => $pekerja) {
+                # code...
+                if ($pekerja['codePekerja'] == $ph_pekerja['codePekerjaTukang']) {
+                    # code...
+                    $ph_pekerja2[$key_php]['namaTukang'] = $pekerja['namaPekerja'];
+                    // $ph_pekerja2[$key_php]['codePekerjaTukang'] = $pekerja['codePekerja'];
+                    // unset($ph_pekerja2[$key_php]['codePekerja']);
+
+                    $ph_pekerja2[$key_php]['idTukang'] = $ph_pekerja2[$key_php]['id'];
+                    unset($ph_pekerja2[$key_php]['id']);
+                    
+                    $this->move_to_top($ph_pekerja2[$key_php], 'idTukang');
+                }
+            }   
+        }
+
+        foreach ($user2 as $key_u => $user) {
+            # code...
+            foreach ($ph_pekerja2 as $key_php => $ph_pekerja) {
+                # code...
+                if ($user['identitasPekerja']['detailRole']['idDetailRole'] == 4 || $user['identitasPekerja']['detailRole']['idDetailRole']== 5) {
+                    # code...
+                    if ($user['codePekerja'] == $ph_pekerja['codePekerjaPH']) {
+                        # code...
+                        unset($ph_pekerja['codePekerjaPH']);
+                        $user2[$key_u]['identitasPekerja']['detailPekerja']['tukang'][] = $ph_pekerja;
+                    }
+                }
+            }
+        }
+        ####################################INSERT WORKER PH###################################################
+
+        $date = '07-02-2019';
+        // $date = $request->date;
+        $rkm = $this->getRKMMandor($user2[0]['idUser'], $date);
+        $user2[0]['RKM'] = $rkm;
+        return json_encode($user2, JSON_PRETTY_PRINT);
+    }
+
     public function getAllUser ()
     {
         $arr        = array();
@@ -962,6 +1118,14 @@ class AppController extends Controller
             $arr[$key] = array_map('rtrim',$arr[$key]);
         }
         // $arr = json_encode($arr, JSON_PRETTY_PRINT);
+        return $arr;
+    }
+
+    public function removeWhitespace2($arr)
+    {
+        $arr = (array) $arr;
+        $arr = array_map('rtrim',$arr);
+
         return $arr;
     }
 

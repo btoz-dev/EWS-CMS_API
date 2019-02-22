@@ -1,0 +1,218 @@
+*API* (*10.254.128.66(ip private)* | *36.66.74.7 (ip publik)*)
+--------------------------------------------------------------
+
+http://36.66.74.7/api/app/user
+method = POST*
+body = [
+    {
+        'username' => (username user),
+        'password' => (password user),
+    }
+]
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/users
+=> GET ALL USER
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/pokok
+=> GET LIST POKOK
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/rkm/{id_user}/{date}
+=> GET RKM Mandor
+{id_user} : int <- id user pengguna app
+{date} : date (dd-mm-YYYY) <- tanggal rkhnya <- contoh '13-02-2019' atau '07-02-2019'
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/rkmkawil/{id_user}
+=> GET RKM Kawil
+{id_user} : int <- id user pengguna app
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeMandor
+=> INSERT DATA RKM Mandor
+method = POST*
+body = [
+    {
+        'subJobCode' => (kode pekerjaan dari child job),
+        'userid' => (id user),
+        'codeTukang' => (kode tukang),
+        'codeTanaman' => (kode tanaman satuan),
+        'mandorNote' => (catatan mandor (boleh kosong)),
+        'totalHand' => (total hand (boleh kosong) (pekerjaan marking)),
+        'totalFinger' => (total finger (boleh kosong) (pekerjaan marking)),
+        'totalLeaf' => (total leaf (boleh kosong) (pekerjaan marking)),
+        'ribbonColor' => (ribbon color (boleh kosong) (pekerjaan marking)),
+        'skimmingSize' => (skimming size (boleh kosong) (pekerjaan skimming)),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeKawil
+=> INSERT DATA RKM Kawil
+method = POST*
+body = [
+    {
+        'idEWSTransMandor' => (id dari pokok yang didapat di rkm kawil),
+        'subJobCode' => (kode pekerjaan dari child job),
+        'kawilNote' => (catatan mandor (boleh kosong)),
+        'userid' => (id user),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeBeratTandan
+=> INSERT DATA PACKING HOUSE (Berat Tandan)
+method = POST*
+body = [
+    {
+        'SubBlkHillCode' => (code tanaman),
+        'EmpCode' => (code tukang),
+        'BeratBruto' => (berat bruto),
+        'BeratBonggol' => (berat bonggol(boleh kosong)),
+        'Notes' => (catatan (boleh kosong)),
+        'userid' => (id user),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeHitungTandan
+=> INSERT DATA PACKING HOUSE (Hitung Tandan)
+method = POST*
+body = [
+    {
+        'SubBlkHillCode' => (code tanaman),
+        'EmpCode' => (code tukang),
+        'HandClass' => (Hand Class),
+        'CallHandClass2' => (Calibrasi/Hand Class 2),
+        'CallHandClass4' => (Calibrasi/Hand Class 4),
+        'CallHandClass6' => (Calibrasi/Hand Class 6),
+        'CallHandClass7' => (Calibrasi/Hand Class 7),
+        'CallHandClassAkhir' => (Calibrasi/Hand Class Akhir),
+        'FingerLen2' => (Finger Length 2),
+        'FingerLen4' => (Finger Length 4),
+        'FingerLen6' => (Finger Length 6),
+        'FingerLen8' => (Finger Length 8),
+        'FingerLen10' => (Finger Length 10),
+        'FingerLenAkhir' => (Finger Length Akhir),
+        'FingerHand2' => (Jumlah Finger/Hand Class 2),
+        'FingerHand4' => (Jumlah Finger/Hand Class 4),
+        'FingerHand6' => (Jumlah Finger/Hand Class 6),
+        'FingerHand8' => (Jumlah Finger/Hand Class 8),
+        'FingerHand10' => (Jumlah Finger/Hand Class 10),
+        'FingerHandAkhir' => (Jumlah Finger/Hand Class Akhir),
+        'Notes' => (catatan (boleh kosong)),
+        'userid' => (id user),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeCekListTimbang
+=> INSERT DATA PACKING HOUSE (Cek List Timbang)
+method = POST*
+body = [
+    {
+        'SubBlkHillCode' => (code tanaman),
+        'NoBox' => (No Box),
+        'ItemCode' => (Produk),
+        'Berat' => (Berat),
+        'Notes' => (catatan (boleh kosong)),
+        'userid' => (id user),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeSensus
+=> INSERT DATA SPI (Sensus Pokok)
+method = POST*
+body = [
+    {
+        'SubBlkHillCode' => (code tanaman),
+        'Girth' => (Girth),
+        'Kondisi' => (Sebelum Shooting),
+        'JmlDaun' => (Jumlah daun),
+        'GlmNoGulma' => (GULMA - Tidak ada Gulma),
+        'GlmNoSpray' => (GULMA - Tanaman tidak terkena spray),
+        'WtrNoGenang' => (WATER LOGGING - Tidak ada genangan),
+        'WtrParit' => (WATER LOGGING - Ada parit),
+        'SucKenaTtkTumbuh' => (SUCKER - Kena titik tumbuh),
+        'SucKenaLbgTimbun' => (SUCKER - Lubah tertimbun),
+        'SucJmlSes' => (SUCKER - Jumlah sesuai),
+        'SucTngSucPlh' => (SUCKER - Tinggi sucker yang dipilih),
+        'DelNoDaunSkt' => (DELEAFING - Tidak ada daun sakit),
+        'IriSlngKnnKiri' => (IRIGASI - Selang kanan kiri),
+        'IriSlngTdkBocor' => (IRIGASI - Selang tidak bocor),
+        'IriSlngTdkSumbat' => (IRIGASI - Selang tidak tersumbat),
+        'IriTnhLmbb' => (IRIGASI - Tanah Lembab),
+        'IriNoDaunPth' => (IRIGASI - Tidak ada daun patah/backlink),
+        'HamNoTrace' => (HAMA - Tidak ada bekas serangan hama/penyakit),
+        'PpkRata' => (PEMUPUKAN - Rata),
+        'PpkAtasSerasah' => (PEMUPUKAN - Tidak di atas serasah),
+        'PpkTdkKenaDaun' => (PEMUPUKAN - Tidak terkena daun),
+        'PpkJrkTepat' => (PEMUPUKAN - Jarak tepat),
+        'KrdlNoKrdl' => (KERDIL - Tanaman tidak kerdil),
+        'HillAkarTutup' => (HILLING UP - Akar tanaman tertutup),
+        'BITepatWaktu' => (BI - Tepat waktu),
+        'BITepatPosisi' => (BI - Tepat posisi),
+        'BagTepatWaktu' => (BAGGING - Tepat waktu),
+        'BagEmptPlhDrHand1' => (BAGGING - 40 cm dari hand 1),
+        'BagDiWiru' => (BAGGING - Di wiru),
+        'PrpCkpDalam' => (PROPPING - Cukup kedalaman),
+        'PrpTepatPosisi' => (PROPPING - Tepat posisi),
+        'PrpTaliKencang' => (PROPPING - Penalian kencang),
+        'MrkTepatWaktu' => (MARKING - Tepat waktu),
+        'MrkTulisSesuai' => (MARKING - Tulisan sesuai aktual),
+        'MrkJmlHand' => (MARKING - Jumlah hand),
+        'ForTdkAdaGanggu' => (FOR - Tandan tidak ada gangguan),
+        'Notes' => $req->Notes,
+        'userid' => (id user),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+*masih membingungkan*
+http://36.66.74.7/api/app/storeCorrAct
+=> INSERT DATA SPI (Corrective Action)
+method = POST*
+body = [
+    {
+        'SubBlkHillCode' => (code tanaman),
+        'CorrectiveCat' => (corrective category),
+        'CorrAction' => (corrective action),
+        'DueDate' => (due date),
+        'CorrDate' => (corrective date),
+        'EmpCode' => (employe code),
+        'Notes' => (notes),
+        'userid' => (id user),
+        'tanggal' => (tanggal dibuatnya),
+        'waktu' => (waktu dibuatnya)
+    }
+]
+
+---------------------------------------------
+
+nb.
+*Nested JSON

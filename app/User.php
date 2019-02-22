@@ -45,7 +45,33 @@ class User extends Authenticatable
      *
      * @var string
      */
-    // protected $primaryKey = 'id';
+    // protected $primaryKey = 'codePekerja';
     // public $timestamps   = false;
 
+    public function roles() 
+    {
+        return $this->belongsToMany(Role::class, 'dbo.EWS_PEKERJA', 'codePekerja', 'idRole', 'codePekerja', 'id');
+    }
+
+     public function checkRoles($roles) 
+    {
+        if ( ! is_array($roles)) {
+            $roles = [$roles];    
+        }
+
+        if ( ! $this->hasAnyRole($roles)) {
+            auth()->logout();
+            abort(404);
+        }
+    }
+
+    public function hasAnyRole($roles): bool
+    {
+        return (bool) $this->roles()->whereIn('idRole', $roles)->first();
+    }
+
+    public function hasRole($role): bool
+    {
+        return (bool) $this->roles()->where('idRole', $role)->first();
+    }
 }

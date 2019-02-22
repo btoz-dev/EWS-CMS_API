@@ -17,11 +17,13 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 // Route::group(['middleware' => 'auth:api'], function(){
-// 	Route::post('details', 'API\UserController@details');
+// 	Route::post('details', 'APIz\UserController@details');
 // 	Route::resource('job', 'JobController');
 // });
 // Route::get('app', 'AppController@index');
-Route::get('app/user', 'AppController@getAllUser');
+Route::post('app/user', 'AppController@getUser');
+Route::get('app/users', 'AppController@getAllUser');
+
 Route::get('app/pokok', 'AppController@getAllPokok');
 Route::get('app/rkm/{rkm}/{date}', 'AppController@getRKMMandor');
 Route::get('app/rkmkawil/{rkmk}', 'AppController@getRKMKawil');
