@@ -3,12 +3,57 @@
 
 http://36.66.74.7/api/app/user
 method = POST*
-body = [
-    {
-        'username' => (username user),
-        'password' => (password user),
-    }
-]
+body = 
+{
+    "username" : "(username user)",
+    "password" : "(password user)"
+}
+
+MANDOR DAN KAWIL MENGAKSES LEWAT SINI
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeMandor
+: INSERT DATA RKM Mandor
+method = POST
+body = 
+{
+    "codeRKH" : "(kode rencana kerja harian)",
+    "subJobCode" : "(kode pekerjaan dari child job)",
+    "userid" : "(id user)",
+    "codeTukang" : "(kode tukang)",
+    "codeTanaman" : "(kode tanaman satuan)",
+    "mandorNote" : "(catatan mandor (boleh kosong))",
+    "totalHand" : "(total hand (boleh kosong) (pekerjaan marking))",
+    "totalFinger" : "(total finger (boleh kosong) (pekerjaan marking))",
+    "totalLeaf" : "(total leaf (boleh kosong) (pekerjaan marking))",
+    "ribbonColor" : "(ribbon color (boleh kosong) (pekerjaan marking))",
+    "skimmingSize" : "(skimming size (boleh kosong) (pekerjaan skimming))",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)",
+    "pokokAwal" : "(pokok awal (boleh kosong))",
+    "pokokAkhir" : "(pokok akhir (boleh kosong))",
+}
+
+nb:
+untuk pokokAwal dan pokokAkhir hanya dilakukan ketika pengerjaan plantcare! dan ketika pengerjaan plantcare, codeTanaman hanya sampai baris!
+---------------------------------------------
+
+http://36.66.74.7/api/app/storeKawil
+=> INSERT DATA RKM Kawil
+method = POST
+body = 
+{
+    "idEWSTransMandor" : "(id dari pokok yang didapat di rkm kawil)",
+    "subJobCode" : "(kode pekerjaan dari child job)",
+    "kawilNote" : "(catatan mandor (boleh kosong))",
+    "userid" : "(id user)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)",
+    "pokokAwal" : "(pokok awal (boleh kosong))",
+    "pokokAkhir" : "(pokok akhir (boleh kosong))"
+}
+
 
 ---------------------------------------------
 
@@ -32,44 +77,6 @@ http://36.66.74.7/api/app/rkm/{id_user}/{date}
 http://36.66.74.7/api/app/rkmkawil/{id_user}
 => GET RKM Kawil
 {id_user} : int <- id user pengguna app
-
----------------------------------------------
-
-http://36.66.74.7/api/app/storeMandor
-=> INSERT DATA RKM Mandor
-method = POST*
-body = [
-    {
-        'subJobCode' => (kode pekerjaan dari child job),
-        'userid' => (id user),
-        'codeTukang' => (kode tukang),
-        'codeTanaman' => (kode tanaman satuan),
-        'mandorNote' => (catatan mandor (boleh kosong)),
-        'totalHand' => (total hand (boleh kosong) (pekerjaan marking)),
-        'totalFinger' => (total finger (boleh kosong) (pekerjaan marking)),
-        'totalLeaf' => (total leaf (boleh kosong) (pekerjaan marking)),
-        'ribbonColor' => (ribbon color (boleh kosong) (pekerjaan marking)),
-        'skimmingSize' => (skimming size (boleh kosong) (pekerjaan skimming)),
-        'tanggal' => (tanggal dibuatnya),
-        'waktu' => (waktu dibuatnya)
-    }
-]
-
----------------------------------------------
-
-http://36.66.74.7/api/app/storeKawil
-=> INSERT DATA RKM Kawil
-method = POST*
-body = [
-    {
-        'idEWSTransMandor' => (id dari pokok yang didapat di rkm kawil),
-        'subJobCode' => (kode pekerjaan dari child job),
-        'kawilNote' => (catatan mandor (boleh kosong)),
-        'userid' => (id user),
-        'tanggal' => (tanggal dibuatnya),
-        'waktu' => (waktu dibuatnya)
-    }
-]
 
 ---------------------------------------------
 

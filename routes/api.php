@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+# API FIX EWS
+Route::post('app/user', 'AppController@getUser');
+
+Route::post('app/storeMandor', 'AppController@storeMandor');
+
+Route::post('app/storeKawil', 'AppController@storeKawil');
+
+# API FIX EWS
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
@@ -21,7 +29,11 @@ use Illuminate\Http\Request;
 // 	Route::resource('job', 'JobController');
 // });
 // Route::get('app', 'AppController@index');
-Route::post('app/user', 'AppController@getUser');
+Route::post('testLogin', 'AppController@testLogin');
+
+
+
+// Route::post('app/user2', 'AppController@getUser2');
 Route::get('app/users', 'AppController@getAllUser');
 
 Route::get('app/pokok', 'AppController@getAllPokok');
@@ -29,8 +41,8 @@ Route::get('app/rkm/{rkm}/{date}', 'AppController@getRKMMandor');
 Route::get('app/rkmkawil/{rkmk}', 'AppController@getRKMKawil');
 
 # Mandor Kawil
-Route::post('app/storeMandor', 'AppController@storeMandor');
-Route::post('app/storeKawil', 'AppController@storeKawil');
+// Route::post('storeMandor', 'AppController@storeMandor2');
+
 
 # Packing House
 Route::post('app/storeBeratTandan', 'AppController@storeBT');
