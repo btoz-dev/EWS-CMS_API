@@ -45,7 +45,6 @@ method = POST
 body = 
 {
     "idEWSTransMandor" : "(id dari pokok yang didapat di rkm kawil)",
-    "subJobCode" : "(kode pekerjaan dari child job)",
     "kawilNote" : "(catatan mandor (boleh kosong))",
     "userid" : "(id user)",
     "tanggal" : "(tanggal dibuatnya)",
@@ -57,13 +56,13 @@ body =
 
 ---------------------------------------------
 
-http://36.66.74.7/api/app/users
-=> GET ALL USER
+http://36.66.74.7/api/app/pokok
+=> GET LIST POKOK
 
 ---------------------------------------------
 
-http://36.66.74.7/api/app/pokok
-=> GET LIST POKOK
+http://36.66.74.7/api/app/users
+=> GET ALL USER
 
 ---------------------------------------------
 

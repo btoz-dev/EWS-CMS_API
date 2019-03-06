@@ -19,6 +19,8 @@ Route::post('app/storeMandor', 'AppController@storeMandor');
 
 Route::post('app/storeKawil', 'AppController@storeKawil');
 
+Route::get('app/pokok', 'AppController@getAllPokok');
+
 # API FIX EWS
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -36,7 +38,6 @@ Route::post('testLogin', 'AppController@testLogin');
 // Route::post('app/user2', 'AppController@getUser2');
 Route::get('app/users', 'AppController@getAllUser');
 
-Route::get('app/pokok', 'AppController@getAllPokok');
 Route::get('app/rkm/{rkm}/{date}', 'AppController@getRKMMandor');
 Route::get('app/rkmkawil/{rkmk}', 'AppController@getRKMKawil');
 

@@ -60,8 +60,12 @@ class User extends Authenticatable
         }
 
         if ( ! $this->hasAnyRole($roles)) {
-            auth()->logout();
-            abort(404);
+            // auth()->logout();
+            // abort(404);
+            return FALSE;
+        }else
+        {
+            return TRUE;
         }
     }
 
@@ -73,5 +77,11 @@ class User extends Authenticatable
     public function hasRole($role): bool
     {
         return (bool) $this->roles()->where('idRole', $role)->first();
+    }
+
+    public function pekerja()
+    {
+        # code...
+        return $this->hasOne('App\Pekerja', 'codePekerja', 'codePekerja');
     }
 }
