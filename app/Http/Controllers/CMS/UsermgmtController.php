@@ -53,9 +53,9 @@ class UsermgmtController extends Controller
         ];
 
         $rules = [
-            'username' => 'required|between:0,255',
-            'email' => 'required|email||between:0,255',
-            'pekerja' => 'required|integer',
+            'username' => 'required|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users',
+            'pekerja' => 'required|integer|unique:users,codePekerja',
             'role' => 'required|integer'
         ];
         // $request->validate([

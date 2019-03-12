@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Validator;
 class AppController extends Controller
 {
     
+	// public function update()
+	// {
+	// 	# code...
+	// 	DB::table('EWS_JADWAL_RKM')
+	// 		->where('id', 1)
+ //            ->update(['barisStart' => '1', 'barisEnd' => '1']);
+	// }
 
     public function getUser (Request $request)
     {
@@ -44,7 +51,7 @@ class AppController extends Controller
         	->where('id', '=', $identitasPekerja['idRole'])
         	->first());
         
-        if ($detailRole['idDetailRole'] == self::ID_ROLE_MANDOR) {
+        if ($detailRole['idDetailRole'] == self::ID_ROLE_MANDOR) {#8
             # code...
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole);
         }
@@ -74,11 +81,18 @@ class AppController extends Controller
         $user2[0]['identitasPekerja'] = $identitasPekerja;
         $user2[0]['identitasPekerja']['detailRole'] = $detailRole;
         $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
+
+        $pilihTukang = array(
+        	'idTukang' => '',
+        	'namaTukang' => 'Pilih Pekerja',
+        	'codeTukang' => ''
+        );
+        array_unshift($tukang, $pilihTukang);
         $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
 
         ####################################GET ALL DATA###################################################
         $user2[0]['RKM'] = array();
-        $date = '07-02-2019'; # 13-02-2019||07-02-2019
+        $date = now(); # 12-03-2019
         $tgl = date_create($date);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
         # rencana kerjaan harian
@@ -105,20 +119,50 @@ class AppController extends Controller
 
         $listBlok2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
             ->select('codeBlok')
-            ->groupBy('codeBlok')
+            ->distinct('codeBlok')
             ->orderBy('codeBlok', 'asc')
             ->get());
         $listPlot2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-            ->select('plot')
-            ->groupBy('plot')
+            ->select('codeBlok', 'plot')
+            ->distinct('codeBlok')
             ->orderBy('plot', 'asc')
             ->get());
         $listBaris2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-            ->select('baris')
-            ->groupBy('baris')
+            ->select('codeBlok','plot', 'baris')
+            ->distinct('baris')
             ->orderBy('baris', 'asc')
             ->get());
-        $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')->get());
+        $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+        	->orderBy('codeTanaman', 'asc')
+        	->get());
+
+        $newRKM = array();
+        foreach ($rkm2 as $key_rkm => $rkm) {
+        	# jika newRKM kosong
+        	if (empty($newRKM)) {
+        		# code...
+        		$newRKM[$key_rkm] = $rkm;
+        		$newRKM[$key_rkm]['listBlok'][]['codeBlok'] = $rkm['codeBlok'];
+        	}
+        	else{
+        		# newRKM ada isinya
+        		foreach ($newRKM as $key_n_RKM => $new_RKM) {
+        			# code...
+	        		if (($newRKM[$key_n_RKM]['rkhCode'] != $rkm['rkhCode']) &&
+	        			# jika rkhCode pada newRKM dan rkm2 sama
+	        			($newRKM[$key_n_RKM]['codeAlojob'] != $rkm['codeAlojob'])
+	        			# jika codeAlojob pada newRKM dan rkm2 sama
+	        			){
+	        			$newRKM[$key_rkm] = $rkm;
+        				$newRKM[$key_rkm]['listBlok'][]['codeBlok'] = $rkm['codeBlok'];
+	        		}
+	        		else{
+	        			$newRKM[$key_n_RKM]['listBlok'][]['codeBlok'] = $rkm['codeBlok'];
+	        		}
+        		}
+        	}
+        }
+        $rkm2 = $newRKM;
         
         foreach ($rkm2 as $key_rkm => $rkm) {
             # code...
@@ -132,6 +176,7 @@ class AppController extends Controller
                         unset($rkm['parentJobName']);
                         unset($rkm['childJobCode']);
                         unset($rkm['childJobName']);
+                        unset($rkm['codeBlok']);
                         // array_push($subJob2[$key_sj], $rkm);
                         $subJob2[$key_sj] = array_merge($subJob,$rkm);
                     }
@@ -139,53 +184,67 @@ class AppController extends Controller
             }
         }
 
-        # MASUKIN BLOK-PLOT-BARIS-POKOK
-        foreach ($subJob2 as $key_sj => $subJob) { #Blok
+        foreach ($subJob2 as $key_sj => $subJob) { # hapus subJob tak dipakai
             # code...
             foreach ($listBlok2 as $key_lb => $listBlok) {
                 # code...
-                if (isset($subJob['codeBlok'])) {
+                if (!isset($subJob['rkhCode'])) {
                     # code...
-                    if ($listBlok['codeBlok'] == $subJob['codeBlok']) {
-                        # code...
-                        $subJob2[$key_sj]['listBlok'][] = $listBlok;
-                    }
-                }
-                else
-                {
                     unset($subJob2[$key_sj]);
                 }
             }
         }
+
+        # MASUKIN PLOT-BARIS-POKOK
         foreach ($subJob2 as $key_sj => $subJob) { #Plot
             # code...
-            if (isset($subJob['codeBlok'])) {
+            if (isset($subJob['rkhCode'])) {
                 foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
                     # code...
-                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'] = $listPlot2;
+                    foreach ($listPlot2 as $key_lp => $listPlot) {
+                    	# code...
+                    	if ($listPlot['codeBlok'] == $listBlok['codeBlok']) {
+                    		# code...
+                    		unset($listPlot['codeBlok']);
+                    		$subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][] = $listPlot;
+                    	}
+                    }
                 }
             }
         }
         foreach ($subJob2 as $key_sj => $subJob) {#Baris
             # code...
-            if (isset($subJob['codeBlok'])) {
+            if (isset($subJob['rkhCode'])) {
                 foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
                     foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
                         foreach ($listBaris2 as $key_lb => $listBaris) {
                             # code...
-                            if ($listBaris['baris'] >= $subJob['barisStart']  && $listBaris['baris'] <= $subJob['barisEnd']) {
-                                # code...
-                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
+                            if (($listBaris['codeBlok'] == $listBlok['codeBlok']) &&
+                            	($listBaris['plot'] == $listPlot['plot'])) {
+                            	# code...
+	                            if ($listBaris['baris'] >= $subJob['barisStart']  && $listBaris['baris'] <= $subJob['barisEnd']) {
+	                                # code...
+                    				unset($listBaris['codeBlok']);
+        							unset($listBaris['plot']);
+	                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
+	                            }
+
+	                            if (($subJob['barisStart'] == 0) && ($subJob['barisEnd'] == 0)) {
+	                            	# code...
+                    				unset($listBaris['codeBlok']);
+        							unset($listBaris['plot']);
+	                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
+	                            }
                             }
                         }
                     }
                 }
             }
         }
-
+        // return $subJob2;
         foreach ($subJob2 as $key_sj => $subJob) {#Pokok
             # code...
-            if (isset($subJob['codeBlok'])) {
+            if (isset($subJob['rkhCode'])) {
                 foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
                     # code...
                     foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
@@ -199,6 +258,7 @@ class AppController extends Controller
                                     $listPokok['status'] = 0;
                                     $listPokok['jmlMinggu'] = $this->datediff('ww', $listPokok['PlantingDate'], now());
                                     $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
+                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listAllPokokPlot'][] = $listPokok;
                                 }
                             }
                         }
@@ -217,7 +277,7 @@ class AppController extends Controller
             ->get());
         foreach ($subJob2 as $key_sj => $subJob) {#Pokok
             # code...
-            if (isset($subJob['codeBlok'])) {
+            if (isset($subJob['rkhCode'])) {
                 foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
                     foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
                         foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
@@ -244,7 +304,7 @@ class AppController extends Controller
         # MENGHITUNG TOTAL STATUS 0 || 1
         foreach ($subJob2 as $key_sj => $subJob) {#Pokok
             # code...
-            if (isset($subJob['codeBlok'])) {
+            if (isset($subJob['rkhCode'])) {
                 foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
                     $lpDone = 0;
                     $lpNDone = 0;
@@ -693,8 +753,8 @@ class AppController extends Controller
             $ak = $request->pokokAkhir;
             while ($aw <= $ak) {
                 # code...
-                $aw = preg_replace('/(?<!\d)(\d)(?!\d)/', '0$1', $aw); # nambahin angka 0 di setiap digit satuan
-                $codeTanam = preg_replace('/.[0-9]$/', $aw, $request->codeTanaman); #replace code pokok akhir dengan pokok skrg
+                $aw = str_pad($aw, 3, "0", STR_PAD_LEFT); # nambahin angka 0 di setiap digit satuan
+                $codeTanam = substr($request->codeTanaman, 0, strrpos($request->codeTanaman, '.')).'.'.$aw; #replace code pokok akhir dengan pokok skrg
                 DB::table('EWS_TRANS_MANDOR')->insert([
                     'rkhCode' => $request->codeRKH,
                     'subJobCode' => $request->subJobCode,
@@ -798,12 +858,106 @@ class AppController extends Controller
     public function getAllPokok()
     {
         # code...
-        $pokok2      = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')->get());
+        $pokok2      = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+        	->orderBy('codeTanaman', 'asc')
+        	->get());
         foreach ($pokok2 as $key_pk => $pokok) {
             # code...
             $pokok2[$key_pk]['jmlMinggu'] = $this->datediff('ww', $pokok['PlantingDate'], now());
         }
         return $pokok2;
+    }
+
+    public function getCTPokok()
+    {
+        # code...
+        $pokok2      = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+        	->select('codeTanaman')
+        	->orderBy('codeTanaman', 'asc')
+        	->get());
+        return $pokok2;
+    }
+
+    public function getTreePokok()
+    {
+        $listBlok2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+            ->select('codeBlok')
+            ->distinct('codeBlok')
+            ->orderBy('codeBlok', 'asc')
+            ->get());
+        $listPlot2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+            ->select('codeBlok', 'plot')
+            ->distinct('codeBlok')
+            ->orderBy('plot', 'asc')
+            ->get());
+        $listBaris2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+            ->select('codeBlok','plot', 'baris')
+            ->distinct('baris')
+            ->orderBy('baris', 'asc')
+            ->get());
+        $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+            ->orderBy('codeTanaman', 'asc')
+        	->get());
+
+        # collect all data
+        $tree2 = $listBlok2;
+
+    	foreach ($tree2 as $key_t => $tree) {
+        	# code...
+        	foreach ($listPlot2 as $key_lp => $listPlot) {
+        		# code...
+        		if ($listPlot['codeBlok'] == $tree['codeBlok']) {
+        			# code...
+        			unset($listPlot['codeBlok']);
+        			$tree2[$key_t]['listPlot'][] = $listPlot;
+        		}
+        	}
+        }
+
+    	foreach ($tree2 as $key_t => $tree) {
+        	# code...
+        	foreach ($tree['listPlot'] as $key_lp => $listPlot) {
+        		# code...
+        		foreach ($listBaris2 as $key_lb => $listBaris) {
+        			# code...
+        			if (($listBaris['codeBlok'] == $tree['codeBlok']) &&
+                    	($listBaris['plot'] == $listPlot['plot'])) {
+        				# code...
+        				unset($listBaris['codeBlok']);
+        				unset($listBaris['plot']);
+        				$tree2[$key_t]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
+        			}
+        		}
+        	}
+        }
+
+		foreach ($tree2 as $key_t => $tree) {
+        	# code...
+        	foreach ($tree['listPlot'] as $key_lp => $listPlot) {
+        		# code...
+        		foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
+        			# code...
+        			foreach ($listPokok2 as $key_pk => $listPokok) {
+        				# code...
+        				if (($listPokok['codeBlok'] == $tree['codeBlok']) && 
+                         ($listPokok['plot'] == $listPlot['plot']) && 
+                         ($listPokok['baris'] == $listBaris['baris'])) {
+                            # code...
+                            unset($listPokok['id']);
+                        	unset($listPokok['Description']);
+                        	unset($listPokok['codeBlok']);
+                        	unset($listPokok['plot']);
+                        	unset($listPokok['baris']);
+                        	unset($listPokok['noTanam']);
+                        	unset($listPokok['PlantingDate']);
+                            $tree2[$key_t]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
+                        }
+        			}
+        		}
+        	}
+        }
+
+        return $tree2;
     }
 
     public function storeBT(Request $request)

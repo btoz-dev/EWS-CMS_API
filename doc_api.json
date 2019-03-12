@@ -14,7 +14,7 @@ MANDOR DAN KAWIL MENGAKSES LEWAT SINI
 ---------------------------------------------
 
 http://36.66.74.7/api/app/storeMandor
-: INSERT DATA RKM Mandor
+=> INSERT DATA RKM Mandor
 method = POST
 body = 
 {
@@ -59,6 +59,17 @@ body =
 http://36.66.74.7/api/app/pokok
 => GET LIST POKOK
 
+---------------------------------------------
+
+http://36.66.74.7/api/app/pokokCT
+=> GET POKOK ONLY codeTanaman
+
+---------------------------------------------
+
+http://36.66.74.7/api/app/treePokok
+=> GET ALL POKOK WITH TREE BRANCH codeBlok
+
+--------------------------------------------- DONE HERE ---------------------------------------------
 ---------------------------------------------
 
 http://36.66.74.7/api/app/users

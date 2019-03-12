@@ -20,6 +20,8 @@ Route::post('app/storeMandor', 'AppController@storeMandor');
 Route::post('app/storeKawil', 'AppController@storeKawil');
 
 Route::get('app/pokok', 'AppController@getAllPokok');
+Route::get('app/pokokCT', 'AppController@getCTPokok');
+Route::get('app/treePokok', 'AppController@getTreePokok');
 
 # API FIX EWS
 
@@ -32,6 +34,7 @@ Route::get('app/pokok', 'AppController@getAllPokok');
 // });
 // Route::get('app', 'AppController@index');
 Route::post('testLogin', 'AppController@testLogin');
+// Route::get('update', 'AppController@update');
 
 
 
