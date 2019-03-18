@@ -37,7 +37,7 @@ class AppController extends Controller
         ]);
 
         $user2 = $this->removeWhitespace(DB::table('users')
-            ->select('id','name','username','password_decrypt','codePekerja')
+            ->select('id','name','username','password_decrypt as password','codePekerja')
             ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
             ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
             ->get());
@@ -52,22 +52,22 @@ class AppController extends Controller
         }
 
         $identitasPekerja = $this->removeWhitespace2(DB::table('EWS_PEKERJA')
-        	->join('users', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-        	->select('namaPekerja', 'idRole')
-        	->where('EWS_PEKERJA.codePekerja', '=', $user2[0]['codePekerja'])
-        	->first());
+            ->join('users', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
+            ->select('namaPekerja as nama', 'idRole')
+            ->where('EWS_PEKERJA.codePekerja', '=', $user2[0]['codePekerja'])
+            ->first());
 
         $detailRole = $this->removeWhitespace2(DB::table('EWS_ROLE_USER')
-        	->select('id as idDetailRole', 'namaRole', 'descRole')
-        	->where('id', '=', $identitasPekerja['idRole'])
-        	->first());
+            ->select('id', 'namaRole as nama', 'descRole as desc')
+            ->where('id', '=', $identitasPekerja['idRole'])
+            ->first());
         
-        if ($detailRole['idDetailRole'] == self::ID_ROLE_MANDOR) {#8
+        if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
             # code...
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole);
         }
 
-        if ($detailRole['idDetailRole'] == 7) {
+        if ($detailRole['id'] == 7) {
             # code...
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole);
         }
@@ -77,16 +77,16 @@ class AppController extends Controller
     public function getRKMMandor ($user2, $identitasPekerja, $detailRole)
     {
     	$codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
-        	->select('codeMandor')
-        	->where('codePekerja', '=', $user2[0]['codePekerja'])
-        	->first());
+            ->select('codeMandor')
+            ->where('codePekerja', '=', $user2[0]['codePekerja'])
+            ->first());
 
         $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
-        	->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
-        	->select('EWS_MANDOR_PEKERJA.id as idTukang', 'EWS_PEKERJA.namaPekerja as namaTukang', 'EWS_PEKERJA.codePekerja as codeTukang')
-        	->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
-            ->orderBy('namaTukang', 'asc')
-        	->get());
+            ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
+            ->select('EWS_MANDOR_PEKERJA.id', 'EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
+            ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
+            ->orderBy('nama', 'asc')
+            ->get());
 
         unset($identitasPekerja['idRole']);
         $user2[0]['identitasPekerja'] = $identitasPekerja;
@@ -94,29 +94,33 @@ class AppController extends Controller
         $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
 
         $pilihTukang = array(
-        	'idTukang' => '',
-        	'namaTukang' => 'Pilih Pekerja',
-        	'codeTukang' => ''
+            'id' => '',
+            'nama' => 'Pilih Pekerja',
+            'code' => ''
         );
-        array_unshift($tukang, $pilihTukang);
+        array_unshift($tukang, $pilihTukang); #inserts new elements into beginning of array
         $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
 
         ####################################GET ALL DATA###################################################
         $user2[0]['RKM'] = array();
-        $date = now(); # 12-03-2019
+        $date = now();
         $tgl = date_create($date);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
         # rencana kerjaan harian
         $rkm2       = $this->removeWhitespace(DB::table('EWS_JADWAL_RKM')
-        	->join('EWS_SUB_JOB', 'EWS_JADWAL_RKM.codeAlojob', '=', 'EWS_SUB_JOB.subJobCode')
-        	->join('EWS_JOB', 'EWS_JOB.jobCode', '=', 'EWS_SUB_JOB.jobCode')
-        	->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName')
-        	->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
-        	->where('EWS_JADWAL_RKM.mandorCode', '=', $codeMandor['codeMandor'])
-        	->get());
+            ->join('EWS_SUB_JOB', 'EWS_JADWAL_RKM.codeAlojob', '=', 'EWS_SUB_JOB.subJobCode')
+            ->join('EWS_JOB', 'EWS_JOB.jobCode', '=', 'EWS_SUB_JOB.jobCode')
+            ->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName')
+            ->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
+            ->where('EWS_JADWAL_RKM.mandorCode', '=', $codeMandor['codeMandor'])
+            ->get());
 
         $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
         $subJob2    = $this->removeWhitespace(DB::table('EWS_SUB_JOB')->get());
+        foreach ($subJob2 as $key => $value) {
+            # code...
+            $subJob2[$key]['Description'] = rtrim(preg_replace('/- [A-Z]{3}\/[A-Z]{3}/', '', $value['Description']));
+        }
 
         foreach ($rkm2 as $key_rkm => $rkm) {
             # code...
@@ -144,30 +148,30 @@ class AppController extends Controller
             ->orderBy('baris', 'asc')
             ->get());
         $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-        	->orderBy('codeTanaman', 'asc')
-        	->get());
+            ->orderBy('codeTanaman', 'asc')
+            ->get());
 
         $newRKM = array();
         foreach ($rkm2 as $key => $value) {
-        	# code...
-        	$newList = array(
+            # code...
+            $newList = array(
                 'codeBlok' => $value['codeBlok'],
                 'barisStart' => $value['barisStart'],
                 'barisEnd' => $value['barisEnd']
             );
-        	$newRKM[$value['rkhCode']]['rkhCode'] = $value['rkhCode'];
-        	$newRKM[$value['rkhCode']]['mandorCode'] = $value['mandorCode'];
-        	$newRKM[$value['rkhCode']]['codeAlojob'] = $value['codeAlojob'];
-        	$newRKM[$value['rkhCode']]['parentJobCode'] = $value['parentJobCode'];
-        	$newRKM[$value['rkhCode']]['parentJobName'] = $value['parentJobName'];
-        	$newRKM[$value['rkhCode']]['childJobCode'] = $value['childJobCode'];
-        	$newRKM[$value['rkhCode']]['childJobName'] = $value['childJobName'];
-        	$newRKM[$value['rkhCode']]['rkhDate'] = $value['rkhDate'];
-        	$newRKM[$value['rkhCode']]['rkhTime'] = $value['rkhTime'];
-        	$newRKM[$value['rkhCode']]['listBlok'][] = $newList;
+            $newRKM[$value['rkhCode']]['rkhCode'] = $value['rkhCode'];
+            $newRKM[$value['rkhCode']]['mandorCode'] = $value['mandorCode'];
+            $newRKM[$value['rkhCode']]['codeAlojob'] = $value['codeAlojob'];
+            $newRKM[$value['rkhCode']]['parentJobCode'] = $value['parentJobCode'];
+            $newRKM[$value['rkhCode']]['parentJobName'] = $value['parentJobName'];
+            $newRKM[$value['rkhCode']]['childJobCode'] = $value['childJobCode'];
+            $newRKM[$value['rkhCode']]['childJobName'] = $value['childJobName'];
+            $newRKM[$value['rkhCode']]['rkhDate'] = $value['rkhDate'];
+            $newRKM[$value['rkhCode']]['rkhTime'] = $value['rkhTime'];
+            $newRKM[$value['rkhCode']]['listBlok'][] = $newList;
         }
         $rkm2 = $newRKM;
-
+        
         foreach ($rkm2 as $key_rkm => $rkm) {
             # code...
             foreach ($subJob2 as $key_sj => $subJob) {
@@ -208,12 +212,12 @@ class AppController extends Controller
                 foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
                     # code...
                     foreach ($listPlot2 as $key_lp => $listPlot) {
-                    	# code...
-                    	if ($listPlot['codeBlok'] == $listBlok['codeBlok']) {
-                    		# code...
-                    		unset($listPlot['codeBlok']);
-                    		$subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][] = $listPlot;
-                    	}
+                        # code...
+                        if ($listPlot['codeBlok'] == $listBlok['codeBlok']) {
+                            # code...
+                            unset($listPlot['codeBlok']);
+                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][] = $listPlot;
+                        }
                     }
                 }
             }
@@ -226,21 +230,21 @@ class AppController extends Controller
                         foreach ($listBaris2 as $key_lb => $listBaris) {
                             # code...
                             if (($listBaris['codeBlok'] == $listBlok['codeBlok']) &&
-                            	($listBaris['plot'] == $listPlot['plot'])) {
-                            	# code...
-	                            if ($listBaris['baris'] >= $listBlok['barisStart']  && $listBaris['baris'] <= $listBlok['barisEnd']) {
-	                                # code...
-                    				unset($listBaris['codeBlok']);
-        							unset($listBaris['plot']);
-	                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
-	                            }
+                                ($listBaris['plot'] == $listPlot['plot'])) {
+                                # code...
+                                if ($listBaris['baris'] >= $listBlok['barisStart']  && $listBaris['baris'] <= $listBlok['barisEnd']) {
+                                    # code...
+                                    unset($listBaris['codeBlok']);
+                                    unset($listBaris['plot']);
+                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
+                                }
 
-	                            if (($listBlok['barisStart'] == 0) && ($listBlok['barisEnd'] == 0)) {
-	                            	# code...
-                    				unset($listBaris['codeBlok']);
-        							unset($listBaris['plot']);
-	                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
-	                            }
+                                if (($listBlok['barisStart'] == 0) && ($listBlok['barisEnd'] == 0)) {
+                                    # code...
+                                    unset($listBaris['codeBlok']);
+                                    unset($listBaris['plot']);
+                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
+                                }
                             }
                         }
                     }
@@ -262,7 +266,16 @@ class AppController extends Controller
                                     # code...
                                     $listPokok['status'] = 0;
                                     $listPokok['jmlMinggu'] = $this->datediff('ww', $listPokok['PlantingDate'], now());
+                                    unset($listPokok['Description']);
+                                    unset($listPokok['codeBlok']);
+                                    unset($listPokok['plot']);
+                                    unset($listPokok['baris']);
+                                    unset($listPokok['noTanam']);
+                                    $listPokok['PlantingDate'] = date_format($date, 'd F Y');
                                     $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
+                                    unset($listPokok['PlantingDate']);
+                                    unset($listPokok['status']);
+                                    unset($listPokok['jmlMinggu']);
                                     $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listAllPokokPlot'][] = $listPokok;
                                 }
                             }
@@ -379,24 +392,13 @@ class AppController extends Controller
                 $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
                 if ($subJob['jobCode'] == $job['jobCode']) {
                     # code...
-                    // $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                    // $jobdesc = ucwords(strtolower($job['Description']));
-                    // $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+                    unset($subJob['codeAlojob']);
+                    unset($subJob['rkhTime']);
                     $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
-                    // $job2[$key_j][$parentJob][] = $subJob;
-                    // $job2[$key_j]['childJob'][] = $subJob;
                 }
-                // else
-                // {
-                // 	$job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                //     $jobdesc = ucwords(strtolower($job['Description']));
-                //     $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
-                // }
-                // $job2[$key_j]['jenisPekerjaan'] = $job2[$key_j]['Description'];
             }
             unset($job2[$key_j]['jobCode']);
             unset($job2[$key_j]['Description']);
-            // $this->move_to_top($job2[$key_j], 'jenisPekerjaan');
         }
 
         $user2[0]['RKM'] = $job2;
@@ -1335,7 +1337,7 @@ class AppController extends Controller
         ]);
 
         $user2 = $this->removeWhitespace(DB::table('users')
-            ->select('id','name','username','password_decrypt','codePekerja')
+            ->select('id','name','username','password_decrypt as password','codePekerja')
             ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
             ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
             ->get());
@@ -1351,21 +1353,21 @@ class AppController extends Controller
 
         $identitasPekerja = $this->removeWhitespace2(DB::table('EWS_PEKERJA')
         	->join('users', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-        	->select('namaPekerja', 'idRole')
+        	->select('namaPekerja as nama', 'idRole')
         	->where('EWS_PEKERJA.codePekerja', '=', $user2[0]['codePekerja'])
         	->first());
 
         $detailRole = $this->removeWhitespace2(DB::table('EWS_ROLE_USER')
-        	->select('id as idDetailRole', 'namaRole', 'descRole')
+        	->select('id', 'namaRole as nama', 'descRole as desc')
         	->where('id', '=', $identitasPekerja['idRole'])
         	->first());
         
-        if ($detailRole['idDetailRole'] == self::ID_ROLE_MANDOR) {#8
+        if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
             # code...
             return $this->getRKMMandor2($user2, $identitasPekerja, $detailRole);
         }
 
-        if ($detailRole['idDetailRole'] == 7) {
+        if ($detailRole['id'] == 7) {
             # code...
             return $this->getRKMKawil2($user2, $identitasPekerja, $detailRole);
         }
@@ -1381,9 +1383,9 @@ class AppController extends Controller
 
         $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
         	->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
-        	->select('EWS_MANDOR_PEKERJA.id as idTukang', 'EWS_PEKERJA.namaPekerja as namaTukang', 'EWS_PEKERJA.codePekerja as codeTukang')
+        	->select('EWS_MANDOR_PEKERJA.id', 'EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
         	->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
-            ->orderBy('namaTukang', 'asc')
+            ->orderBy('nama', 'asc')
         	->get());
 
         unset($identitasPekerja['idRole']);
@@ -1392,11 +1394,11 @@ class AppController extends Controller
         $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
 
         $pilihTukang = array(
-        	'idTukang' => '',
-        	'namaTukang' => 'Pilih Pekerja',
-        	'codeTukang' => ''
+        	'id' => '',
+        	'nama' => 'Pilih Pekerja',
+        	'code' => ''
         );
-        array_unshift($tukang, $pilihTukang);
+        array_unshift($tukang, $pilihTukang); #inserts new elements into beginning of array
         $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
 
         ####################################GET ALL DATA###################################################
@@ -1409,12 +1411,16 @@ class AppController extends Controller
         	->join('EWS_SUB_JOB', 'EWS_JADWAL_RKM.codeAlojob', '=', 'EWS_SUB_JOB.subJobCode')
         	->join('EWS_JOB', 'EWS_JOB.jobCode', '=', 'EWS_SUB_JOB.jobCode')
         	->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName')
-        	->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
+        	->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
         	->where('EWS_JADWAL_RKM.mandorCode', '=', $codeMandor['codeMandor'])
         	->get());
 
         $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
         $subJob2    = $this->removeWhitespace(DB::table('EWS_SUB_JOB')->get());
+        foreach ($subJob2 as $key => $value) {
+            # code...
+            $subJob2[$key]['Description'] = rtrim(preg_replace('/- [A-Z]{3}\/[A-Z]{3}/', '', $value['Description']));
+        }
 
         foreach ($rkm2 as $key_rkm => $rkm) {
             # code...
@@ -1560,7 +1566,16 @@ class AppController extends Controller
                                     # code...
                                     $listPokok['status'] = 0;
                                     $listPokok['jmlMinggu'] = $this->datediff('ww', $listPokok['PlantingDate'], now());
+                                    unset($listPokok['Description']);
+                                    unset($listPokok['codeBlok']);
+                                    unset($listPokok['plot']);
+                                    unset($listPokok['baris']);
+                                    unset($listPokok['noTanam']);
+                                    $listPokok['PlantingDate'] = date_format($date, 'd F Y');
                                     $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
+                                    unset($listPokok['PlantingDate']);
+                                    unset($listPokok['status']);
+                                    unset($listPokok['jmlMinggu']);
                                     $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listAllPokokPlot'][] = $listPokok;
                                 }
                             }
@@ -1677,24 +1692,13 @@ class AppController extends Controller
                 $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
                 if ($subJob['jobCode'] == $job['jobCode']) {
                     # code...
-                    // $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                    // $jobdesc = ucwords(strtolower($job['Description']));
-                    // $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+                    unset($subJob['codeAlojob']);
+                    unset($subJob['rkhTime']);
                     $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
-                    // $job2[$key_j][$parentJob][] = $subJob;
-                    // $job2[$key_j]['childJob'][] = $subJob;
                 }
-                // else
-                // {
-                // 	$job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                //     $jobdesc = ucwords(strtolower($job['Description']));
-                //     $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
-                // }
-                // $job2[$key_j]['jenisPekerjaan'] = $job2[$key_j]['Description'];
             }
             unset($job2[$key_j]['jobCode']);
             unset($job2[$key_j]['Description']);
-            // $this->move_to_top($job2[$key_j], 'jenisPekerjaan');
         }
 
         $user2[0]['RKM'] = $job2;
