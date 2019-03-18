@@ -21,6 +21,8 @@ Route::get('/dashboard', 'CMSController@dashboard');#->name('home');
 
 Route::resource('usermgmt', 'CMS\UsermgmtController');
 
+Route::resource('report', 'CMS\ReportController');
+
 Route::get('/reports/{dateStart?}/{dateEnd?}', 'CMSController@reports')
 	->where([
 		'dateStart' => '^\d{1,2}\-\d{1,2}\-\d{4}$',

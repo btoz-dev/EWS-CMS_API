@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CMS;
 
+use DataTables;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,16 +15,28 @@ class UsermgmtController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->removeWhitespace(DB::table('users')
+        if ($request->ajax()) {
+            $query = DB::table('users')
             ->join('EWS_PEKERJA', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
             ->join('EWS_ROLE_USER', 'EWS_PEKERJA.idRole', '=', 'EWS_ROLE_USER.id')
             ->select('users.id', 'users.username', 'users.email', 'EWS_PEKERJA.codePekerja', 'EWS_PEKERJA.namaPekerja', 'EWS_ROLE_USER.namaRole', 'EWS_ROLE_USER.descRole')
-            ->get());
+            ->get();
+            $users = $this->removeWhitespace($query);
+            return DataTables::of($users)->make(true);
+        }
 
-        $data['users'] = $users;
-        return view('cms.usermgmt', $data);
+        // $users = $this->removeWhitespace(DB::table('users')
+        //     ->join('EWS_PEKERJA', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
+        //     ->join('EWS_ROLE_USER', 'EWS_PEKERJA.idRole', '=', 'EWS_ROLE_USER.id')
+        //     ->select('users.id', 'users.username', 'users.email', 'EWS_PEKERJA.codePekerja', 'EWS_PEKERJA.namaPekerja', 'EWS_ROLE_USER.namaRole', 'EWS_ROLE_USER.descRole')
+        //     ->get());
+
+        // $data['users'] = $users;
+        return view('cms.usermgmt');
+        // return view('cms.usermgmt', $data);
+        // return DataTables::of($users)->make(true);
     }
 
     /**

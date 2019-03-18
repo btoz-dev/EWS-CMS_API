@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 # API FIX EWS
 Route::post('app/user', 'AppController@getUser');
+Route::post('app/user2', 'AppController@getUser2');
 
 Route::post('app/storeMandor', 'AppController@storeMandor');
 
@@ -33,8 +34,9 @@ Route::get('app/treePokok', 'AppController@getTreePokok');
 // 	Route::resource('job', 'JobController');
 // });
 // Route::get('app', 'AppController@index');
-Route::post('testLogin', 'AppController@testLogin');
+// Route::post('testLogin', 'AppController@testLogin');
 // Route::get('update', 'AppController@update');
+Route::post('test', 'AppController@test');
 
 
 

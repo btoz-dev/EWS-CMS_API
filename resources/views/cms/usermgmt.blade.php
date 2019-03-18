@@ -1,48 +1,48 @@
 @extends('layouts.cmsApp')
 
 @section('content')
-    <div class="row mt-3">
+    <!-- <div class="row mt-3">
         <div class="col">
             <h2>User Management</h2>
         </div>
         <div class="col">
             <a href="{{ url('/usermgmt/create') }}" class="btn btn-primary btn-sm">Tambah User</a>
         </div>
-    </div>
-    
-    <div class="table-responsive">
-        <table class="table table-striped table-sm">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Kode Pekerja</th>
-                    <th>Nama Pekerja</th>
-                    <th>Role</th>
-                    <th>Deskripsi Role</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($users as $value)
+    </div> -->
+    <div class="container">
+        <hr>
+        <h2>User Management</h2>
+        <hr>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm" id="data-table">
+                <thead>
                     <tr>
-                        <td>{{$value['id']}}</td>
-                        <td>{{$value['username']}}</td>
-                        <td>{{$value['email']}}</td>
-                        <td>{{$value['codePekerja']}}</td>
-                        <td>{{$value['namaPekerja']}}</td>
-                        <td>{{$value['namaRole']}}</td>
-                        <td>{{$value['descRole']}}</td>
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-info btn-sm">Ubah</button>
-                                <button type="button" class="btn btn-danger btn-sm">Hapus</button>
-                            </div>
-                        </td>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Nama Pekerja</th>
+                        <th>Role</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                
+            </table>
+        </div>
     </div>
+@endsection
+
+@section('script')
+    <script type="text/javascript">
+        $('#data-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('usermgmt.index') }}',
+            columns: [
+                {data: 'id', name: 'id'},
+                {data: 'username', name: 'username'},
+                {data: 'email', name: 'email'},
+                {data: 'namaPekerja', name: 'namaPekerja'},
+                {data: 'namaRole', name: 'namaRole'},
+            ]
+        });
+    </script>
 @endsection
