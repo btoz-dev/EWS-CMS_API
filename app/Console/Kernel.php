@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use DB;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -25,7 +26,16 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')
-        //          ->hourly();
+        //          ->everyMinute()
+        //          ->appendOutputTo(storage_path('logs/inspire.log'));
+
+        // $schedule->call(function () {
+        //     $kmrn = date('Y-m-d', strtotime('-1 day', strtotime(now())));
+        //     DB::table('EWS_JADWAL_RKM')
+        //         ->whereBetween('rkhDate', [$kmrn, $kmrn.' 23:59:59.000'])
+        //         ->update(['rkhDate' => now()]);
+        // })
+        // ->daily();
     }
 
     /**
