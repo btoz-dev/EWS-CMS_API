@@ -13,17 +13,37 @@ use Illuminate\Http\Request;
 |
 */
 # API FIX EWS
-Route::post('app/user', 'AppController@getUser');
-Route::post('app/user2', 'AppController@getUser2');
 
-Route::post('app/storeMandor', 'AppController@storeMandor');
 
-Route::post('app/storeKawil', 'AppController@storeKawil');
+#Route::post('app/storeKawil', 'AppController@storeKawil');
 
-Route::get('app/pokok', 'AppController@getAllPokok');
-Route::get('app/pokokCT', 'AppController@getCTPokok');
-Route::get('app/treePokok', 'AppController@getTreePokok');
+Route::group(['prefix' => 'app'], function () { # Use DB GPS_APS
+	Route::get('test', 'AppController@test');
 
+	Route::post('user', 'AppController@getUser');
+
+	Route::post('user2', 'AppController@getUser2');
+
+	Route::post('storeMandor', 'AppController@storeMandor');
+
+	Route::get('pokok', 'AppController@getAllPokok');
+	Route::get('pokokCT', 'AppController@getCTPokok');
+	Route::get('treePokok', 'AppController@getTreePokok');
+});
+
+Route::group(['prefix' => 'dev', 'middleware' => 'changeDB'], function () { # Use DB GPS_APS_EWS
+	Route::get('test', 'Dev\DevController@test');
+
+	Route::post('user', 'Dev\DevController@getUser');
+
+	Route::post('user2', 'Dev\DevController@getUser2');
+
+	Route::post('storeMandor', 'Dev\DevController@storeMandor');
+
+	Route::get('pokok', 'Dev\DevController@getAllPokok');
+	Route::get('pokokCT', 'Dev\DevController@getCTPokok');
+	Route::get('treePokok', 'Dev\DevController@getTreePokok');
+});
 # API FIX EWS
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -36,7 +56,7 @@ Route::get('app/treePokok', 'AppController@getTreePokok');
 // Route::get('app', 'AppController@index');
 // Route::post('testLogin', 'AppController@testLogin');
 // Route::get('update', 'AppController@update');
-Route::post('test', 'AppController@test');
+/*
 
 
 
@@ -64,3 +84,4 @@ Route::post('app/storeCorrAct', 'AppController@storeCA');
 // Route::get('plantloc/{block}/{plot}/{baris}', 'PlantLocController@show');
 
 // Route::get('/users', 'UserController@all');
+*/
