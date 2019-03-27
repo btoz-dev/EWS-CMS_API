@@ -1,5 +1,9 @@
 @extends('layouts.cmsApp')
 
+@section('stylesheet')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
+@endsection
+
 @section('content')
     <div class="row mt-3">
         <div class="col">
@@ -34,22 +38,18 @@
         </div>
 
         <div class="form-group">
-            <label for="pekerjaInput">Nama Pekerja</label>
-            <select class="form-control" id="pekerjaInput" name="pekerja">
-                <option>Pilih Nama Pekerja</option>
-                @foreach($pekerja as $pekerja)
-                    <option value="{{$pekerja['codePekerja']}}">{{$pekerja['namaPekerja']}} ({{$pekerja['codePekerja']}})</option>
+            <label for="roleInput">Role</label>
+            <select class="form-control selectpicker" id="roleInput" name="role">
+                <option value="">Pilih Role User</option>
+                @foreach($role as $role)
+                    <option value="{{$role['id']}}">{{$role['namaRole']}}</option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="roleInput">Role</label>
-            <select class="form-control" id="roleInput" name="role">
-                <option>Pilih Role User</option>
-                @foreach($role as $role)
-                    <option value="{{$role['id']}}">{{$role['namaRole']}}</option>
-                @endforeach
+            <label for="pekerjaInput">Nama Pekerja</label>
+            <select class="form-control selectpicker" id="pekerjaInput" name="pekerja">
             </select>
         </div>
 
@@ -66,4 +66,32 @@
         <button type="submit" class="btn btn-primary">Submit</button>
 
     </form>
+@endsection
+
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
+        $.fn.selectpicker.Constructor.BootstrapVersion = '4';
+
+        $('#roleInput, #pekerjaInput').selectpicker({
+            liveSearch : true,
+            size : 5
+        });
+
+        $('#roleInput').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            // body...
+            $.post('{{route('usermgmt.postRoleDropdown')}}',{id: $(this).val()}, function (e) {
+                // body...
+                console.log(e);
+                $('#pekerjaInput').html(e);
+                $('#pekerjaInput').selectpicker('refresh');
+            })
+        })
+    </script>
 @endsection
