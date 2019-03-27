@@ -48,7 +48,7 @@ class UsermgmtController extends CMSController
                 ->make(true);
         }
 
-        return view('cms.usermgmt');
+        return view('cms.usermgmt.index');
     }
 
     /**
@@ -86,6 +86,13 @@ class UsermgmtController extends CMSController
         ];
         
         $validator = Validator::make($request->all(), $rules, $messages)->validate();
+
+        try {
+            
+        } catch (Exception $e) {
+            return $e;
+        }
+
         return $request;
     }
 
