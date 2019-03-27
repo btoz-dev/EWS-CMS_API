@@ -76,6 +76,12 @@
                             Custom Reports
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ asset('storage/ews-app-release_22-03-2019.apk') }}">
+                            <i class="fab fa-android"></i>
+                            Download APK File
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
