@@ -32,17 +32,17 @@ Route::group(['prefix' => 'app'], function () { # Use DB GPS_APS
 });
 
 Route::group(['prefix' => 'dev', 'middleware' => 'changeDB'], function () { # Use DB GPS_APS_EWS
-	Route::get('test', 'Dev\DevController@test');
+	Route::get('test', 'Api\Dev\DevController@test');
 
-	Route::post('user', 'Dev\DevController@getUser');
+	Route::post('user', 'Api\Dev\DevController@getUser');
 
-	Route::post('user2', 'Dev\DevController@getUser2');
+	Route::post('user2', 'Api\Dev\DevController@getUser2');
 
-	Route::post('storeMandor', 'Dev\DevController@storeMandor');
+	Route::post('storeMandor', 'Api\Dev\DevController@storeMandor');
 
-	Route::get('pokok', 'Dev\DevController@getAllPokok');
-	Route::get('pokokCT', 'Dev\DevController@getCTPokok');
-	Route::get('treePokok', 'Dev\DevController@getTreePokok');
+	Route::get('pokok', 'Api\Dev\DevController@getAllPokok');
+	Route::get('pokokCT', 'Api\Dev\DevController@getCTPokok');
+	Route::get('treePokok', 'Api\Dev\DevController@getTreePokok');
 });
 # API FIX EWS
 
