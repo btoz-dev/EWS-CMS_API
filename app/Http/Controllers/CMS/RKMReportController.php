@@ -18,17 +18,13 @@ class RKMReportController extends CMSController
     {
         if ($request->ajax()) {
             $query = DB::table('EWS_JADWAL_RKM')
-            ->select('*')
-            // ->join('users', 'users.id', '=', 'EWS_TRANS_MANDOR.userid')
-            // ->join('EWS_MANDOR', 'EWS_MANDOR.codePekerja', '=', 'users.codePekerja')
-            // ->join('EWS_PEKERJA as m', 'm.codePekerja', '=', 'users.codePekerja')
-            // ->join('EWS_PEKERJA as t', 't.codePekerja', '=', 'EWS_TRANS_MANDOR.codeTukang')
-            // ->join('EWS_SUB_JOB', 'EWS_SUB_JOB.subJobCode', '=', 'EWS_TRANS_MANDOR.subJobCode')
-            // ->select('EWS_TRANS_MANDOR.*', 'users.codePekerja as codePekerjaMandor', 'EWS_MANDOR.codeMandor', 'm.namaPekerja as namaMandor', 't.namaPekerja as namaTukang', 'EWS_SUB_JOB.Description')
-            ->selectRaw('convert(varchar, rkhDate, 106) as tanggal')
-            ->selectRaw('dbo.EWS_f_getTotalPokok(codeBlok, barisStart, barisEnd) as totalPokok')
-            ->selectRaw('dbo.EWS_f_totalPokokDone(rkhCode, codeAlojob, codeBlok) as pokokDone')
-            ->selectRaw('dbo.EWS_f_realisasiPersen(dbo.EWS_f_getTotalPokok(codeBlok, barisStart, barisEnd), dbo.EWS_f_totalPokokDone(rkhCode, codeAlojob, codeBlok)) as persentase')
+            ->select('EWS_JADWAL_RKM.id', 'EWS_JADWAL_RKM.rkhCode', 'EWS_VW_DETAIL_MANDOR.namaPekerja', 'EWS_SUB_JOB.Description', 'EWS_JADWAL_RKM.codeBlok', 'EWS_JADWAL_RKM.barisStart', 'EWS_JADWAL_RKM.barisEnd')
+            ->selectRaw('convert(varchar, EWS_JADWAL_RKM.rkhDate, 106) as tanggal')
+            ->selectRaw('dbo.EWS_f_getTotalPokok(EWS_JADWAL_RKM.codeBlok, EWS_JADWAL_RKM.barisStart, EWS_JADWAL_RKM.barisEnd) as totalPokok')
+            ->selectRaw('dbo.EWS_f_totalPokokDone(EWS_JADWAL_RKM.rkhCode, EWS_JADWAL_RKM.codeAlojob, EWS_JADWAL_RKM.codeBlok) as pokokDone')
+            ->selectRaw('dbo.EWS_f_realisasiPersen(dbo.EWS_f_getTotalPokok(EWS_JADWAL_RKM.codeBlok, EWS_JADWAL_RKM.barisStart, EWS_JADWAL_RKM.barisEnd), dbo.EWS_f_totalPokokDone(EWS_JADWAL_RKM.rkhCode, EWS_JADWAL_RKM.codeAlojob, EWS_JADWAL_RKM.codeBlok)) as persentase')
+            ->join('EWS_VW_DETAIL_MANDOR', 'EWS_VW_DETAIL_MANDOR.codeMandor', '=', 'EWS_JADWAL_RKM.mandorCode')
+            ->join('EWS_SUB_JOB', 'EWS_SUB_JOB.subJobCode', '=', 'EWS_JADWAL_RKM.codeAlojob')
             ->get();
             $report = $this->removeWhitespace($query);
             return DataTables::of($report)
