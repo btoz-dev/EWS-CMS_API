@@ -12,7 +12,7 @@
                         <th>#</th>
                         <th>Kode RKH</th>
                         <th>Tanggal RKH</th>
-                        <th>Kode Mandor</th>
+                        <th>Nama Mandor</th>
                         <th>Aktifitas</th>
                         <th>Kode Blok</th>
                         <th>Baris Start</th>
@@ -37,8 +37,8 @@
                 {data: 'id', name: 'id'},
                 {data: 'rkhCode', name: 'rkhCode'},
                 {data: 'tanggal', name: 'tanggal'},
-                {data: 'mandorCode', name: 'mandorCode'},
-                {data: 'codeAlojob', name: 'codeAlojob'},
+                {data: 'namaPekerja', name: 'namaPekerja'},
+                {data: 'Description', name: 'Description'},
                 {data: 'codeBlok', name: 'codeBlok'},
                 {data: 'barisStart', name: 'barisStart'},
                 {data: 'barisEnd', name: 'barisEnd'},

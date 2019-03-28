@@ -12,7 +12,7 @@
                         <th>#</th>
                         <th>Kode RKH</th>
                         <th>Mandor</th>
-                        <th>Tukang</th>
+                        <th>TK</th>
                         <th>Pekerjaan</th>
                         <th>Kode Tanaman</th>
                         <th>Catatan Mandor</th>
