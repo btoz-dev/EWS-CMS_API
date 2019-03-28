@@ -14,7 +14,8 @@
             </button>
         </div>
     </div>
-    <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+    <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
+    <canvas id="myChart2"></canvas>
     <h2>Section title</h2>
     <div class="table-responsive">
         <table class="table table-striped table-sm">
@@ -147,6 +148,34 @@
 
 @section('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
+    <!-- <script src="{{ asset('js/dashboard.js') }}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script type="text/javascript">
+        var ctx = document.getElementById('myChart2').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'pie',
+
+            // The data for our dataset
+            data : {
+                datasets: [{
+                    data: [10, 30],
+                    backgroundColor: [
+                        'red',
+                        'blue',
+                    ]
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    'Sudah di realisasi',
+                    'Belum di realisasi',
+                ]
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+    </script>
 @endsection
