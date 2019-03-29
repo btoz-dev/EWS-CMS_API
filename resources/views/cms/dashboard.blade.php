@@ -5,8 +5,8 @@
         <h1 class="h2">Dashboard</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button> -->
             </div>
             <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
                 <span data-feather="calendar"></span>
@@ -14,136 +14,7 @@
             </button>
         </div>
     </div>
-    <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
     <canvas id="myChart2"></canvas>
-    <h2>Section title</h2>
-    <div class="table-responsive">
-        <table class="table table-striped table-sm">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Header</th>
-                    <th>Header</th>
-                    <th>Header</th>
-                    <th>Header</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1,001</td>
-                    <td>Lorem</td>
-                    <td>ipsum</td>
-                    <td>dolor</td>
-                    <td>sit</td>
-                </tr>
-                <tr>
-                    <td>1,002</td>
-                    <td>amet</td>
-                    <td>consectetur</td>
-                    <td>adipiscing</td>
-                    <td>elit</td>
-                </tr>
-                <tr>
-                    <td>1,003</td>
-                    <td>Integer</td>
-                    <td>nec</td>
-                    <td>odio</td>
-                    <td>Praesent</td>
-                </tr>
-                <tr>
-                    <td>1,003</td>
-                    <td>libero</td>
-                    <td>Sed</td>
-                    <td>cursus</td>
-                    <td>ante</td>
-                </tr>
-                <tr>
-                    <td>1,004</td>
-                    <td>dapibus</td>
-                    <td>diam</td>
-                    <td>Sed</td>
-                    <td>nisi</td>
-                </tr>
-                <tr>
-                    <td>1,005</td>
-                    <td>Nulla</td>
-                    <td>quis</td>
-                    <td>sem</td>
-                    <td>at</td>
-                </tr>
-                <tr>
-                    <td>1,006</td>
-                    <td>nibh</td>
-                    <td>elementum</td>
-                    <td>imperdiet</td>
-                    <td>Duis</td>
-                </tr>
-                <tr>
-                    <td>1,007</td>
-                    <td>sagittis</td>
-                    <td>ipsum</td>
-                    <td>Praesent</td>
-                    <td>mauris</td>
-                </tr>
-                <tr>
-                    <td>1,008</td>
-                    <td>Fusce</td>
-                    <td>nec</td>
-                    <td>tellus</td>
-                    <td>sed</td>
-                </tr>
-                <tr>
-                    <td>1,009</td>
-                    <td>augue</td>
-                    <td>semper</td>
-                    <td>porta</td>
-                    <td>Mauris</td>
-                </tr>
-                <tr>
-                    <td>1,010</td>
-                    <td>massa</td>
-                    <td>Vestibulum</td>
-                    <td>lacinia</td>
-                    <td>arcu</td>
-                </tr>
-                <tr>
-                    <td>1,011</td>
-                    <td>eget</td>
-                    <td>nulla</td>
-                    <td>Class</td>
-                    <td>aptent</td>
-                </tr>
-                <tr>
-                    <td>1,012</td>
-                    <td>taciti</td>
-                    <td>sociosqu</td>
-                    <td>ad</td>
-                    <td>litora</td>
-                </tr>
-                <tr>
-                    <td>1,013</td>
-                    <td>torquent</td>
-                    <td>per</td>
-                    <td>conubia</td>
-                    <td>nostra</td>
-                </tr>
-                <tr>
-                    <td>1,014</td>
-                    <td>per</td>
-                    <td>inceptos</td>
-                    <td>himenaeos</td>
-                    <td>Curabitur</td>
-                </tr>
-                <tr>
-                    <td>1,015</td>
-                    <td>sodales</td>
-                    <td>ligula</td>
-                    <td>in</td>
-                    <td>libero</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 @endsection
 
 @section('script')
@@ -152,6 +23,12 @@
     <!-- <script src="{{ asset('js/dashboard.js') }}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         var ctx = document.getElementById('myChart2').getContext('2d');
         var chart = new Chart(ctx, {
             // The type of chart we want to create
@@ -160,10 +37,12 @@
             // The data for our dataset
             data : {
                 datasets: [{
-                    data: [10, 30],
+                    data: [],
                     backgroundColor: [
-                        'red',
-                        'blue',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 99, 132)',
+                        // window.chartColors.blue,
+                        // window.chartColors.red,
                     ]
                 }],
 
@@ -177,5 +56,57 @@
             // Configuration options go here
             options: {}
         });
+
+        // $.post('{{route('dashboard.getDataChart')}}', {
+        //         type: 'blok', 
+        //         id: $('#select-aktifitas').val()
+        //     }, function (e) {
+        //     // body...
+        //     $('#select-codeBlok').html(e);
+        //     $('#select-codeBlok').selectpicker('refresh');
+        // })
+
+        $.ajax({
+            url: '{{route('dashboard.getDataChart')}}',
+            method: 'post',
+            data: {
+                rkhCode : 'RKH/KL01/0319/0292',
+                codeAlojob : '5210400100',
+                codeBlok : '2031-R0',
+            },
+            success: function(data) {
+                console.log(data);
+              // process your data to pull out what you plan to use to update the chart
+              // e.g. new label and a new data point
+              
+              // add new label and data point to chart's underlying data structures
+              // myChart.data.labels.push("Post " + postId++);
+              chart.data.datasets[0].data.push(data.pokokDone);
+              chart.data.datasets[0].data.push(data.totalPokok - data.pokokDone);
+              
+              // // re-render the chart
+              chart.update();
+            }
+        });
+
+        // logic to get new data
+        var getData = function() {
+          // $.ajax({
+          //   url: '{{route('dashboard.getDataChart')}}',
+          //   method: 'post',
+          //   success: function(data) {
+          //       console.log(data);
+          //     // process your data to pull out what you plan to use to update the chart
+          //     // e.g. new label and a new data point
+              
+          //     // add new label and data point to chart's underlying data structures
+          //     // myChart.data.labels.push("Post " + postId++);
+          //     // myChart.data.datasets[0].data.push(getRandomIntInclusive(1, 25));
+              
+          //     // // re-render the chart
+          //     // myChart.update();
+          //   }
+          // });
+        };
     </script>
 @endsection
