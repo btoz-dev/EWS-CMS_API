@@ -10,6 +10,12 @@
             <div class="form-group mx-sm-3 mb-2">
                 <a href = "{{route('usermgmt.create')}}" id="add" class="btn btn-primary btn-sm" tabindex="-1" role="button" aria-disabled="false">Tambah</a>
             </div>
+            <div class="alert alert-warning alert-dismissible fade" role="alert">
+                <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </form>
         <hr>
         <div class="table-responsive">
