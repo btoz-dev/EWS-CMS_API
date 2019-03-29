@@ -17,7 +17,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/dashboard', 'CMSController@dashboard');#->name('home');
+Route::get('dashboard', 'CMSController@dashboard');#->name('home');
+Route::post('dashboardChartDataSet', 'CMSController@chartDataSet')->name('dashboard.getDataChart');
 
 Route::resource('usermgmt', 'CMS\UsermgmtController');
 Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
@@ -32,6 +33,7 @@ Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index'
 Route::get('customReport', 'CMS\CustomReportController@index')->name('customReport.index');
 Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
 Route::post('postFilter', 'CMS\CustomReportController@postFilter')->name('postFilter');
+Route::post('chartDataSet', 'CMSController@chartDataSet')->name('getDataChart');
 
 // Route::get('/reports/{dateStart?}/{dateEnd?}', 'CMSController@reports')
 // 	->where([
