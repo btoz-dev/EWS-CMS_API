@@ -39,6 +39,26 @@ class CMSController extends Controller
         return view('cms.dashboard');
     }
 
+    public function chartDataSet(Request $request)
+    {
+        # code...
+        // $table = DB::select('exec EWS_sp_allPokokStatus @rkhCode = ?, @codeAlojob = ?, @codeBlok = ?',array($request->rkhCode,$request->codeAlojob,$request->codeBlok));
+        $query = DB::table('EWS_JADWAL_RKM')
+            ->select('*')
+            ->selectRaw('convert(varchar, rkhDate, 106) as tanggal')
+            ->selectRaw('dbo.EWS_f_getTotalPokok(codeBlok, barisStart, barisEnd) as totalPokok')
+            ->selectRaw('dbo.EWS_f_totalPokokDone(rkhCode, codeAlojob, codeBlok) as pokokDone')
+            ->selectRaw('dbo.EWS_f_realisasiPersen(dbo.EWS_f_getTotalPokok(codeBlok, barisStart, barisEnd), dbo.EWS_f_totalPokokDone(rkhCode, codeAlojob, codeBlok)) as persentase')
+            ->where('rkhCode', '=', $request->rkhCode)
+            ->where('codeAlojob', '=', $request->codeAlojob)
+            ->where('codeBlok', '=', $request->codeBlok)
+            ->first();
+            $report = $this->removeWhitespace2($query);
+        // $table = DB::select('exec EWS_sp_allPokokStatus @rkhCode = ?, @codeAlojob = ?, @codeBlok = ?',array('RKH/KL01/0319/0292', '5210400100', '2031-R0'));
+
+        return $report;
+    }
+
     // public function usermgmt()
     // {
     //     # code...
