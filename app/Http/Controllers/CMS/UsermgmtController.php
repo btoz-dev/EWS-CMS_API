@@ -88,12 +88,28 @@ class UsermgmtController extends CMSController
         $validator = Validator::make($request->all(), $rules, $messages)->validate();
 
         try {
-            
+            DB::table('users')->insert([
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'password_decrypt' => $request->password,
+                'codePekerja' => $request->pekerja,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            if ($request->pekerja != NULL) {
+                # code...
+                DB::table('EWS_PEKERJA')
+                    ->where('codePekerja', '=', $request->pekerja)
+                    ->update(['idRole' => $request->role]);
+            }
         } catch (Exception $e) {
             return $e;
         }
 
-        return $request;
+        return view('cms.usermgmt.index');
     }
 
     /**
@@ -205,7 +221,7 @@ class UsermgmtController extends CMSController
             return $e;            
         }
 
-        return view('cms.usermgmt');
+        return view('cms.usermgmt.index');
     }
 
     /**
