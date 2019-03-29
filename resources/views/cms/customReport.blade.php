@@ -25,7 +25,13 @@
         <select class="selectpicker" id="select-aktifitas"></select>
         <select class="selectpicker" id="select-codeBlok"></select>
         <button type="button" id="filter" class="btn btn-primary">Filter</button>
+
         <hr>
+
+        <canvas id="myChart2" style="display: none;"></canvas>
+
+        <hr>
+
         <div class="table-responsive">
             <table class="table table-striped table-sm" id="data-table">
                 <thead>
@@ -43,6 +49,7 @@
 
 @section('script')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -51,6 +58,30 @@
         });
         
         $.fn.selectpicker.Constructor.BootstrapVersion = '4';
+
+        var myChart2 = document.getElementById('myChart2');
+        var ctx = myChart2.getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'pie',
+
+            // The data for our dataset
+            data : {
+                datasets: [{
+                    data: [],
+                    backgroundColor: [
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 99, 132)',
+                    ]
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: []
+            },
+
+            // Configuration options go here
+            options: {}
+        });
 
         $('#select-rkh, #select-aktifitas, #select-codeBlok').selectpicker({
             liveSearch : true
@@ -133,13 +164,42 @@
             // console.log($('#select-aktifitas').val());
             // console.log($('#select-codeBlok').val());
 
+            // Refresh Table
             $.post('{{route('postFilter')}}',{rkhCode: $('#select-rkh').val(), codeAlojob: $('#select-aktifitas').val(), codeBlok: $('#select-codeBlok').val()}, function (e) {
                 // body...
                 Table.clear().draw();
                 Table.rows.add( e ).draw();
             })
+
+            // Refresh Chart
+            $.ajax({
+                url: '{{route('getDataChart')}}',
+                method: 'post',
+                data: {
+                    rkhCode: $('#select-rkh').val(), 
+                    codeAlojob: $('#select-aktifitas').val(), 
+                    codeBlok: $('#select-codeBlok').val()
+                },
+                success: function(data) {
+                    console.log(data);
+                    chart.data.labels = [];
+                    chart.data.datasets[0].data = [];
+                  // process your data to pull out what you plan to use to update the chart
+                  // e.g. new label and a new data point
+                  
+                  // add new label and data point to chart's underlying data structures
+                  chart.data.labels.push("Sudah Terrealisasi");
+                  chart.data.datasets[0].data.push(data.pokokDone);
+                  chart.data.labels.push("Belum Terrealisasi");
+                  chart.data.datasets[0].data.push(data.totalPokok - data.pokokDone);
+                  
+                  // // re-render the chart
+                  chart.update();
+
+                  myChart2.style.display = 'block';
+                }
+            });
         })
 
-        
     </script>
 @endsection
