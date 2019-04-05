@@ -39,6 +39,7 @@ Route::group(['prefix' => 'dev', 'middleware' => 'changeDB'], function () { # Us
 	Route::post('user2', 'Api\Dev\DevController@getUser2');
 
 	Route::post('storeMandor', 'Api\Dev\DevController@storeMandor');
+	Route::post('storeKawil', 'Api\Dev\DevController@storeKawil');
 
 	Route::get('pokok', 'Api\Dev\DevController@getAllPokok');
 	Route::get('pokokCT', 'Api\Dev\DevController@getCTPokok');
