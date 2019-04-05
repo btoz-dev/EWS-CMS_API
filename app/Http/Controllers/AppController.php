@@ -13,7 +13,7 @@ class AppController extends Controller
 	public function test(Request $request)
 	{
 		# code...
-		return DB::getDatabaseName();;
+		return DB::getDatabaseName();
 		// return var_dump(Artisan::call('config:cache'));
 	}
 
