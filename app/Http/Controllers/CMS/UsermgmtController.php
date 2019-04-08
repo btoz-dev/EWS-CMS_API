@@ -29,20 +29,27 @@ class UsermgmtController extends CMSController
             return DataTables::of($users)
                 ->addColumn('aksi', function ($users)
                 {
-                    return '
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">
-                        <div class="btn-group" role="group">
-                            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle btn-info" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    $onClick = "event.preventDefault();document.getElementById('destroy-form_".$users["id"]."').submit();";
+
+                    return "
+                    <div class='btn-group' role='group' aria-label='Button group with nested dropdown'>
+                        <div class='btn-group' role='group'>
+                            <button id='btnGroupDrop1' type='button' class='btn btn-secondary dropdown-toggle btn-info' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                             Ubah
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                <a href='.route('usermgmt.edit', ['id' => $users['id'].'_detail']).' id="edit" class="btn dropdown-item" tabindex="-1" role="button" aria-disabled="false">Detail</a> 
-                                <a href='.route('usermgmt.edit', ['id' => $users['id'].'_password']).' id="edit" class="btn dropdown-item" tabindex="-1" role="button" aria-disabled="false">Password</a> 
+                            <div class='dropdown-menu' aria-labelledby='btnGroupDrop1'>
+                                <a href=".route("usermgmt.edit", ["id" => $users["id"]."_detail"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Detail</a> 
+
+                                <a href=".route("usermgmt.edit", ["id" => $users["id"]."_password"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Password</a> 
                             </div>
                         </div>
-                        <a href= "#" id="delete" class="btn btn-warning btn-secondary disabled" tabindex="-1" role="button" aria-disabled="true">Hapus</a>
+                        <button type='button' class='btn btn-secondary btn-warning' onclick=".$onClick.">Hapus</button>
                     </div>
-                    ';
+                    <form id='destroy-form_".$users["id"]."' action=".route("usermgmt.destroy", ["id" => $users["id"]])." method='POST' style='display: none;'>
+                        <input type='hidden' name='_method' value='DELETE'>
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                    </form>
+                    ";
                 })
                 ->rawColumns(['aksi'])
                 ->make(true);
@@ -232,7 +239,8 @@ class UsermgmtController extends CMSController
      */
     public function destroy($id)
     {
-        //
+        DB::table('users')->where('id', '=', $id)->delete();
+        return redirect()->back()->with('alert', 'User Deleted!');
     }
 
     public function postRoleDropdown(Request $request)
