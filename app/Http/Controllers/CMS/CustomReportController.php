@@ -49,14 +49,15 @@ class CustomReportController extends CMSController
             case 'aktifitas':
                 $data = DB::table('EWS_JADWAL_RKM')
                     ->distinct()
-                    ->select('codeAlojob')
+                    ->join('EWS_SUB_JOB', 'EWS_SUB_JOB.subJobCode', '=', 'EWS_JADWAL_RKM.codeAlojob')
+                    ->select('EWS_JADWAL_RKM.codeAlojob', 'EWS_SUB_JOB.Description')
                     ->where('rkhCode', '=', $set)
                     ->orderBy('codeAlojob', 'asc')
                     ->get();
                 $listData = $this->removeWhitespace($data);
                 $return = '<option value="">Pilih Aktifitas...</option>';
                 foreach($listData as $temp) 
-                    $return .= "<option value=".$temp['codeAlojob'].">".$temp['codeAlojob']."</option>";
+                    $return .= "<option value=".$temp['codeAlojob'].">".$temp['Description']."</option>";
                 return $return;
             break;
             case 'blok':
