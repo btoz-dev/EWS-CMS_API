@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\Dev;
+namespace App\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
+// use Illuminate\Http\Response;
 
-class DevController extends Controller
+class AppController extends Controller
 {
     
-    public function test(Request $request)
+	public function test(Request $request)
     {
         # code...
         return DB::getDatabaseName();
