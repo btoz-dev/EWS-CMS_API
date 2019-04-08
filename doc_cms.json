@@ -1,0 +1,6 @@
+*CMS* 
+*Security* -> http [*yes*] | https [*no*]
+*IP* -> (*10.254.128.66(ip private)* | *101.255.125.227 (ip publik)* | *10.10.18.18:9090 (ip vpn)*)
+*CREDS*
+Username => admin
+Password => 123456
