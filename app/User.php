@@ -50,33 +50,52 @@ class User extends Authenticatable
 
     public function roles() 
     {
+        /**
+         * belongsToMany()
+         * @param Model to relation
+         * @param Table name
+         * @param FK pivot parent model
+         * @param FK related
+        */
         return $this->belongsToMany(Role::class, 'dbo.EWS_PEKERJA', 'codePekerja', 'idRole', 'codePekerja', 'id');
     }
 
-     public function checkRoles($roles) 
+    public function hasRole($roles): bool
     {
-        if ( ! is_array($roles)) {
-            $roles = [$roles];    
+        $this->have_role = $this->getUserRole();
+        // echo json_encode($this->have_role);
+        // // echo var_dump($this->getUserRole());
+        // exit();
+        // Check if the user is a root account
+        if($this->have_role->namaRole == 'Super Admin') {
+            return true;
         }
+        if(is_array($roles)){
+            foreach($roles as $need_role){
+                if($this->checkIfUserHasRole($need_role)) {
+                    return true;
+                }
+            }
+        } else{
+            return $this->checkIfUserHasRole($roles);
+        }
+        return false;
+        // return (bool) $this->roles()->where('idRole', $role)->first();
+    }
 
-        if ( ! $this->hasAnyRole($roles)) {
-            // auth()->logout();
-            // abort(404);
-            return FALSE;
-        }else
-        {
-            return TRUE;
-        }
+    private function getUserRole()
+    {
+        return $this->roles()->first();
+    }
+
+    private function checkIfUserHasRole($need_role)
+    {
+        return (strtolower($need_role)==strtolower($this->have_role->namaRole)) ? true : false;
     }
 
     public function hasAnyRole($roles): bool
     {
         return (bool) $this->roles()->whereIn('idRole', $roles)->first();
-    }
-
-    public function hasRole($role): bool
-    {
-        return (bool) $this->roles()->where('idRole', $role)->first();
     }
 
     public function pekerja()
