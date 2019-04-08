@@ -13,10 +13,10 @@
                 <input class="form-control" type="date" id="dateAwal">
             </div>
             <div class="form-group mx-sm-3 mb-2">
-                <i class="fas fa-long-arrow-alt-right"></i>
+                <i class="fas fa-long-arrow-alt-right" style="display: none"></i>
             </div>
             <div class="form-group  mb-2">
-                <input class="form-control" type="date" id="dateAkhir">
+                <input class="form-control" type="date" id="dateAkhir" style="display: none">
             </div>
         </form>
         <select class="selectpicker" id="select-rkh">
