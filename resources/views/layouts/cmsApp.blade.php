@@ -59,15 +59,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('transReport*') ? 'active' : '' }}" href="{{ url('/transReport') }}">
-                            <i class="far fa-chart-bar"></i>
-                            Trans Reports
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link {{ request()->is('rkmReport*') ? 'active' : '' }}" href="{{ url('/rkmReport') }}">
                             <i class="far fa-chart-bar"></i>
                             RKM Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('mandorTransReport*') ? 'active' : '' }}" href="{{ url('/mandorTransReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            Mandor Trans Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('kawilTransReport*') ? 'active' : '' }}" href="{{ url('/kawilTransReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            Kawil Trans Reports
                             </a>
                         </li>
                         <li class="nav-item">
