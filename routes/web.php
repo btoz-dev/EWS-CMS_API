@@ -17,23 +17,37 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('dashboard', 'CMSController@dashboard');#->name('home');
-Route::post('dashboardChartDataSet', 'CMSController@chartDataSet')->name('dashboard.getDataChart');
 
-Route::resource('usermgmt', 'CMS\UsermgmtController');
-Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
 
-// Route::resource('transReport', 'CMS\TransReportController');
-Route::get('transReport', 'CMS\TransReportController@index')->name('transReport.index');
+// Route::get('customReport', [
+// 	'middleware' => ['roles'], // A 'roles' middleware must be specified
+// 	'uses' => 'CMS\CustomReportController@index',
+// 	'roles' => ['super admin', 'management'] // Only an administrator, or a manager can access this route
+// ])->name('customReport.index');
 
-// Route::resource('rkmReport', 'CMS\RKMReportController');
-Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');
+Route::group([
+	'middleware' => ['roles'], // A 'roles' middleware must be specified
+	'roles' => ['super admin', 'management'] // Only an administrator, or a manager can access this route
+], function() {
+	Route::get('dashboard', 'CMSController@dashboard');#->name('home');
+	Route::post('dashboardChartDataSet', 'CMSController@chartDataSet')->name('dashboard.getDataChart');
 
-// Route::resource('customReport', 'CMS\CustomReportController');
-Route::get('customReport', 'CMS\CustomReportController@index')->name('customReport.index');
-Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
-Route::post('postFilter', 'CMS\CustomReportController@postFilter')->name('postFilter');
-Route::post('chartDataSet', 'CMSController@chartDataSet')->name('getDataChart');
+	Route::resource('usermgmt', 'CMS\UsermgmtController');
+	Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
+
+	// Route::resource('transReport', 'CMS\TransReportController');
+	Route::get('mandorTransReport', 'CMS\TransReportController@indexMandor')->name('mandorTransReport.index');
+	Route::get('kawilTransReport', 'CMS\TransReportController@indexKawil')->name('kawilTransReport.index');
+
+	// Route::resource('rkmReport', 'CMS\RKMReportController');
+	Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');
+
+	Route::get('customReport', 'CMS\CustomReportController@index')->name('customReport.index');
+	Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
+	Route::post('postFilter', 'CMS\CustomReportController@postFilter')->name('postFilter');
+	Route::post('chartDataSet', 'CMSController@chartDataSet')->name('getDataChart');
+});
+
 
 // Route::get('/reports/{dateStart?}/{dateEnd?}', 'CMSController@reports')
 // 	->where([
