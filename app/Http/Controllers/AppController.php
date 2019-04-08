@@ -439,7 +439,7 @@ class AppController extends Controller
         ini_set('max_execution_time', '300');
         ini_set('memory_limit', '2048M');
         $date = now();
-        $date = '22-03-2019';
+        // $date = '22-03-2019';
         $tgl = date_create($date);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
 
@@ -469,7 +469,7 @@ class AppController extends Controller
             ->get());
         if (empty($rkm2)) {
             # code...
-            return $this->errMessage(400,'Tidak ada RKM untuk hari ini');
+            return $this->errMessage(400,'Tidak ada transaksi mandor untuk hari ini');
         }
 
         $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
@@ -513,7 +513,7 @@ class AppController extends Controller
             ->join('EWS_MANDOR as d', 'c.codePekerja', '=', 'd.codePekerja')
             ->join('EWS_PEKERJA as e', 'a.codeTukang', '=', 'e.codePekerja') # nama Tukang
             ->join('EWS_PEKERJA as f', 'd.codePekerja', '=', 'f.codePekerja') # nama Mandor
-            ->select('a.rkhCode', 'a.subJobCode', 'd.codeMandor', 'f.namaPekerja as mandor', 'a.codeTukang', 'e.namaPekerja as tk', 'a.created_at' ,'b.codeTanaman', 'b.codeBlok', 'b.plot', 'b.baris', 'b.noTanam', 'b.PlantingDate', 'a.totalHand', 'a.totalFinger', 'a.totalLeaf', 'a.ribbonColor', 'a.skimmingSize')
+            ->select('a.rkhCode', 'a.subJobCode', 'd.codeMandor', 'f.namaPekerja as mandor', 'a.codeTukang', 'e.namaPekerja as tk', 'a.created_at' , 'b.id','b.codeTanaman', 'b.codeBlok', 'b.plot', 'b.baris', 'b.noTanam', 'b.PlantingDate', 'a.totalHand', 'a.totalFinger', 'a.totalLeaf', 'a.ribbonColor', 'a.skimmingSize')
             ->orderBy('a.codeTanaman', 'asc')
             ->get());
 
