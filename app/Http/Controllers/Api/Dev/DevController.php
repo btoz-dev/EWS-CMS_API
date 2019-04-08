@@ -439,7 +439,7 @@ class DevController extends Controller
         ini_set('max_execution_time', '300');
         ini_set('memory_limit', '2048M');
         $date = now();
-        $date = '25-03-2019';
+        $date = '22-03-2019';
         $tgl = date_create($date);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
 
@@ -729,6 +729,24 @@ class DevController extends Controller
                 }
             }
         }
+        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
+            # code...
+            if (isset($subJob['rkhCode'])) {
+                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
+                    # code...
+                    if (isset($listBlok['listPlot'])) {
+                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
+                            if (isset($listPlot['listBaris'])) {
+                                foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
+                                    # code...
+                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'] = array_values($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris']);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         foreach ($subJob2 as $key_sj => $subJob) {#Plot-Baris
             # code...
             if (isset($subJob['rkhCode'])) {
@@ -739,6 +757,19 @@ class DevController extends Controller
                             if (!isset($listPlot['listBaris']) || empty($listPlot['listBaris'])) {
                                 unset($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]);
                             }
+                        }
+                    }
+                }
+            }
+        }
+        foreach ($subJob2 as $key_sj => $subJob) {#Plot-Baris
+            # code...
+            if (isset($subJob['rkhCode'])) {
+                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
+                    # code...
+                    if (isset($listBlok['listPlot'])) {
+                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
+                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'] = array_values($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot']);
                         }
                     }
                 }
@@ -882,7 +913,7 @@ class DevController extends Controller
             'userid' => 'required',
             'codeTukang' => 'required|between:0,20',
             'codeTanaman' => 'required|between:0,20',
-            'mandorNote' => 'nullable|between:0,255',
+            'note' => 'nullable|between:0,255',
             'totalHand' => 'nullable|integer',
             'totalFinger' => 'nullable|integer',
             'totalLeaf' => 'nullable|integer',
@@ -953,7 +984,7 @@ class DevController extends Controller
     	                    'codeTukang' => $request->codeTukang,
                             'codeBlok' => $codeBlok['codeBlok'],
     	                    'codeTanaman' => $codeTanam,
-    	                    'mandorNote' => $request->mandorNote,
+    	                    'mandorNote' => $request->note,
     	                    'totalHand' => $request->totalHand,
     	                    'totalFinger' => $request->totalFinger,
     	                    'totalLeaf' => $request->totalLeaf,
@@ -1009,7 +1040,7 @@ class DevController extends Controller
     	                'codeTukang' => $request->codeTukang,
                         'codeBlok' => $codeBlok['codeBlok'],
     	                'codeTanaman' => $request->codeTanaman,
-    	                'mandorNote' => $request->mandorNote,
+    	                'mandorNote' => $request->note,
     	                'totalHand' => $request->totalHand,
     	                'totalFinger' => $request->totalFinger,
     	                'totalLeaf' => $request->totalLeaf,
@@ -1032,7 +1063,7 @@ class DevController extends Controller
             'subJobCode' => 'required|between:0,15',
             'userid' => 'required',
             'codeTanaman' => 'required|between:0,20',
-            'kawilNote' => 'nullable|between:0,255',
+            'note' => 'nullable|between:0,255',
             'tanggal' => 'required',
             'waktu' => 'required',
             'pokokAwal' => 'nullable|integer',
@@ -1097,11 +1128,11 @@ class DevController extends Controller
                         # insert ke ews_trans_kawil
                         DB::table('EWS_TRANS_KAWIL')->insert([
                             'idEWSTransMandor' => $check,
-                            'kawilNote' => $request->kawilNote,
+                            'kawilNote' => $request->note,
                             'userid' => $request->userid,
                             'created_at' => $created_at
                         ]);
-                        $message['message'][] = 'Data berhasil di input||'.$check.'||'.$request->kawilNote.'||'.$request->userid.'||'.$created_at;
+                        $message['message'][] = 'Data berhasil di input||'.$check.'||'.$request->note.'||'.$request->userid.'||'.$created_at;
                     }
                 }
                 # ke pokok selanjutnya
@@ -1144,11 +1175,11 @@ class DevController extends Controller
                     # insert ke ews_trans_kawil
                     DB::table('EWS_TRANS_KAWIL')->insert([
                         'idEWSTransMandor' => $idEwsTransMandor,
-                        'kawilNote' => $request->kawilNote,
+                        'kawilNote' => $request->note,
                         'userid' => $request->userid,
                         'created_at' => $created_at
                     ]);
-                    $message['message'][] = 'Data berhasil di input||'.$idEwsTransMandor.'||'.$request->kawilNote.'||'.$request->userid.'||'.$created_at;
+                    $message['message'][] = 'Data berhasil di input||'.$idEwsTransMandor.'||'.$request->note.'||'.$request->userid.'||'.$created_at;
                 }
             }
             return response()->json($message, 200);
