@@ -8,13 +8,51 @@
                 <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Export</button> -->
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <!-- <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
                 <span data-feather="calendar"></span>
                 This week
-            </button>
+            </button> -->
         </div>
     </div>
-    <canvas id="myChart2"></canvas>
+    <div class="row text-center">
+      <div class="col-lg-2">
+        <i class="fas fa-users fa-5x"></i>
+        <h6>User Management</h6>
+        <p>Pengelolaan akun</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/usermgmt') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>RKM Reports</h6>
+        <p>Jadwal RKM mandor keseluruhan</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/rkmReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Mandor Trans Reports</h6>
+        <p>Hasil aktifitas mandor</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/mandorTransReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Kawil Trans Reports</h6>
+        <p>Hasil aktifitas kawil</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/kawilTransReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Custom Reports</h6>
+        <p>Tabel pencarian khusus</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/customReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="fab fa-android fa-5x"></i>
+        <h6>Download APK Reports</h6>
+        <p>Download apk android terbaru</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ asset('storage/ews-app-release_22-03-2019.apk') }}">View details »</a></p>
+      </div>
+    </div>
+    <!-- <canvas id="myChart2"></canvas> -->
 @endsection
 
 @section('script')
