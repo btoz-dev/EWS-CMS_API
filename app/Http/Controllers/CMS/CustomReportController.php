@@ -16,7 +16,23 @@ class CustomReportController extends CMSController
      */
     public function index(Request $request)
     {
-        return view('cms.customReport');
+        $date = now();
+        $tgl = date_create($date);
+        $tgl_ubah = date_format($tgl, 'Y-m-d');
+
+        $data = DB::table('EWS_VW_DETAIL_JADWAL_RKM')
+            ->distinct()
+            ->select('*')
+            ->whereBetween('rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
+            ->orderBy('Description', 'asc')
+            ->get();
+        $det_rkm = $this->removeWhitespace($data);
+        $data['navigasi'] = $det_rkm;
+        $data['navigasi0'] = $det_rkm[0];
+        
+        $data['now'] = $tgl_ubah;
+
+        return view('cms.customReport', $data);
     }
 
     public function postDropdown(Request $request)

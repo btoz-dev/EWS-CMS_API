@@ -10,7 +10,7 @@
         <h2>Reports</h2>
         <form class="form-inline">
             <div class="form-group mb-2">
-                Pilih Tanggal &nbsp; <input class="form-control" type="date" id="dateAwal">
+                Tanggal &nbsp; <input class="form-control" type="date" id="dateAwal" value="{{$now}}">
             </div>
             <div class="form-group mx-sm-3 mb-2">
                 <!-- <i class="fas fa-long-arrow-alt-right" style="display: none"></i> -->
@@ -29,14 +29,18 @@
         <div class="row">
           <div class="col-3">
             <div class="nav flex-column nav-pills" id="nav-rkh" role="tablist" aria-orientation="vertical">
-              
+              @foreach ($navigasi as $key => $data)
+                <a class="nav-link {{ $key == 0 ? 'active' : ''}}" id="v-pills-profile-tab" data-toggle="pill" data-rkh="{{$data['rkhCode']}}" data-aktifitas="{{$data['codeAlojob']}}" data-blok="{{$data['codeBlok']}}" href="#" role="tab" aria-controls="v-pills-profile" aria-selected="{{ $key == 0 ? 'true' : 'false' }}">
+                    {{$data['Description']}} || {{$data['rkhCode']}} || {{$data['codeBlok']}}
+                </a>
+              @endforeach
             </div>
           </div>
           <div class="col-9">
             <div class="tab-content" id="nav-rkh-tabContent">
               <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                
-                <canvas id="myChart2"></canvas>
+
+                <canvas id="myChart2" style="display: none;"></canvas>
 
                 <hr>
                 <div class="table-responsive">
@@ -95,65 +99,6 @@
             options: {}
         });
 
-        // $('#select-rkh, #select-aktifitas, #select-codeBlok').selectpicker({
-        //     liveSearch : true
-        // });
-
-        $('#dateAwal').on('change', function(e) {
-            console.log($(this).val());
-            // console.log($('#dateAkhir').val());
-            // if ($(this).val() > $('#dateAkhir').val()) {
-            //     $('#dateAkhir').val($(this).val());
-            // }
-
-            // $.post('{{route('postDropdown')}}',{type: 'rkh', dateAwal: $(this).val(), dateAkhir: $('#dateAkhir').val()}, function (e) {
-            //     // body...
-            //     console.log(e);
-            //     $('#select-rkh').html(e);
-            //     $('#select-rkh').selectpicker('refresh');
-            // })
-            $.post('{{route('filterByDate')}}',{type: 'rkh', dateAwal: $(this).val(), dateAkhir: $(this).val()}, function (e) {
-                // body...
-                console.log(e);
-                $('#nav-rkh').html(e);
-            })
-        })
-
-        $('#nav-rkh').on('click', 'a#v-pills-profile-tab', function(x) {
-            console.log($(this).data());
-            $.post('{{route('postFilter')}}',{rkhCode: $(this).data('rkh'), codeAlojob: $(this).data('aktifitas'), codeBlok: $(this).data('blok')}, function (e) {
-                // body...
-                Table.clear().draw();
-                Table.rows.add( e ).draw();
-            })
-            $.ajax({
-                url: '{{route('getDataChart')}}',
-                method: 'post',
-                data: {
-                    rkhCode: $(this).data('rkh'), 
-                    codeAlojob: $(this).data('aktifitas'), 
-                    codeBlok: $(this).data('blok')
-                },
-                success: function(data) {
-                    console.log(data);
-                    chart.data.labels = [];
-                    chart.data.datasets[0].data = [];
-                  // process your data to pull out what you plan to use to update the chart
-                  // e.g. new label and a new data point
-                  
-                  // add new label and data point to chart's underlying data structures
-                  chart.data.labels.push("Sudah Terrealisasi");
-                  chart.data.datasets[0].data.push(data.pokokDone);
-                  chart.data.labels.push("Belum Terrealisasi");
-                  chart.data.datasets[0].data.push(data.totalPokok - data.pokokDone);
-                  
-                  // // re-render the chart
-                  chart.update();
-
-                  myChart2.style.display = 'block';
-                }
-            });
-        });
         var Table = $('#data-table').DataTable({
             data: [],
             processing: true,
@@ -182,6 +127,83 @@
                 }
             }
         });
+
+        Call_Data("{{ $navigasi0['rkhCode'] }}", "{{ $navigasi0['codeAlojob'] }}", "{{ $navigasi0['codeBlok'] }}");
+        // $('#select-rkh, #select-aktifitas, #select-codeBlok').selectpicker({
+        //     liveSearch : true
+        // });
+
+        $('#dateAwal').on('change', function(e) {
+            console.log($(this).val());
+            // console.log($('#dateAkhir').val());
+            // if ($(this).val() > $('#dateAkhir').val()) {
+            //     $('#dateAkhir').val($(this).val());
+            // }
+
+            // $.post('{{route('postDropdown')}}',{type: 'rkh', dateAwal: $(this).val(), dateAkhir: $('#dateAkhir').val()}, function (e) {
+            //     // body...
+            //     console.log(e);
+            //     $('#select-rkh').html(e);
+            //     $('#select-rkh').selectpicker('refresh');
+            // })
+            $.post('{{route('filterByDate')}}',{type: 'rkh', dateAwal: $(this).val(), dateAkhir: $(this).val()}, function (e) {
+                // body...
+                console.log(e);
+                $('#nav-rkh').html(e);
+            })
+        })
+
+        $('#nav-rkh').on('click', 'a#v-pills-profile-tab', function(x) {
+            console.log($(this).data());
+            Call_Data($(this).data('rkh'),$(this).data('aktifitas'),$(this).data('blok'))
+        });
+
+        function Call_Data(rkh, aktifitas, blok) {
+            // body...
+            $.ajax({
+                url: '{{route('postFilter')}}',
+                method: 'post',
+                data: {
+                    rkhCode: rkh, 
+                    codeAlojob: aktifitas, 
+                    codeBlok: blok
+                },
+                success: function(e) {
+                    // body...
+                    Table.clear().draw();
+                    Table.rows.add( e ).draw();
+                }
+            });
+            
+            $.ajax({
+                url: '{{route('getDataChart')}}',
+                method: 'post',
+                data: {
+                    rkhCode: rkh, 
+                    codeAlojob: aktifitas, 
+                    codeBlok: blok
+                },
+                success: function(data) {
+                    console.log(data);
+                    chart.data.labels = [];
+                    chart.data.datasets[0].data = [];
+                  // process your data to pull out what you plan to use to update the chart
+                  // e.g. new label and a new data point
+                  
+                  // add new label and data point to chart's underlying data structures
+                  chart.data.labels.push("Sudah Terrealisasi");
+                  chart.data.datasets[0].data.push(data.pokokDone);
+                  chart.data.labels.push("Belum Terrealisasi");
+                  chart.data.datasets[0].data.push(data.totalPokok - data.pokokDone);
+                  
+                  // // re-render the chart
+                  chart.update();
+
+                  myChart2.style.display = 'block';
+                }
+            });
+        }
+        
         // $.ajaxSetup({
         //     headers: {
         //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
