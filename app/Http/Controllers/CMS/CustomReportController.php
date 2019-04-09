@@ -121,7 +121,7 @@ class CustomReportController extends CMSController
             ->distinct()
             ->select('*')
             ->whereBetween('rkhDate', [$request->dateAwal, $request->dateAkhir])
-            ->orderBy('rkhCode', 'asc')
+            ->orderBy('Description', 'asc')
             ->get();
         $listData = $this->removeWhitespace($data);
 
