@@ -83,7 +83,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ asset('storage/ews-app-release_09-04-2019.apk') }}">
+                            <a class="nav-link" href="{{ asset('storage/ews-app-release_09-04-2019_vpn3.apk') }}">
                             <i class="fab fa-android"></i>
                             Download APK File
                             </a>
