@@ -16,13 +16,6 @@ class CustomReportController extends CMSController
      */
     public function index(Request $request)
     {
-        // $listRKH = DB::table('EWS_JADWAL_RKM')
-        //     ->distinct()
-        //     ->select('rkhCode')
-        //     ->orderBy('rkhCode', 'asc')
-        //     ->get();
-        // $data['listRKH'] = $this->removeWhitespace($listRKH);
-        // return view('cms.customReport', $data);
         return view('cms.customReport');
     }
 
@@ -105,69 +98,25 @@ class CustomReportController extends CMSController
         return $report;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function filterByDate(Request $request)
     {
-        //
+        # code...
+        $data = DB::table('EWS_VW_DETAIL_JADWAL_RKM')
+            ->distinct()
+            ->select('*')
+            ->whereBetween('rkhDate', [$request->dateAwal, $request->dateAkhir])
+            ->orderBy('rkhCode', 'asc')
+            ->get();
+        $listData = $this->removeWhitespace($data);
+
+        $return = '';
+        foreach($listData as $temp) 
+            $return .= "
+            <a class='nav-link' id='v-pills-profile-tab' data-toggle='pill' data-rkh='".$temp['rkhCode']."' data-aktifitas='".$temp['codeAlojob']."' data-blok='".$temp['codeBlok']."' href='#' role='tab' aria-controls='v-pills-profile' aria-selected='false'>
+                ".$temp['Description']." || ".$temp['rkhCode']." || ".$temp['codeBlok']."
+            </a>";
+        
+        return $return;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
