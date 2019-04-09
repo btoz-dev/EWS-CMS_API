@@ -37,7 +37,8 @@
                         <th>Baris End</th>
                         <th>Total Pokok</th>
                         <th>Realisasi Pokok</th>
-                        <th>Persentase Pokok</th>
+                        <th>Sisa Pokok</th>
+                        <th>Persentase Realisasi</th>
                     </tr>
                 </thead>
             </table>
@@ -68,6 +69,7 @@
                 {data: 'barisEnd', name: 'barisEnd'},
                 {data: 'totalPokok', name: 'totalPokok'},
                 {data: 'pokokDone', name: 'pokokDone'},
+                {data: 'pokokNDone', name: 'pokokNDone'},
                 {data: 'persentase', name: 'persentase'},
             ]
         });
