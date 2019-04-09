@@ -513,7 +513,7 @@ class AppController extends Controller
             ->join('EWS_MANDOR as d', 'c.codePekerja', '=', 'd.codePekerja')
             ->join('EWS_PEKERJA as e', 'a.codeTukang', '=', 'e.codePekerja') # nama Tukang
             ->join('EWS_PEKERJA as f', 'd.codePekerja', '=', 'f.codePekerja') # nama Mandor
-            ->select('a.rkhCode', 'a.subJobCode', 'd.codeMandor', 'f.namaPekerja as mandor', 'a.codeTukang', 'e.namaPekerja as tk', 'a.created_at' , 'b.id','b.codeTanaman', 'b.codeBlok', 'b.plot', 'b.baris', 'b.noTanam', 'b.PlantingDate', 'a.totalHand', 'a.totalFinger', 'a.totalLeaf', 'a.ribbonColor', 'a.skimmingSize')
+            ->select('a.rkhCode', 'a.subJobCode', 'd.codeMandor', 'f.namaPekerja as mandor', 'a.codeTukang', 'e.namaPekerja as tk', 'a.created_at' , 'b.id','b.codeTanaman', 'b.codeBlok', 'b.plot', 'b.baris', 'b.noTanam', 'b.PlantingDate', 'a.totalHand', 'a.totalFinger', 'a.totalLeaf', 'a.ribbonColor', 'a.skimmingSize', 'a.id as idTransMandor')
             ->orderBy('a.codeTanaman', 'asc')
             ->get());
 
@@ -779,36 +779,34 @@ class AppController extends Controller
 
         # MASUKIN STATUS KE POKOK
         # tanaman sudah dikerjakan
-        // $trans_mandor2 = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
-        //     ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode')
-        //     ->where('userid', '=', $user2[0]['id'])
-        //     // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
-        //     ->get());
-        // foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-        //     # code...
-        //     if (isset($subJob['rkhCode'])) {
-        //         foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-        //             foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-        //                 foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-        //                     foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
-        //                         # code...
-        //                         // return $listPokok;
-        //                         foreach ($trans_mandor2 as $key_tm => $trans_mandor) {
-        //                             # code...
-        //                             if (($trans_mandor['rkhCode'] == $subJob['rkhCode']) && 
-        //                             ($trans_mandor['codeTanaman'] == $listPokok['code']) &&
-        //                             ($trans_mandor['subJobCode'] == $subJob['subJobCode'])) {
-        //                                 # code...
-        //                                 // return 'ada';
-        //                                 $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['status'] = 1;
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        $trans_kawil2 = $this->removeWhitespace(DB::table('EWS_TRANS_KAWIL')
+            ->select('id', 'idEWSTransMandor')
+            ->where('userid', '=', $user2[0]['id'])
+            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
+            ->get());
+        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
+            # code...
+            if (isset($subJob['rkhCode'])) {
+                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
+                    foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
+                        foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
+                            foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
+                                # code...
+                                // return $listPokok;
+                                foreach ($trans_kawil2 as $key_tm => $trans_kawil) {
+                                    # code...
+                                    if ($trans_kawil['idEWSTransMandor'] == $listPokok['idTransMandor']) {
+                                        # code...
+                                        // return 'ada';
+                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['status'] = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         # MASUKIN STATUS KE POKOK
 
         # MENGHITUNG TOTAL STATUS 0 || 1
@@ -832,9 +830,11 @@ class AppController extends Controller
                                             if ($listPokok['status'] == 1) {
                                                 # code...
                                                 $lpkDone++;
+                                                unset($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['idTransMandor']);
                                             }
                                             else{
                                                 $lpkNDone++;
+                                                unset($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['idTransMandor']);
                                             }
                                         }
                                     }
