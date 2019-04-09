@@ -45,7 +45,9 @@ Route::group([
 	Route::get('customReport', 'CMS\CustomReportController@index')->name('customReport.index');
 	Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
 	Route::post('postFilter', 'CMS\CustomReportController@postFilter')->name('postFilter');
-	Route::post('chartDataSet', 'CMSController@chartDataSet')->name('getDataChart');
+	Route::post('filterByDate', 'CMS\CustomReportController@filterByDate')->name('filterByDate');
+	
+	Route::post('chartDataSet', 'CMS\CustomReportController@chartDataSet')->name('getDataChart');
 });
 
 
