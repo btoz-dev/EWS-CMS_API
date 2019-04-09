@@ -812,60 +812,60 @@ class AppController extends Controller
         # MASUKIN STATUS KE POKOK
 
         # MENGHITUNG TOTAL STATUS 0 || 1
-        // foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-        //     # code...
-        //     if (isset($subJob['rkhCode'])) {
-        //         foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-        //             $lpDone = 0;
-        //             $lpNDone = 0;
-        //             if (isset($listBlok['listPlot'])) {
-        //                 foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-        //                     $lbDone = 0;
-        //                     $lbNDone = 0;
-        //                     if (isset($listPlot['listBaris'])) {
-        //                         foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-        //                             $lpkDone = 0;
-        //                             $lpkNDone = 0;
-        //                             if (isset($listBaris['listPokok'])) {
-        //                                 foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
-        //                                     # code...
-        //                                     if ($listPokok['status'] == 1) {
-        //                                         # code...
-        //                                         $lpkDone++;
-        //                                     }
-        //                                     else{
-        //                                         $lpkNDone++;
-        //                                     }
-        //                                 }
-        //                             }
-        //                             $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokDone'] = $lpkDone;
-        //                             $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokNDone'] = $lpkNDone;
-        //                             $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokNDone');
-        //                             $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokDone');
-        //                             $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'baris');
+        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
+            # code...
+            if (isset($subJob['rkhCode'])) {
+                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
+                    $lpDone = 0;
+                    $lpNDone = 0;
+                    if (isset($listBlok['listPlot'])) {
+                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
+                            $lbDone = 0;
+                            $lbNDone = 0;
+                            if (isset($listPlot['listBaris'])) {
+                                foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
+                                    $lpkDone = 0;
+                                    $lpkNDone = 0;
+                                    if (isset($listBaris['listPokok'])) {
+                                        foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
+                                            # code...
+                                            if ($listPokok['status'] == 1) {
+                                                # code...
+                                                $lpkDone++;
+                                            }
+                                            else{
+                                                $lpkNDone++;
+                                            }
+                                        }
+                                    }
+                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokDone'] = $lpkDone;
+                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokNDone'] = $lpkNDone;
+                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokNDone');
+                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokDone');
+                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'baris');
 
-        //                             $lbDone+=$lpkDone;
-        //                             $lbNDone+=$lpkNDone;
-        //                         }
-        //                         $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowDone'] = $lbDone;
-        //                         $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowNDone'] = $lbNDone;
-        //                         $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowNDone');
-        //                         $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowDone');
-        //                         $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'plot');
+                                    $lbDone+=$lpkDone;
+                                    $lbNDone+=$lpkNDone;
+                                }
+                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowDone'] = $lbDone;
+                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowNDone'] = $lbNDone;
+                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowNDone');
+                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowDone');
+                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'plot');
 
-        //                         $lpDone+=$lbDone;
-        //                         $lpNDone+=$lbNDone;
-        //                     }
-        //                 }
-        //                 $subJob2[$key_sj]['listBlok'][$key_lt]['plotDone'] = $lpDone;
-        //                 $subJob2[$key_sj]['listBlok'][$key_lt]['plotNDone'] = $lpNDone;
-        //                 $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotNDone');
-        //                 $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotDone');
-        //                 $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'blok');
-        //             }
-        //         }
-        //     }
-        // }
+                                $lpDone+=$lbDone;
+                                $lpNDone+=$lbNDone;
+                            }
+                        }
+                        $subJob2[$key_sj]['listBlok'][$key_lt]['plotDone'] = $lpDone;
+                        $subJob2[$key_sj]['listBlok'][$key_lt]['plotNDone'] = $lpNDone;
+                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotNDone');
+                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotDone');
+                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'blok');
+                    }
+                }
+            }
+        }
         # MENGHITUNG TOTAL STATUS 0 || 1
         foreach ($job2 as $key_j => $job) {
             # code...
