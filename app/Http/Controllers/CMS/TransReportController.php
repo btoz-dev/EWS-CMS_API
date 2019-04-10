@@ -19,7 +19,7 @@ class TransReportController extends CMSController
         if ($request->ajax()) {
             $query = DB::table('EWS_VW_CMS_MANDOR_TRANS')
                 ->select('id', 'rkhCode', 'mandor', 'tk', 'Description', 'codeBlok', 'codeTanaman', 'mandorNote')
-                ->selectRaw('cast(cast(created_at as time) as char(5)) created_at');
+                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at');
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
@@ -46,7 +46,7 @@ class TransReportController extends CMSController
         if ($request->ajax()) {
             $query = DB::table('EWS_VW_CMS_KAWIL_TRANS')
                 ->select('id','kawil','kawilNote','rkhCode','Description','mandor','tk','codeBlok','codeTanaman','mandorNote')
-                ->selectRaw('cast(cast(created_at as time) as char(5)) created_at');
+                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at');
 
             if ($request->date_aw != NULL) {
                 # code...

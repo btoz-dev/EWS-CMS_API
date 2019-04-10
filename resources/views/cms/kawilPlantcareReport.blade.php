@@ -28,7 +28,7 @@
                         <th>ID</th>
                         <th>Kawil</th>
                         <th>Catatan Kawil</th>
-                        <th>Time</th>
+                        <th>Date</th>
                         <th>RKH</th>
                         <th>Aktifitas</th>
                         <th>Mandor</th>

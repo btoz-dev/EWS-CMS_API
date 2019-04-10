@@ -47,7 +47,7 @@
       </div>
       <div class="col-lg-2">
         <i class="fab fa-android fa-5x"></i>
-        <h6>Download APK Reports</h6>
+        <h6>Download APK APP</h6>
         <p>Download apk android terbaru</p>
         <p><a role="button" class="btn btn-secondary btn-sm" href="{{ asset('storage/ews-app-release_22-03-2019.apk') }}">View details »</a></p>
       </div>

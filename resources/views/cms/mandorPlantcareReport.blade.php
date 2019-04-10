@@ -33,7 +33,7 @@
                         <th>Kode Blok</th>
                         <th>Kode Tanaman</th>
                         <th>Catatan Mandor</th>
-                        <th>Time</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
             </table>
