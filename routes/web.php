@@ -36,8 +36,8 @@ Route::group([
 	Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
 
 	// Route::resource('transReport', 'CMS\TransReportController');
-	Route::get('mandorTransReport', 'CMS\TransReportController@indexMandor')->name('mandorTransReport.index');
-	Route::get('kawilTransReport', 'CMS\TransReportController@indexKawil')->name('kawilTransReport.index');
+	Route::get('mandorPlantcareReport', 'CMS\TransReportController@mandorPlantcare')->name('mandorPlantcareReport.index');
+	Route::get('kawilPlantcareReport', 'CMS\TransReportController@kawilPlantcare')->name('kawilPlantcareReport.index');
 
 	// Route::resource('rkmReport', 'CMS\RKMReportController');
 	Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');

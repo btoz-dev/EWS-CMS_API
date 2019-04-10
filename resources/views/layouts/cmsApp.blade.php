@@ -65,15 +65,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('mandorTransReport*') ? 'active' : '' }}" href="{{ url('/mandorTransReport') }}">
+                            <a class="nav-link {{ request()->is('mandorPlantcareReport*') ? 'active' : '' }}" href="{{ url('/mandorPlantcareReport') }}">
                             <i class="far fa-chart-bar"></i>
-                            Mandor Trans Reports
+                            Mandor Plantcare Reports
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('kawilTransReport*') ? 'active' : '' }}" href="{{ url('/kawilTransReport') }}">
+                            <a class="nav-link {{ request()->is('kawilPlantcareReport*') ? 'active' : '' }}" href="{{ url('/kawilPlantcareReport') }}">
                             <i class="far fa-chart-bar"></i>
-                            Kawil Trans Reports
+                            Kawil Plantcare Reports
                             </a>
                         </li>
                         <li class="nav-item">

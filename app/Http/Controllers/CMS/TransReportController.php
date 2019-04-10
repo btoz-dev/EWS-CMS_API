@@ -14,11 +14,12 @@ class TransReportController extends CMSController
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexMandor(Request $request)
+    public function mandorPlantcare(Request $request)
     {
         if ($request->ajax()) {
-            $query = DB::table('EWS_VW_CMS_MANDOR_TRANS');
-            
+            $query = DB::table('EWS_VW_CMS_MANDOR_TRANS')
+                ->select('id', 'rkhCode', 'mandor', 'tk', 'Description', 'codeBlok', 'codeTanaman', 'mandorNote')
+                ->selectRaw('cast(cast(created_at as time) as char(5)) created_at');
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
@@ -32,7 +33,7 @@ class TransReportController extends CMSController
                 ->make(true);
         }
 
-        return view('cms.mandorTransReport');
+        return view('cms.mandorPlantcareReport');
     }
 
     /**
@@ -40,10 +41,12 @@ class TransReportController extends CMSController
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexKawil(Request $request)
+    public function kawilPlantcare(Request $request)
     {
         if ($request->ajax()) {
-            $query = DB::table('EWS_VW_CMS_KAWIL_TRANS');
+            $query = DB::table('EWS_VW_CMS_KAWIL_TRANS')
+                ->select('id','kawil','kawilNote','rkhCode','Description','mandor','tk','codeBlok','codeTanaman','mandorNote')
+                ->selectRaw('cast(cast(created_at as time) as char(5)) created_at');
 
             if ($request->date_aw != NULL) {
                 # code...
@@ -58,7 +61,7 @@ class TransReportController extends CMSController
                 ->make(true);
         }
         
-        return view('cms.kawilTransReport');
+        return view('cms.kawilPlantcareReport');
     }
 
     /**

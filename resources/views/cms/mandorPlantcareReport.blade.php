@@ -4,7 +4,7 @@
     <div class="container">
         <hr>
         <div class="card rounded-0">
-          <h5 class="card-header">Kawil Trans Report</h5>
+          <h5 class="card-header">Mandor Plantcare Report</h5>
           <div class="card-body">
             <form method="POST" id="search-form" class="form-inline" role="form">
 
@@ -26,21 +26,14 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Kawil</th>
-                        <th>Catatan Kawil</th>
-                        <th>Date</th>
-                        <th>RKH</th>
-                        <th>Aktifitas</th>
+                        <th>Kode RKH</th>
                         <th>Mandor</th>
                         <th>TK</th>
+                        <th>Pekerjaan</th>
                         <th>Kode Blok</th>
                         <th>Kode Tanaman</th>
                         <th>Catatan Mandor</th>
-                        <th>Total Hand</th>
-                        <th>Total Finger</th>
-                        <th>Total Leaf</th>
-                        <th>Ribbon Color</th>
-                        <th>Skimming Size</th>
+                        <th>Time</th>
                     </tr>
                 </thead>
             </table>
@@ -54,7 +47,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('kawilTransReport.index') }}',
+                url: '{{ route('mandorPlantcareReport.index') }}',
                 data: function (d) {
                     d.date_aw = $('input[name=date_aw]').val();
                     d.date_ak = $('input[name=date_ak]').val();
@@ -62,21 +55,14 @@
             },
             columns: [
                 {data: 'id', name: 'id'},
-                {data: 'kawil', name: 'kawil'},
-                {data: 'kawilNote', name: 'kawilNote'},
-                {data: 'created_at', name: 'created_at'},
                 {data: 'rkhCode', name: 'rkhCode'},
-                {data: 'Description', name: 'Description'},
                 {data: 'mandor', name: 'mandor'},
                 {data: 'tk', name: 'tk'},
+                {data: 'Description', name: 'Description'},
                 {data: 'codeBlok', name: 'codeBlok'},
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'mandorNote', name: 'mandorNote'},
-                {data: 'totalHand', name: 'totalHand'},
-                {data: 'totalFinger', name: 'totalFinger'},
-                {data: 'totalLeaf', name: 'totalLeaf'},
-                {data: 'ribbonColor', name: 'ribbonColor'},
-                {data: 'skimmingSize', name: 'skimmingSize'},
+                {data: 'created_at', name: 'created_at'},
             ]
         });
 
