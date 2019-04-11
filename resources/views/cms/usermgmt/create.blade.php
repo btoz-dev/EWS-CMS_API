@@ -48,7 +48,7 @@
         </div>
 
         <div class="form-group">
-            <label for="pekerjaInput">Nama Pekerja</label>
+            <label for="pekerjaInput" id="pekerjaInputLabel">Nama Pekerja</label>
             <select class="form-control selectpicker" id="pekerjaInput" name="pekerja">
             </select>
         </div>
@@ -86,12 +86,23 @@
 
         $('#roleInput').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             // body...
-            $.post('{{route('usermgmt.postRoleDropdown')}}',{id: $(this).val()}, function (e) {
-                // body...
-                console.log(e);
-                $('#pekerjaInput').html(e);
+            if ($(this).val() == 8 || $(this).val() == 7) {
+                $.post('{{route('usermgmt.postRoleDropdown')}}',{id: $(this).val()}, function (e) {
+                    // body...
+                    console.log(e);
+                    $('#pekerjaInput').prop('disabled', false);
+                    $('#pekerjaInput').html(e);
+                    $('#pekerjaInput').selectpicker('refresh');
+                    $('#pekerjaInput').selectpicker('show');
+                    document.getElementById("pekerjaInputLabel").style.display = 'block';
+                })
+            }else{
+                $('#pekerjaInput').html('');
                 $('#pekerjaInput').selectpicker('refresh');
-            })
+                $('#pekerjaInput').prop('disabled', true);
+                $('#pekerjaInput').selectpicker('hide');
+                document.getElementById("pekerjaInputLabel").style.display = 'none';
+            }
         })
     </script>
 @endsection
