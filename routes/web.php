@@ -34,6 +34,7 @@ Route::group([
 
 	Route::resource('usermgmt', 'CMS\UsermgmtController');
 	Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
+	Route::post('usermgmtCallDropdownEdit', 'CMS\UsermgmtController@callDropdownEdit')->name('usermgmt.callDropdownEdit');
 
 	// Route::resource('transReport', 'CMS\TransReportController');
 	Route::get('mandorPlantcareReport', 'CMS\TransReportController@mandorPlantcare')->name('mandorPlantcareReport.index');
