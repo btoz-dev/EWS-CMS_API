@@ -29,8 +29,6 @@ class UsermgmtController extends CMSController
             return DataTables::of($users)
                 ->addColumn('aksi', function ($users)
                 {
-                    $onClick = "event.preventDefault();document.getElementById('destroy-form_".$users["id"]."').submit();";
-
                     return "
                     <div class='btn-group' role='group' aria-label='Button group with nested dropdown' id='btn-group-aksi'>
                         <button type='button' class='btn btn-secondary btn-success' id='showDetail' data-id=".$users["id"].">Show</button>
@@ -44,12 +42,8 @@ class UsermgmtController extends CMSController
                                 <a href=".route("usermgmt.edit", ["id" => $users["id"]."_password"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Password</a> 
                             </div>
                         </div>
-                        <button type='button' class='btn btn-secondary btn-warning' onclick=".$onClick.">Hapus</button>
+                        <button type='button' class='btn btn-secondary btn-warning' id='penghapusan' data-toggle='modal' data-target='#hapusModal' data-url=".route("usermgmt.destroy", ["id" => $users["id"]]).">Hapus</button>
                     </div>
-                    <form id='destroy-form_".$users["id"]."' action=".route("usermgmt.destroy", ["id" => $users["id"]])." method='POST' style='display: none;'>
-                        <input type='hidden' name='_method' value='DELETE'>
-                        <input type='hidden' name='_token' value=".csrf_token().">
-                    </form>
                     ";
                 })
                 ->rawColumns(['aksi'])
@@ -115,6 +109,11 @@ class UsermgmtController extends CMSController
             if ($request->role == 2) {
                 # code...
                 $request->pekerja = 2;
+            }
+
+            if ($request->role == 3) {
+                # code...
+                $request->pekerja = 3;
             }
         }
 
@@ -237,9 +236,19 @@ class UsermgmtController extends CMSController
             ->where('id', '=', $param[0])
             ->first());
         $data['role'] = $this->removeWhitespace(DB::table('EWS_ROLE_USER')->orderBy('id', 'asc')->get());
-        $data['pekerja'] = $this->removeWhitespace(DB::table('EWS_VW_DETAIL_MANDOR')
+
+        if ($data['user']['idRole'] == 8) 
+        {
+            # code...
+            $data['pekerja'] = $this->removeWhitespace(DB::table('EWS_VW_DETAIL_MANDOR')
                 ->orderBy('namaPekerja', 'asc')
                 ->get());
+        }else
+        {   
+            $data['pekerja'] = $this->removeWhitespace(DB::table('EWS_PEKERJA')
+                ->orderBy('namaPekerja', 'asc')
+                ->get());
+        }
         return view('cms.usermgmt.edit', $data);
     }
 
@@ -278,6 +287,11 @@ class UsermgmtController extends CMSController
             if ($request->role == 2) {
                 # code...
                 $request->pekerja = 2;
+            }
+
+            if ($request->role == 3) {
+                # code...
+                $request->pekerja = 3;
             }
             
             $array = array(
@@ -360,7 +374,7 @@ class UsermgmtController extends CMSController
             return $return;
         }
 
-        if ($request->id == 7) { # mandor
+        if ($request->id == 7) { # kawil
             # code...
             $data = DB::table('EWS_PEKERJA')
                 ->orderBy('namaPekerja', 'asc')
@@ -371,6 +385,54 @@ class UsermgmtController extends CMSController
                 if ($temp['idRole'] != NULL) {
                     # code...
                     $return .= "<option value=".$temp['codePekerja']." disabled>".$temp['namaPekerja']."</option>";
+                }else{
+                    $return .= "<option value=".$temp['codePekerja'].">".$temp['namaPekerja']."</option>";
+                }
+            return $return;
+        }
+    }
+
+    public function callDropdownEdit(Request $request)
+    {
+        # code...
+        $codePekerja = $this->removeWhitespace2(DB::table('EWS_VW_DETAIL_USER')
+            ->where('id', '=', $request->idUser)
+            ->first());
+
+        if ($request->idRole == 8) { # mandor
+            # code...
+            $data = DB::table('EWS_VW_DETAIL_MANDOR')
+                ->orderBy('namaPekerja', 'asc')
+                ->get();
+            $listData = $this->removeWhitespace($data);
+            $return = '<option value="">Pilih Kode Pekerja...</option>';
+            foreach($listData as $temp) 
+                if ($temp['codePekerja'] == $codePekerja['codePekerja']) {
+                    # code...
+                    $return .= "<option value=".$temp['codePekerja']." selected='true'>".$temp['namaPekerja']." [".$temp['codeMandor']."]</option>";
+                }else
+                {
+                    $return .= "<option value=".$temp['codePekerja'].">".$temp['namaPekerja']." [".$temp['codeMandor']."]</option>";
+                }
+            return $return;
+        }
+
+        if ($request->idRole == 7) { # kawil
+            # code...
+            $data = DB::table('EWS_PEKERJA')
+                ->orderBy('namaPekerja', 'asc')
+                ->get();
+            $listData = $this->removeWhitespace($data);
+            $return = '<option value="">Pilih Kode Pekerja...</option>';
+            foreach($listData as $temp) 
+                if ($temp['idRole'] != NULL) {
+                    # code...
+                    if ($temp['codePekerja'] == $codePekerja['codePekerja']) {
+                        # code...
+                        $return .= "<option value=".$temp['codePekerja']." selected='true'>".$temp['namaPekerja']."</option>";
+                    }else{
+                        $return .= "<option value=".$temp['codePekerja']." disabled>".$temp['namaPekerja']."</option>";
+                    }
                 }else{
                     $return .= "<option value=".$temp['codePekerja'].">".$temp['namaPekerja']."</option>";
                 }
