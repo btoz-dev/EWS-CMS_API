@@ -27,7 +27,7 @@ Auth::routes();
 
 Route::group([
 	'middleware' => ['roles'], // A 'roles' middleware must be specified
-	'roles' => ['super admin', 'management'] // Only an administrator, or a manager can access this route
+	'roles' => ['super admin'] // Only an administrator, or a manager can access this route
 ], function() {
 	Route::get('dashboard', 'CMSController@dashboard');#->name('home');
 	Route::post('dashboardChartDataSet', 'CMSController@chartDataSet')->name('dashboard.getDataChart');
@@ -50,6 +50,27 @@ Route::group([
 	Route::post('chartDataSet', 'CMS\CustomReportController@chartDataSet')->name('getDataChart');
 });
 
+Route::group([
+	'middleware' => ['roles'], // A 'roles' middleware must be specified
+	'roles' => ['management', 'kawil', 'spi'] // Only an administrator, or a manager can access this route
+], function() {
+	Route::get('dashboard', 'CMSController@dashboard');#->name('home');
+	Route::post('dashboardChartDataSet', 'CMSController@chartDataSet')->name('dashboard.getDataChart');
+
+	// Route::resource('transReport', 'CMS\TransReportController');
+	Route::get('mandorPlantcareReport', 'CMS\TransReportController@mandorPlantcare')->name('mandorPlantcareReport.index');
+	Route::get('kawilPlantcareReport', 'CMS\TransReportController@kawilPlantcare')->name('kawilPlantcareReport.index');
+
+	// Route::resource('rkmReport', 'CMS\RKMReportController');
+	Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');
+
+	Route::get('customReport', 'CMS\CustomReportController@index')->name('customReport.index');
+	Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
+	Route::post('postFilter', 'CMS\CustomReportController@postFilter')->name('postFilter');
+	Route::post('filterByDate', 'CMS\CustomReportController@filterByDate')->name('filterByDate');
+	
+	Route::post('chartDataSet', 'CMS\CustomReportController@chartDataSet')->name('getDataChart');
+});
 
 // Route::get('/reports/{dateStart?}/{dateEnd?}', 'CMSController@reports')
 // 	->where([
