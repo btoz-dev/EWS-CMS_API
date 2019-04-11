@@ -32,7 +32,8 @@ class UsermgmtController extends CMSController
                     $onClick = "event.preventDefault();document.getElementById('destroy-form_".$users["id"]."').submit();";
 
                     return "
-                    <div class='btn-group' role='group' aria-label='Button group with nested dropdown'>
+                    <div class='btn-group' role='group' aria-label='Button group with nested dropdown' id='btn-group-aksi'>
+                        <button type='button' class='btn btn-secondary btn-success' id='showDetail' data-id=".$users["id"].">Show</button>
                         <div class='btn-group' role='group'>
                             <button id='btnGroupDrop1' type='button' class='btn btn-secondary dropdown-toggle btn-info' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                             Ubah
@@ -83,17 +84,41 @@ class UsermgmtController extends CMSController
             'email' => 'Alamat email harus benar || ',
             'integer' => 'Kotak :attribute harus diisi/dipilih || ',
         ];
-
-        $rules = [
-            'username' => 'required|max:255|unique:users',
-            'email' => 'required|email|max:255|unique:users',
-            'pekerja' => 'required|integer|unique:users,codePekerja',
-            'role' => 'required|integer',
-            'password' => 'required|string|min:6|confirmed'
-        ];
         
-        $validator = Validator::make($request->all(), $rules, $messages)->validate();
+        if ($request->role == 8) {
+            # code...
+            $rules = [
+                'username' => 'required|max:255|unique:users',
+                'email' => 'required|email|max:255|unique:users',
+                'pekerja' => 'required|integer|unique:users,codePekerja',
+                'role' => 'required|integer',
+                'password' => 'required|string|min:6|confirmed'
+            ];
+            
+            $validator = Validator::make($request->all(), $rules, $messages)->validate();
+        }else{
+            # code...
+            $rules = [
+                'username' => 'required|max:255|unique:users',
+                'email' => 'required|email|max:255|unique:users',
+                'role' => 'required|integer',
+                'password' => 'required|string|min:6|confirmed'
+            ];
+            
+            $validator = Validator::make($request->all(), $rules, $messages)->validate();
 
+            if ($request->role == 1) {
+                # code...
+                $request->pekerja = 1;
+            }
+
+            if ($request->role == 2) {
+                # code...
+                $request->pekerja = 2;
+            }
+        }
+
+        
         try {
             DB::table('users')->insert([
                 'name' => $request->name,
@@ -127,7 +152,73 @@ class UsermgmtController extends CMSController
      */
     public function show($id)
     {
-        
+        $query = DB::table('EWS_VW_DETAIL_USER') 
+            ->where('id', '=', $id)
+            ->first();
+        $user = $this->removeWhitespace2($query);
+        return "
+            <div class='modal-header'>
+                <h5 class='modal-title' id='showDetailLabel'>User Detail</h5>
+                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                <span aria-hidden='true'>&times;</span>
+                </button>
+            </div>
+            <div class='modal-body'>
+                <div class='container'>
+                    <div class='row'>
+                        <div class='col-sm'>
+                            Nama Akun
+                        </div>
+                        <div class='col-sm'>
+                            ".$user['name']."
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-sm'>
+                            Username
+                        </div>
+                        <div class='col-sm'>
+                            ".$user['username']."
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-sm'>
+                            Email
+                        </div>
+                        <div class='col-sm'>
+                            ".$user['email']."
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-sm'>
+                            Password
+                        </div>
+                        <div class='col-sm'>
+                            ".$user['password_decrypt']."
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-sm'>
+                            Kode Pekerja
+                        </div>
+                        <div class='col-sm'>
+                            ".$user['codePekerja']."
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-sm'>
+                            Nama Pekerja
+                        </div>
+                        <div class='col-sm'>
+                            ".$user['namaPekerja']."
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+            </div>
+        ";
     }
 
     /**
@@ -178,6 +269,16 @@ class UsermgmtController extends CMSController
                 'pekerja' => 'integer',
                 'role' => 'integer',
             ];
+
+            if ($request->role == 1) {
+                # code...
+                $request->pekerja = 1;
+            }
+
+            if ($request->role == 2) {
+                # code...
+                $request->pekerja = 2;
+            }
             
             $array = array(
                 'name' => $request->name,
@@ -256,6 +357,23 @@ class UsermgmtController extends CMSController
             $return = '<option value="">Pilih Kode Pekerja...</option>';
             foreach($listData as $temp) 
                 $return .= "<option value=".$temp['codePekerja'].">".$temp['namaPekerja']." [".$temp['codeMandor']."]</option>";
+            return $return;
+        }
+
+        if ($request->id == 7) { # mandor
+            # code...
+            $data = DB::table('EWS_PEKERJA')
+                ->orderBy('namaPekerja', 'asc')
+                ->get();
+            $listData = $this->removeWhitespace($data);
+            $return = '<option value="">Pilih Kode Pekerja...</option>';
+            foreach($listData as $temp) 
+                if ($temp['idRole'] != NULL) {
+                    # code...
+                    $return .= "<option value=".$temp['codePekerja']." disabled>".$temp['namaPekerja']."</option>";
+                }else{
+                    $return .= "<option value=".$temp['codePekerja'].">".$temp['namaPekerja']."</option>";
+                }
             return $return;
         }
     }
