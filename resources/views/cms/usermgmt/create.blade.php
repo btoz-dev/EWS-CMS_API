@@ -1,7 +1,7 @@
 @extends('layouts.cmsApp')
 
 @section('stylesheet')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/css/bootstrap-select.min.css">
 @endsection
 
 @section('content')
@@ -69,7 +69,7 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/js/bootstrap-select.min.js"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
