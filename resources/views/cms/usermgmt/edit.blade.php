@@ -1,7 +1,7 @@
 @extends('layouts.cmsApp')
 
 @section('stylesheet')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/css/bootstrap-select.min.css">
 @endsection
 
 @section('content')
@@ -63,13 +63,7 @@
             <div class="form-group">
                 <label for="pekerjaInput" id="pekerjaInputLabel">Kode Pekerja</label>
                 <select class="form-control selectpicker" id="pekerjaInput" name="pekerja">
-                    @foreach($pekerja as $pekerja)
-                        @if ($user['codePekerja'] == $pekerja['codePekerja'])
-                            <option value="{{$pekerja['codePekerja']}}" selected="true">{{$pekerja['namaPekerja']}} [{{$pekerja['codeMandor']}}]</option>
-                        @else
-                            <option value="{{$pekerja['codePekerja']}}">{{$pekerja['namaPekerja']}} [{{$pekerja['codeMandor']}}]</option>
-                        @endif
-                    @endforeach
+                    
                 </select>
             </div>
         @endif
@@ -99,20 +93,32 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/js/bootstrap-select.min.js"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        
+
         $.fn.selectpicker.Constructor.BootstrapVersion = '4';
 
         $('#roleInput, #pekerjaInput').selectpicker({
             liveSearch : true,
             size : 5
         });
+
+        var idRole = '{{$user['idRole']}}';
+        var idUser = '{{$user['id']}}';
+        if (idRole == 8 || idRole == 7) {
+            CallData(idRole, idUser);
+        }else{
+            $('#pekerjaInput').html('');
+            $('#pekerjaInput').selectpicker('refresh');
+            $('#pekerjaInput').prop('disabled', true);
+            $('#pekerjaInput').selectpicker('hide');
+            document.getElementById("pekerjaInputLabel").style.display = 'none';
+        }
 
         $('#roleInput').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             // body...
@@ -134,5 +140,17 @@
                 document.getElementById("pekerjaInputLabel").style.display = 'none';
             }
         })
+
+        function CallData(idRole, idUser) {
+            $.post('{{route('usermgmt.callDropdownEdit')}}',{idRole: idRole, idUser: idUser}, function (e) {
+                // body...
+                console.log(e);
+                $('#pekerjaInput').prop('disabled', false);
+                $('#pekerjaInput').html(e);
+                $('#pekerjaInput').selectpicker('refresh');
+                $('#pekerjaInput').selectpicker('show');
+                document.getElementById("pekerjaInputLabel").style.display = 'block';
+            })
+        }
     </script>
 @endsection
