@@ -25,7 +25,7 @@ class CheckRole
         {
             return $next($request);
         }
-        return redirect('/')->with('alert', 'You are not authorized to access this resource.');
+        return redirect()->back()->with('alert', 'You are not authorized to access this resource.');
         
     }
 
