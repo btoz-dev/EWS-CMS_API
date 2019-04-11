@@ -26,8 +26,6 @@
                     <tr>
                         <th>#</th>
                         <th>Username</th>
-                        <th>Email</th>
-                        <th>Nama Pekerja</th>
                         <th>Role</th>
                         <th>Aksi</th>
                     </tr>
@@ -35,6 +33,25 @@
             </table>
         </div>
     </div>
+    <div class="modal fade" id="showDetailModal" tabindex="-1" role="dialog" aria-labelledby="showDetailLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="showDetailLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>    
 @endsection
 
 @section('script')
@@ -46,15 +63,21 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'username', name: 'username'},
-                {data: 'email', name: 'email'},
-                {data: 'namaPekerja', name: 'namaPekerja'},
                 {data: 'namaRole', name: 'namaRole'},
                 {data: 'aksi', name: 'aksi', orderable: false, searchable: false}
             ]
         });
 
-        // $('#add').on('click', function(e) {
-        //     $('#modal').modal('show');
-        // })
+        $(document).ready(function () {
+            $(document).on("click", "button#showDetail", function (event) {
+                event.preventDefault();
+
+                $.get('{{route('usermgmt.show', [''])}}/'+$(this).data('id'), function (e) {
+                    // body...
+                    $('.modal-content').html(e);
+                    $('#showDetailModal').modal('show');
+                })
+            });
+        });
     </script>
 @endsection
