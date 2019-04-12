@@ -21,7 +21,8 @@ class AppController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'username' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'date' => 'required|date|date_format:d-m-Y'
         ]);
         if ($validator->fails()) {
             return $this->errMessage(400,$validator->messages()->first());
@@ -58,16 +59,16 @@ class AppController extends Controller
         
         if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
             # code...
-            return $this->getRKMMandor($user2, $identitasPekerja, $detailRole);
+            return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
         if ($detailRole['id'] == 7) {
             # code...
-            return $this->getRKMKawil($user2, $identitasPekerja, $detailRole);
+            return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
     }
 
-    public function getRKMMandor ($user2, $identitasPekerja, $detailRole)
+    public function getRKMMandor ($user2, $identitasPekerja, $detailRole, $reqDate)
     {
         $codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
             ->select('codeMandor')
@@ -89,8 +90,8 @@ class AppController extends Controller
             return $this->errMessage(400,'Tidak ada data tukang');
         }
 
-        $date = now();
-        $tgl = date_create($date);
+        // $date = now();
+        $tgl = date_create($reqDate);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
 
         $user2[0]['rkhDate'] = $tgl_ubah;
@@ -286,11 +287,14 @@ class AppController extends Controller
                                             unset($listPokok['noTanam']);
                                             $date = date_create($listPokok['PlantingDate']);
                                             $listPokok['date'] = date_format($date, 'd F Y');
-                                            unset($listPokok['PlantingDate']);
+                                            unset($listPokok['PlantingDate']);  
                                             $listPokok['code'] = $listPokok['codeTanaman'];
                                             unset($listPokok['codeTanaman']);
                                             $listPokok['week'] = $listPokok['jmlMinggu'];
                                             unset($listPokok['jmlMinggu']);
+
+                                            $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
+
                                             $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
                                             unset($listPokok['date']);
                                             unset($listPokok['status']);
@@ -434,13 +438,13 @@ class AppController extends Controller
         return $user2;
     }
 
-    public function getRKMKawil ($user2, $identitasPekerja, $detailRole)
+    public function getRKMKawil ($user2, $identitasPekerja, $detailRole, $reqDate)
     {
         ini_set('max_execution_time', '300');
         ini_set('memory_limit', '2048M');
-        $date = now();
+        // $date = now();
         // $date = '22-03-2019';
-        $tgl = date_create($date);
+        $tgl = date_create($reqDate);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
 
         $user2[0]['rkhDate'] = $tgl_ubah;
@@ -469,7 +473,7 @@ class AppController extends Controller
             ->get());
         if (empty($rkm2)) {
             # code...
-            return $this->errMessage(400,'Tidak ada transaksi mandor untuk hari ini');
+            return $this->errMessage(400,'Tidak ada RKM untuk hari ini');
         }
 
         $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
@@ -688,6 +692,9 @@ class AppController extends Controller
                                             unset($listPokok['tk']);
                                             unset($listPokok['mandor']);
                                             unset($listPokok['mandorTrans']);
+
+                                            $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
+                                            
                                             $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
 
                                             unset($listPokok['date']);
