@@ -94,7 +94,7 @@ class AppController extends Controller
         $tgl = date_create($reqDate);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
 
-        $user2[0]['rkhDate'] = $tgl_ubah;
+        $user2[0]['rkhDate'] = date_format($tgl, 'd-m-Y');
 
         unset($identitasPekerja['idRole']);
         $user2[0]['identitasPekerja'] = $identitasPekerja;
@@ -447,7 +447,7 @@ class AppController extends Controller
         $tgl = date_create($reqDate);
         $tgl_ubah = date_format($tgl, 'Y-m-d');
 
-        $user2[0]['rkhDate'] = $tgl_ubah;
+        $user2[0]['rkhDate'] = date_format($tgl, 'd-m-Y');
 
         unset($identitasPekerja['idRole']);
         $user2[0]['identitasPekerja'] = $identitasPekerja;
