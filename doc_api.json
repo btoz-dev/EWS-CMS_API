@@ -10,7 +10,8 @@ method = POST
 body = 
 {
     "username" : "(username user)",
-    "password" : "(password user)"
+    "password" : "(password user)",
+    "date" : "(format tanggal-bulan-tahun, eg: 11-04-2019)"
 }
 
 MANDOR DAN KAWIL MENGAKSES LEWAT SINI
