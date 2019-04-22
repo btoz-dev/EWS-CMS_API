@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\CMS;
 
 use DataTables;
-use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CMSController;
+use App\Trans;
+use App\Exports\MandorExport;
+use App\Exports\KawilExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransReportController extends CMSController
 {
@@ -17,9 +20,9 @@ class TransReportController extends CMSController
     public function mandorPlantcare(Request $request)
     {
         if ($request->ajax()) {
-            $query = DB::table('EWS_VW_CMS_MANDOR_TRANS')
-                ->select('id', 'rkhCode', 'mandor', 'tk', 'Description', 'codeBlok', 'codeTanaman', 'mandorNote')
-                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at');
+
+            $query = Trans::mandor('PLANTCARE');
+
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
@@ -36,6 +39,40 @@ class TransReportController extends CMSController
         return view('cms.mandorPlantcareReport');
     }
 
+    public function mandorFruitcare(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $query = Trans::mandor('FRUITCARE');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+
+        return view('cms.mandorFruitcareReport');
+    }
+
+    public function exportMandor(Request $request)
+    {
+    	# code...
+    	$export = new MandorExport();
+		$export->setHeading($request->heading);
+		$export->setJob($request->job);
+		$export->setDateAw($request->date_aw);
+		$export->setDateAk($request->date_ak);
+
+		return Excel::download($export, 'trans.xlsx');
+    }
+
     /**
      * Display a listing of the kawil resource.
      *
@@ -44,9 +81,8 @@ class TransReportController extends CMSController
     public function kawilPlantcare(Request $request)
     {
         if ($request->ajax()) {
-            $query = DB::table('EWS_VW_CMS_KAWIL_TRANS')
-                ->select('id','kawil','kawilNote','rkhCode','Description','mandor','tk','codeBlok','codeTanaman','mandorNote')
-                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at');
+
+            $query = Trans::kawil('PLANTCARE');
 
             if ($request->date_aw != NULL) {
                 # code...
@@ -62,6 +98,40 @@ class TransReportController extends CMSController
         }
         
         return view('cms.kawilPlantcareReport');
+    }
+
+    public function kawilFruitcare(Request $request)
+    {
+        if ($request->ajax()) {
+            
+            $query = Trans::kawil('FRUITCARE');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+        
+        return view('cms.kawilFruitcareReport');
+    }
+
+    public function exportKawil(Request $request)
+    {
+    	# code...
+    	$export = new KawilExport();
+		$export->setHeading($request->heading);
+		$export->setJob($request->job);
+		$export->setDateAw($request->date_aw);
+		$export->setDateAk($request->date_ak);
+
+		return Excel::download($export, 'trans.xlsx');
     }
 
     /**
