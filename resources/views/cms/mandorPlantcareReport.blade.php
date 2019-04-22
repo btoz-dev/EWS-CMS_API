@@ -12,12 +12,26 @@
                     <label for="date_aw">Dari</label>
                     <input type="date" class="form-control mx-sm-3" name="date_aw" id="date_aw" placeholder="search tanggal dari (MM/DD/YYYY)">
                 </div>
+
                 <div class="form-group">
                     <label for="date_ak">Sampai</label>
                     <input type="date" class="form-control mx-sm-3" name="date_ak" id="date_ak" placeholder="search tanggal ke (MM/DD/YYYY)">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Cari</button>
+                <div class="form-group">
+                    <button type="submit" class="form-control mx-sm-3 btn btn-primary">Cari</button>
+                </div>
+
+                <!-- <div class="form-group">
+                </div> -->
+
+                <div class="form-group">
+                    <button type="button" class="form-control mx-sm-3 btn btn-success" name="export">Export</button>
+                    <div class="spinner-border text-warning" role="status" style="display:none;" id="loading-export">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                
             </form>
           </div>
         </div>
@@ -43,7 +57,29 @@
 
 @section('script')
     <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(document).ajaxSend(function(e,x,o){
+            $("#loading-export").show();
+        });
+        $(document).ajaxStop(function(e,x,o){
+            $("#loading-export").hide();
+        });
         var oTable = $('#data-table').DataTable({
+            // buttons: [
+            //     {
+            //         extend: 'excel',
+            //         text: 'Save current page',
+            //         exportOptions: {
+            //             modifier: {
+            //                 page: 'all'
+            //             }
+            //         }
+            //     }
+            // ],
             processing: true,
             serverSide: true,
             ajax: {
@@ -63,7 +99,18 @@
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'mandorNote', name: 'mandorNote'},
                 {data: 'created_at', name: 'created_at'},
-            ]
+            ],
+            // initComplete : function () {
+            //     oTable.buttons().container()
+            //            .appendTo( $('#search-form .form-group:eq(3)'));
+            // }
+        });
+
+        var headings = [];
+        $(oTable.table().header()).find('th').each(function () {
+          // access each tr's tds from here using $(this)
+          var head = $(this).text()
+          headings.push(head);
         });
 
         $('#search-form').on('submit', function(e) {
@@ -77,13 +124,43 @@
             if ($(this).val() > $('#date_ak').val()) {
                 $('#date_ak').val($(this).val());
             }
-        })
+        });
 
         $('#date_ak').on('change', function(e) {
             console.log($(this).val());
             if ($(this).val() < $('#date_aw').val()) {
                 $('#date_aw').val($(this).val());
             }
-        })
+        });
+
+        $('button[name="export"]').on('click', function(e) {
+            var url = '{{route('exportMandor')}}';
+            var params = { 
+                    heading: headings, 
+                    job: "PLANTCARE", 
+                    date_aw: $('input[name=date_aw]').val(), 
+                    date_ak: $('input[name=date_ak]').val() 
+                };
+
+            // downloadFromAjaxPost(url, params);
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: params,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(response, status, request) {
+                    // console.log(response);
+                    var a = document.createElement('a');
+                    var url = window.URL.createObjectURL(response);
+                    a.href = url;
+                    a.download = '';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            });
+        });
     </script>
 @endsection
