@@ -71,9 +71,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->is('mandorFruitcareReport*') ? 'active' : '' }}" href="{{ url('/mandorFruitcareReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            Mandor Fruitcare Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->is('kawilPlantcareReport*') ? 'active' : '' }}" href="{{ url('/kawilPlantcareReport') }}">
                             <i class="far fa-chart-bar"></i>
                             Kawil Plantcare Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('kawilFruitcareReport*') ? 'active' : '' }}" href="{{ url('/kawilFruitcareReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            Kawil Fruitcare Reports
                             </a>
                         </li>
                         <li class="nav-item">
@@ -83,7 +95,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ asset('storage/ews-app-release_12-04-2019_vpn.apk') }}">
+                            <a class="nav-link" href="{{ asset('storage/ews-app-release_12-04-2019_dev_2.apk') }}">
                             <i class="fab fa-android"></i>
                             Download APK File
                             </a>
