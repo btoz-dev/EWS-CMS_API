@@ -54,6 +54,9 @@ Route::group([
 	Route::post('filterByDate', 'CMS\CustomReportController@filterByDate')->name('filterByDate');
 	
 	Route::post('chartDataSet', 'CMS\CustomReportController@chartDataSet')->name('getDataChart');
+
+	Route::get('apk', 'CMS\FileController@index')->name('apk');
+	Route::post('insertapk', 'CMS\FileController@upload')->name('uploadapk');
 });
 
 Route::group([
