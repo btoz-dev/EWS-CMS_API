@@ -95,9 +95,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ asset('storage/ews-app-release_12-04-2019_dev_2.apk') }}">
+                            <a class="nav-link {{ request()->is('apk*') ? 'active' : '' }}" href="{{ url('/apk') }}">
                             <i class="fab fa-android"></i>
-                            Download APK File
+                            APK
                             </a>
                         </li>
                     </ul>
