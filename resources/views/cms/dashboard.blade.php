@@ -29,22 +29,38 @@
       </div>
       <div class="col-lg-2">
         <i class="far fa-chart-bar fa-5x"></i>
-        <h6>Mandor Trans Reports</h6>
-        <p>Hasil aktifitas mandor</p>
-        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/mandorTransReport') }}">View details »</a></p>
-      </div>
-      <div class="col-lg-2">
-        <i class="far fa-chart-bar fa-5x"></i>
-        <h6>Kawil Trans Reports</h6>
-        <p>Hasil aktifitas kawil</p>
-        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/kawilTransReport') }}">View details »</a></p>
-      </div>
-      <div class="col-lg-2">
-        <i class="far fa-chart-bar fa-5x"></i>
         <h6>Custom Reports</h6>
         <p>Tabel pencarian khusus</p>
         <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/customReport') }}">View details »</a></p>
       </div>
+    </div>
+    <div class="row text-center">
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Mandor Plantcare Reports</h6>
+        <p>Laporan mandor pada aktifitas plantcare</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/mandorPlantcareReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Mandor Fruitcare Reports</h6>
+        <p>Laporan mandor pada aktifitas fruitcare</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/mandorFruitcareReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Kawil Plantcare Reports</h6>
+        <p>Laporan kawil pada aktifitas plantcare</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/kawilPlantcareReport') }}">View details »</a></p>
+      </div>
+      <div class="col-lg-2">
+        <i class="far fa-chart-bar fa-5x"></i>
+        <h6>Kawil Fruitcare Reports</h6>
+        <p>Laporan kawil pada aktifitas fruitcare</p>
+        <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/kawilFruitcareReport') }}">View details »</a></p>
+      </div>
+    </div>
+    <div class="row text-center">
       <div class="col-lg-2">
         <i class="fab fa-android fa-5x"></i>
         <h6>Download APK APP</h6>
