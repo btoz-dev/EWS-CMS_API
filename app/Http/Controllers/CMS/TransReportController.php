@@ -61,6 +61,28 @@ class TransReportController extends CMSController
         return view('cms.mandorFruitcareReport');
     }
 
+    public function mandorPanen(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $query = Trans::mandor('PANEN');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+
+        return view('cms.mandorPanenReport');
+    }
+
     public function exportMandor(Request $request)
     {
     	# code...
@@ -120,6 +142,28 @@ class TransReportController extends CMSController
         }
         
         return view('cms.kawilFruitcareReport');
+    }
+
+    public function kawilPanen(Request $request)
+    {
+        if ($request->ajax()) {
+            
+            $query = Trans::kawil('PANEN');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+        
+        return view('cms.kawilPanenReport');
     }
 
     public function exportKawil(Request $request)
