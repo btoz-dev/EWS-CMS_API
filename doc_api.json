@@ -32,7 +32,7 @@ body =
     "totalHand" : "(total hand (boleh kosong) (pekerjaan marking))",
     "totalFinger" : "(total finger (boleh kosong) (pekerjaan marking))",
     "totalLeaf" : "(total leaf (boleh kosong) (pekerjaan marking))",
-    "ribbonColor" : "(ribbon color (boleh kosong) (pekerjaan marking))",
+    "ribbonColor" : "(ribbon color (boleh kosong) (pekerjaan marking) (Blue, Red, Yellow, White, Black, Green)",
     "skimmingSize" : "(skimming size (boleh kosong) (pekerjaan skimming))",
     "tanggal" : "(tanggal dibuatnya)",
     "waktu" : "(waktu dibuatnya)",
