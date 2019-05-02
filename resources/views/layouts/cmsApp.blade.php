@@ -77,6 +77,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->is('mandorPanenReport*') ? 'active' : '' }}" href="{{ url('/mandorPanenReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            Mandor Panen Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->is('kawilPlantcareReport*') ? 'active' : '' }}" href="{{ url('/kawilPlantcareReport') }}">
                             <i class="far fa-chart-bar"></i>
                             Kawil Plantcare Reports
@@ -86,6 +92,12 @@
                             <a class="nav-link {{ request()->is('kawilFruitcareReport*') ? 'active' : '' }}" href="{{ url('/kawilFruitcareReport') }}">
                             <i class="far fa-chart-bar"></i>
                             Kawil Fruitcare Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('kawilPanenReport*') ? 'active' : '' }}" href="{{ url('/kawilPanenReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            Kawil Panen Reports
                             </a>
                         </li>
                         <li class="nav-item">
