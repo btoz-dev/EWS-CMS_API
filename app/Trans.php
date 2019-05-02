@@ -23,6 +23,11 @@ class Trans extends Model
     	if ($job == 'FRUITCARE') {
     		# code...
     		$query->where('jobCode', '=', '002');
+		}
+		
+		if ($job == 'PANEN') {
+    		# code...
+    		$query->where('jobCode', '=', '003');
     	}
 
     	return $query;
@@ -43,6 +48,11 @@ class Trans extends Model
     	if ($job == 'FRUITCARE') {
     		# code...
     		$query->where('jobCode', '=', '002');
+		}
+		
+		if ($job == 'PANEN') {
+    		# code...
+    		$query->where('jobCode', '=', '003');
     	}
 
     	return $query;
