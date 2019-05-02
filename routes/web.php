@@ -39,10 +39,12 @@ Route::group([
 	// Route::resource('transReport', 'CMS\TransReportController');
 	Route::get('mandorPlantcareReport', 'CMS\TransReportController@mandorPlantcare')->name('mandorPlantcareReport.index');
 	Route::get('mandorFruitcareReport', 'CMS\TransReportController@mandorFruitcare')->name('mandorFruitcareReport.index');
+	Route::get('mandorPanenReport', 'CMS\TransReportController@mandorPanen')->name('mandorPanenReport.index');
 	Route::post('exportMandor', 'CMS\TransReportController@exportMandor')->name('exportMandor');
 
 	Route::get('kawilPlantcareReport', 'CMS\TransReportController@kawilPlantcare')->name('kawilPlantcareReport.index');
 	Route::get('kawilFruitcareReport', 'CMS\TransReportController@kawilFruitcare')->name('kawilFruitcareReport.index');
+	Route::get('kawilPanenReport', 'CMS\TransReportController@kawilPanen')->name('kawilPanenReport.index');
 	Route::post('exportKawil', 'CMS\TransReportController@exportKawil')->name('exportKawil');
 
 	// Route::resource('rkmReport', 'CMS\RKMReportController');
