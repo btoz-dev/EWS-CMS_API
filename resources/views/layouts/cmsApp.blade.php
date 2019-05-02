@@ -67,7 +67,7 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('mandorPlantcareReport*') ? 'active' : '' }}" href="{{ url('/mandorPlantcareReport') }}">
                             <i class="far fa-chart-bar"></i>
-                            Mandor Plantcare Reports
+                            SPI Plantcare Reports
                             </a>
                         </li>
                         <li class="nav-item">

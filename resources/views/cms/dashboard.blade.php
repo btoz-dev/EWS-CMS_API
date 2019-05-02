@@ -37,8 +37,8 @@
     <div class="row text-center">
       <div class="col-lg-2">
         <i class="far fa-chart-bar fa-5x"></i>
-        <h6>Mandor Plantcare Reports</h6>
-        <p>Laporan mandor pada aktifitas plantcare</p>
+        <h6>SPI Plantcare Reports</h6>
+        <p>Laporan SPI pada aktifitas plantcare</p>
         <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/mandorPlantcareReport') }}">View details »</a></p>
       </div>
       <div class="col-lg-2">
