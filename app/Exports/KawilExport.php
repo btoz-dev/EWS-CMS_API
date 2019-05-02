@@ -97,5 +97,23 @@ class KawilExport implements FromCollection, ShouldAutoSize, WithHeadings, WithM
                 $kawilExport->ribbonColor,
             ];
         }
+
+        if ($this->job == 'PANEN') {
+            # code...
+            return [
+                $kawilExport->id,
+                $kawilExport->kawil,
+                $kawilExport->kawilNote,
+                $kawilExport->created_at,
+                $kawilExport->rkhCode,
+                $kawilExport->Description,
+                $kawilExport->mandor,
+                $kawilExport->tk,
+                $kawilExport->codeBlok,
+                $kawilExport->codeTanaman,
+                $kawilExport->skimmingSize,
+                $kawilExport->mandorNote,
+            ];
+        }
     }
 }

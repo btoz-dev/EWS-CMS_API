@@ -94,6 +94,22 @@ class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, With
                 $mandorExport->created_at,
             ];
         }
+
+        if ($this->job == 'PANEN') {
+            # code...
+            return [
+                $mandorExport->id,
+                $mandorExport->rkhCode,
+                $mandorExport->mandor,
+                $mandorExport->tk,
+                $mandorExport->Description,
+                $mandorExport->codeBlok,
+                $mandorExport->codeTanaman,
+                $mandorExport->skimmingSize,
+                $mandorExport->mandorNote,
+                $mandorExport->created_at,
+            ];
+        }
     }
 
 }
