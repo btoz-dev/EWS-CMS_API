@@ -10,12 +10,12 @@
 
                 <div class="form-group">
                     <label for="date_aw">Dari</label>
-                    <input type="date" class="form-control mx-sm-3" name="date_aw" id="date_aw" placeholder="search tanggal dari (MM/DD/YYYY)">
+                    <input type="date" class="form-control mx-sm-3" name="date_aw" id="date_aw" placeholder="MM/DD/YYYY">
                 </div>
                 
                 <div class="form-group">
                     <label for="date_ak">Sampai</label>
-                    <input type="date" class="form-control mx-sm-3" name="date_ak" id="date_ak" placeholder="search tanggal ke (MM/DD/YYYY)">
+                    <input type="date" class="form-control mx-sm-3" name="date_ak" id="date_ak" placeholder="MM/DD/YYYY">
                 </div>
 
                 <div class="form-group">
@@ -160,13 +160,25 @@
                     responseType: 'blob'
                 },
                 success: function(response, status, request) {
-                    // console.log(response);
-                    var a = document.createElement('a');
-                    var url = window.URL.createObjectURL(response);
-                    a.href = url;
-                    a.download = '';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
+                    var data = new Blob([response]);
+
+                    if (navigator.msSaveOrOpenBlob) {
+                        navigator.msSaveOrOpenBlob(data, "report.xlsx");
+                    } else {
+                        var a = document.createElement('a');
+                        var url = window.URL.createObjectURL(response);
+                        
+                        a.setAttribute("type", "hidden"); // make it hidden if needed
+                        a.href = url;
+                        a.download = '';
+
+                        // Add the element to the DOM
+                        document.body.appendChild(a); //Support for firefox
+
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    }
                 }
             });
         })
