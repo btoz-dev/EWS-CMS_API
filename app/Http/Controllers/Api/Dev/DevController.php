@@ -6,14 +6,20 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 
 class DevController extends Controller
 {
+    public function __construct()
+    {
+    	# code...
+    	ini_set('max_execution_time', '300');
+    }
     
 	public function test(Request $request)
 	{
 		# code...
-		return DB::getDatabaseName();
+		return 'INI DARI API DEV || DB => '.DB::getDatabaseName();
 		// return var_dump(Artisan::call('config:cache'));
 	}
 
@@ -22,7 +28,6 @@ class DevController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required',
-            'date' => 'required|date|date_format:d-m-Y'
         ]);
         if ($validator->fails()) {
             return $this->errMessage(400,$validator->messages()->first());
@@ -58,16 +63,40 @@ class DevController extends Controller
         }
         
         if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
-            # code...
+            $validator = Validator::make($request->all(), [
+                'date' => 'required|date|date_format:d-m-Y'
+            ]);
+            if ($validator->fails()) {
+                return $this->errMessage(400,$validator->messages()->first());
+            }
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
         if ($detailRole['id'] == 7) {
-            # code...
+            $validator = Validator::make($request->all(), [
+                'date' => 'required|date|date_format:d-m-Y'
+            ]);
+            if ($validator->fails()) {
+                return $this->errMessage(400,$validator->messages()->first());
+            }
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
+        }
+        
+        if ($detailRole['id'] == 9) {
+            $validator = Validator::make($request->all(), [
+                'data' => [
+                    'required', 
+                    Rule::in(['bruto', 'bonggol'])
+                ],
+            ]);
+            if ($validator->fails()) {
+                return $this->errMessage(400,$validator->messages()->first());
+            }
+            return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
         }
     }
 
+    # MANDOR KAWIL PLANTCARE-FRUITCARE-PANEN #
     public function getRKMMandor ($user2, $identitasPekerja, $detailRole, $reqDate)
     {
     	$codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
@@ -293,7 +322,8 @@ class DevController extends Controller
                                             $listPokok['week'] = $listPokok['jmlMinggu'];
                                             unset($listPokok['jmlMinggu']);
 
-                                            $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
+                                            // $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
+                                            unset($listPokok['id']);
 
                                             $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
                                             unset($listPokok['date']);
@@ -418,6 +448,9 @@ class DevController extends Controller
                     case 'PANEN':
                         $parentJob = 'panen';
                         break;
+                    case 'PACKING HOUSE':
+                        $parentJob = 'packingHouse';
+                        break;
                 }
                 $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
                 $jobdesc = ucwords(strtolower($job['Description']));
@@ -429,6 +462,7 @@ class DevController extends Controller
                     $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
                 }
             }
+            unset($job2[3]); # menghapus packing house
             unset($job2[$key_j]['jobCode']);
             unset($job2[$key_j]['Description']);
         }
@@ -891,6 +925,9 @@ class DevController extends Controller
                     case 'PANEN':
                         $parentJob = 'panen';
                         break;
+                    case 'PACKING HOUSE':
+                        $parentJob = 'packingHouse';
+                        break;
                 }
                 $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
                 $jobdesc = ucwords(strtolower($job['Description']));
@@ -903,6 +940,7 @@ class DevController extends Controller
                     $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
                 }
             }
+            unset($job2[3]); # menghapus packing house
             unset($job2[$key_j]['jobCode']);
             unset($job2[$key_j]['Description']);
         }
@@ -1027,7 +1065,7 @@ class DevController extends Controller
 	        if (!empty($check)) 
 	        {
 	        	# code...
-                // $message['message'][] = 'Data duplikat||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->userid.'||'.$codeTanam;
+                // $message['message'][] = 'Data duplikat||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->userid.'||'.$request->codeTanaman;
 	        }
 	        else
 	        {
@@ -1055,7 +1093,7 @@ class DevController extends Controller
     	                'skimmingSize' => $request->skimmingSize,
     	                'created_at' => $created_at
     	            ]);
-                    $message['message'][] = 'Data berhasil di input||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->userid.'||'.$codeTanam;
+                    $message['message'][] = 'Data berhasil di input||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->userid.'||'.$request->codeTanaman;
                 }
             }
             return response()->json($message, 200);
@@ -1164,7 +1202,7 @@ class DevController extends Controller
             if (empty($idEwsTransMandor)) 
             {
                 # jika id trans mandor tidak ada
-                $message['message'][] = 'Data tidak ditemukan||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->codeTanaman;
+                // $message['message'][] = 'Data tidak ditemukan||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->codeTanaman;
             }
             else
             {
@@ -1297,29 +1335,499 @@ class DevController extends Controller
 
         return $tree2;
     }
+    # /MANDOR KAWIL PLANTCARE-FRUITCARE-PANEN #
 
-    public function storeBT(Request $request)
+    # PACKING HOUSE BERAT TANDAN-HITUNG TANDAN-CEK LIST TIMBANG #
+    public function getPH($user2, $identitasPekerja, $detailRole, $loginAs)
+    {
+        # membuat identitas user
+        unset($user2[0]['codePekerja']);
+        $user2[0]['data'] = $loginAs;
+        unset($identitasPekerja['idRole']);
+        $user2[0]['identitasPekerja'] = $identitasPekerja;
+        $user2[0]['identitasPekerja']['detailRole'] = $detailRole;
+
+        # memasukkan TK PH
+        $TK = $this->removeWhitespace(DB::table('EWS_PH_TK')
+            ->select('id', 'namaPekerja as nama', 'codePekerja as code')
+            ->orderBy('namaPekerja', 'asc')
+            ->get());
+        $pilihTukang = array(
+            'id' => '',
+            'nama' => 'Pilih Pekerja',
+            'code' => ''
+        );
+        array_unshift($TK, $pilihTukang); #inserts new elements into beginning of array
+        $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $TK;
+
+        // $date_frst = date('Y-m-d');
+        // $date_scnd = date('Y-m-d', strtotime('-7 days'));
+
+        $date_frst = '2019-05-08';
+        $date_scnd = '2019-05-01';
+        # mencari blok-blok dari transaksi panen selama seminggu terakhir dari hari ini
+        $listBlokPanen  = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
+            ->select('codeBlok as blok')
+            ->distinct('codeBlok')
+            ->orderBy('codeBlok', 'asc')
+            ->where('subJobCode', '=', '5410400000')
+            ->whereBetween('created_at', [$date_scnd.' 00:00:00.000', $date_frst.' 23:59:59.999'])
+            ->get());
+        
+        # mencari transaksi panen selama seminggu terakhir dari hari ini
+        $listPokokPanen = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
+            // ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode', 'codeBlok')
+            ->select('id', 'codeTanaman as code', 'codeBlok as blok')
+            ->where('subJobCode', '=', '5410400000')
+            ->whereBetween('created_at', [$date_scnd.' 00:00:00.000', $date_frst.' 23:59:59.999'])
+            ->orderBy('code', 'asc')
+            ->get());
+
+        # ambil semua transaksi mandor dari aktifitas marking untuk diambil ribbonColor-nya
+        $listMarking = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
+            ->select('id', 'codeTanaman as code', 'ribbonColor')
+            ->where('subJobCode', '=', '5210410800') # marking
+            ->get());
+        
+        # ambil kategori pekerjaan
+        $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
+
+        # membuat data untuk BT (Bruto & Bonggol)
+        $listBT = $listBlokPanen;
+        foreach ($listBT as $lbp => $blokPanen) {
+            foreach ($listPokokPanen as $lpp => $pokokPanen) {
+                # masukkan pokok sesuai dengan bloknya
+                if ($blokPanen['blok'] == $pokokPanen['blok']) {
+                    # pokok panen id dibuat dari id pada aktifitas panen di tabel trans mandor.
+                    $pokokPanen['id'] = 'BT;'.$pokokPanen['id'];
+                    $pokokPanen['status'] = 0;
+                    // unset($pokokPanen['rkhCode']);
+                    // unset($pokokPanen['subJobCode']);
+                    unset($pokokPanen['blok']);
+                    $listBT[$lbp]['listPokok'][] = $pokokPanen; 
+                }
+            }
+        }
+        # masukin status 1 bagi yang sudah di input
+        $trans_bt = $this->removeWhitespace(DB::table('EWS_TRANS_PH_BT')->get());
+        foreach ($listBT as $lbp => $blokPanen) {
+            foreach ($blokPanen['listPokok'] as $lpp => $pokokPanen) {
+                foreach ($trans_bt as $tbt => $trans) {
+                    $pokok = explode(';',$pokokPanen['id']);
+                    if ($pokok[1] == $trans['idEWSTransMandor']) {
+                        # count for bruto
+                        if (($user2[0]['data'] == 'bruto') && (!empty($trans['brutoUserid'])))  {
+                            $listBT[$lbp]['listPokok'][$lpp]['status'] = 1; 
+                        }
+
+                        # count for bruto
+                        if (($user2[0]['data'] == 'bonggol') && (!empty($trans['bonggolUserid']))) {
+                            $listBT[$lbp]['listPokok'][$lpp]['status'] = 1; 
+                        }
+                    } 
+                }
+            }
+        }
+        # menghitung jumlah status 0 dan 1
+        foreach ($listBT as $lbp => $blokPanen) {
+            $pokokDone = 0;
+            $pokokNDone = 0;
+            foreach ($blokPanen['listPokok'] as $lpp => $pokokPanen) {
+                if ($pokokPanen['status'] == 1) {
+                    $pokokDone++;
+                }else{
+                    $pokokNDone++;
+                }
+            }
+            $listBT[$lbp]['pokokDone'] = $pokokDone;
+            $listBT[$lbp]['pokokNDone'] = $pokokNDone;
+
+            $this->move_to_top($listBT[$lbp], 'pokokNDone');
+            $this->move_to_top($listBT[$lbp], 'pokokDone');
+            $this->move_to_top($listBT[$lbp], 'blok');
+        }
+
+        # membuat data untuk HT (Bruto & Bonggol)
+        $listHT = $listBlokPanen;
+        foreach ($listHT as $lbp => $blokPanen) {
+            # code...
+            foreach ($listPokokPanen as $lpp => $pokokPanen) {
+                # masukkan pokok sesuai dengan bloknya
+                if ($blokPanen['blok'] == $pokokPanen['blok']) {
+                    # pokok panen id dibuat dari id pada aktifitas panen di tabel trans mandor.
+                    $pokokPanen['id'] = 'HT;'.$pokokPanen['id'];
+                    $pokokPanen['status'] = 0;
+                    unset($pokokPanen['blok']);
+                    $listHT[$lbp]['listPokok'][] = $pokokPanen; 
+                }
+            }
+        }
+        foreach ($listHT as $lbp => $blokPanen) {
+            foreach ($blokPanen['listPokok'] as $lp => $pokok) {
+                foreach ($listMarking as $lm => $marking) {
+                    if ($pokok['code'] == $marking['code']) {
+                        $listHT[$lbp]['listPokok'][$lp]['ribbonColor'] = $marking['ribbonColor'];
+                    } else {
+                        $listHT[$lbp]['listPokok'][$lp]['ribbonColor'] = '-';
+                    }
+                    
+                }
+            }
+        }
+        # masukin status 1 bagi yang sudah di input
+        $trans_ht = $this->removeWhitespace(DB::table('EWS_TRANS_PH_HT')->get());
+        foreach ($listHT as $lbp => $blokPanen) {
+            foreach ($blokPanen['listPokok'] as $lpp => $pokokPanen) {
+                foreach ($trans_ht as $tht => $trans) {
+                    $pokok = explode(';',$pokokPanen['id']);
+                    if ($pokok[1] == $trans['idEWSTransMandor']) {
+                        $listHT[$lbp]['listPokok'][$lpp]['status'] = 1; 
+                    } 
+                }
+            }
+        }
+        # menghitung jumlah status 0 dan 1
+        foreach ($listHT as $lbp => $blokPanen) {
+            $pokokDone = 0;
+            $pokokNDone = 0;
+            foreach ($blokPanen['listPokok'] as $lpp => $pokokPanen) {
+                if ($pokokPanen['status'] == 1) {
+                    $pokokDone++;
+                }else{
+                    $pokokNDone++;
+                }
+            }
+            $listHT[$lbp]['pokokDone'] = $pokokDone;
+            $listHT[$lbp]['pokokNDone'] = $pokokNDone;
+
+            $this->move_to_top($listHT[$lbp], 'pokokNDone');
+            $this->move_to_top($listHT[$lbp], 'pokokDone');
+            $this->move_to_top($listHT[$lbp], 'blok');
+        }
+
+        # membuat data untuk CLT, (Bruto & Bonggol)
+        $listCLT = $listBlokPanen;
+
+        $listProduk = $this->removeWhitespace(DB::table('EWS_CLT_PRODUK')->get());
+        $pilihProduk = array(
+            'id' => '0',
+            'desc' => 'Pilih Produk',
+        );
+        array_unshift($listProduk, $pilihProduk);
+
+        $listChildJob = array(
+            array(
+		'subJobCode' => 1,
+                'Description' => 'Berat Tandan',
+                'listBlok' => $listBT
+            ),
+            array(
+		'subJobCode' => 2,
+                'Description' => 'Hitung Tandan',
+                'listBlok' => $listHT
+            ),
+            array(
+		'subJobCode' => 3,
+                'Description' => 'Cek List Timbang',
+                'listProdukCLT' => $listProduk,
+                'listBlok' => $listCLT
+            ),
+        );
+
+        foreach ($job2 as $key_j => $job) {
+            # code...
+            $parentJob = '';
+            switch ($job['Description']) {
+                case 'PLANT CARE':
+                    $parentJob = 'plantCare';
+                    break;
+
+                case 'FRUIT CARE':
+                    $parentJob = 'fruitCare';
+                    break;
+
+                case 'PANEN':
+                    $parentJob = 'panen';
+                    break;
+                case 'PACKING HOUSE':
+                    $parentJob = 'packingHouse';
+                    break;
+            }
+            $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
+            $jobdesc = ucwords(strtolower($job['Description']));
+            $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+            if ($job['jobCode'] == '004') {
+                # code...
+                $job2[$key_j][$parentJob]['listChildJob'] = $listChildJob;
+            }
+            else {
+                unset($job2[$key_j]);
+            }
+            unset($job2[$key_j]['jobCode']);
+            unset($job2[$key_j]['Description']);
+        }
+        $job2 = $job2[3];
+        $user2[0]['RKM'] = array($job2);
+        
+        return $user2;
+    }
+    
+    public function storePH(Request $request) # store packing house
+    {
+        $validator = Validator::make($request->all(), [
+            'input' => [
+                'required', 
+                Rule::in(['BT', 'HT', 'CLT'])
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errMessage(400,$validator->messages()->first());
+        }
+
+        if ($request->input == 'BT') {
+            return $this->storeBT($request);
+        }
+
+        if ($request->input == 'HT') {
+            return $this->storeHT($request);
+        }
+
+        if ($request->input == 'CLT') {
+            return $this->storeCLT($request);
+        }
+    }
+
+    public function storeBT(Request $request) # STORE PROSESS PACKING HOUSE - BERAT TANDAN #
+    {
+        $validator = Validator::make($request->all(), [
+            'data' => [
+                'required', 
+                Rule::in(['bruto', 'bonggol'])
+            ],
+            'userid' => 'required',
+            'idPokok' => 'required',
+            'codeTK' => 'required|between:0,20',
+            'berat' => 'required|integer',
+            'note' => 'nullable|between:0,255',
+            'tanggal' => 'required',
+            'waktu' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errMessage(400,$validator->messages()->first());
+        }
+
+        if ($request->data == 'bruto') {
+            return $this->storeBT_Bruto($request);
+        }
+
+        if ($request->data == 'bonggol') {
+            return $this->storeBT_Bonggol($request);
+        }
+    }
+
+    public function storeBT_Bruto(Request $request) # STORE PROSESS PACKING HOUSE - BERAT TANDAN #
     {
         $date = date_create($request->tanggal.' '.$request->waktu);
         # tanggal bulan tahun
-        $create_at = date_format($date, 'Y-m-d H:i:s.B');
+        $brutoDate = date_format($date, 'Y-m-d H:i:s.B');
 
-        foreach ($request as $key_req => $req) {
-                DB::table('EWS_BERAT_TANDAN')->insert([
-                    'SubBlkHillCode' => $req->SubBlkHillCode,
-                    'Tgl' => $create_at,
-                    'EmpCode' => $req->EmpCode,
-                    'BeratBruto' => $req->BeratBruto,
-                    'BeratBonggol' => $req->BeratBonggol,
-                    'Notes' => $req->Notes,
-                    'userid' => $req->userid,
-                ]);
-        }
+        $panen = explode(';', $request->idPokok);
 
-        return $request;
+        $data = array(
+                'idEWSTransMandor' => $panen[1],
+                'brutoUserid' => $request->userid,
+                'brutoTK' => $request->codeTK,
+                'brutoBerat' => $request->berat,
+                'brutoNote' => $request->note,
+                'brutoDate' => $brutoDate,
+            );
+        
+        return $this->insertupdatePH($data);
     }
 
-    public function storePH(Request $request)
+    public function storeBT_Bonggol(Request $request) # STORE PROSESS PACKING HOUSE - BERAT TANDAN #
+    {
+        $date = date_create($request->tanggal.' '.$request->waktu);
+        # tanggal bulan tahun
+        $bonggolDate = date_format($date, 'Y-m-d H:i:s.B');
+
+        $panen = explode(';', $request->idPokok);
+
+        $data = array(
+                'idEWSTransMandor' => $panen[1],
+                'bonggolUserid' => $request->userid,
+                'bonggolTK' => $request->codeTK,
+                'bonggolBerat' => $request->berat,
+                'bonggolNote' => $request->note,
+                'bonggolDate' => $bonggolDate,
+            );
+
+        return $this->insertupdatePH($data);
+    }
+
+    public function insertupdatePH($data)
+    {
+        $check = DB::table('EWS_TRANS_PH_BT')->where('idEWSTransMandor', $data['idEWSTransMandor'])->value('id');
+        if (empty($check)) {
+            # code...
+            try {
+                DB::table('EWS_TRANS_PH_BT')->insert($data);
+                $message['message'][] = 'Data berhasil di input';
+                $message['message'][] = $data;
+            } catch (\Exception  $e) {
+                $message['message'][] = $e->getMessage();
+            }
+        }else{
+            try {
+                DB::table('EWS_TRANS_PH_BT')->where('id', $check)->update($data);
+                $message['message'][] = 'Data berhasil di update';
+                $message['message'][] = $data;
+            } catch (\Exception  $e) {
+                $message['message'][] = $e->getMessage();
+            }
+        }
+
+        return response()->json($message, 200);
+    }
+
+    public function storeHT(Request $request) # STORE PROSESS PACKING HOUSE - HITUNG TANDAN #
+    {
+        $validator = Validator::make($request->all(), [
+            'userid' => 'required',
+            'codeTK' => 'required|between:0,20',
+            'idPokok' => 'required',
+            'handClass' => 'nullable|integer', 
+            'calHandClass2' => 'nullable|integer', 
+            'calHandClass4' => 'nullable|integer', 
+            'calHandClass6' => 'nullable|integer', 
+            'calHandClass8' => 'nullable|integer', 
+            'calHandClass10' => 'nullable|integer', 
+            'calHandClassAkhir' => 'nullable|integer', 
+            'fingerLen2' => 'nullable|integer', 
+            'fingerLen4' => 'nullable|integer', 
+            'fingerLen6' => 'nullable|integer', 
+            'fingerLen8' => 'nullable|integer', 
+            'fingerLen10' => 'nullable|integer', 
+            'fingerLenAkhir' => 'nullable|integer', 
+            'fingerHand2' => 'nullable|integer', 
+            'fingerHand4' => 'nullable|integer', 
+            'fingerHand6' => 'nullable|integer', 
+            'fingerHand8' => 'nullable|integer', 
+            'fingerHand10' => 'nullable|integer', 
+            'fingerHandAkhir' => 'nullable|integer', 
+            'note' => 'nullable|between:0,255',
+            'tanggal' => 'required',
+            'waktu' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errMessage(400,$validator->messages()->first());
+        }
+
+        $date = date_create($request->tanggal.' '.$request->waktu);
+        # tanggal bulan tahun
+        $dateHT = date_format($date, 'Y-m-d H:i:s.B');
+
+        $panen = explode(';', $request->idPokok);
+
+        $data = array(
+            'idEWSTransMandor' => $panen[1],
+            'userid' => $request->userid,
+            'TK' => $request->codeTK,
+            'HandClass' => $request->handClass, 
+            'CalHandClass2' => $request->calHandClass2, 
+            'CalHandClass4' => $request->calHandClass4, 
+            'CalHandClass6' => $request->calHandClass6, 
+            'CalHandClass8' => $request->calHandClass8, 
+            'CalHandClass10' => $request->calHandClass10, 
+            'CalHandClassAkhir' => $request->calHandClassAkhir, 
+            'FingerLen2' => $request->fingerLen2, 
+            'FingerLen4' => $request->fingerLen4, 
+            'FingerLen6' => $request->fingerLen6, 
+            'FingerLen8' => $request->fingerLen8, 
+            'FingerLen10' => $request->fingerLen10, 
+            'FingerLenAkhir' => $request->fingerLenAkhir, 
+            'FingerHand2' => $request->fingerHand2, 
+            'FingerHand4' => $request->fingerHand4, 
+            'FingerHand6' => $request->fingerHand6, 
+            'FingerHand8' => $request->fingerHand8, 
+            'FingerHand10' => $request->fingerHand10, 
+            'FingerHandAkhir' => $request->fingerHandAkhir, 
+            'Notes' => $request->note,
+            'date' => $dateHT
+        );
+
+        $check = DB::table('EWS_TRANS_PH_HT')->where('idEWSTransMandor', $data['idEWSTransMandor'])->value('id');
+        if (empty($check)) {
+            # code...
+            try {
+                DB::table('EWS_TRANS_PH_HT')->insert($data);
+                $message['message'][] = 'Data berhasil di input';
+                $message['message'][] = $data;
+            } catch (\Exception  $e) {
+                $message['message'][] = $e->getMessage();
+            }
+        }else{
+            try {
+                DB::table('EWS_TRANS_PH_HT')->where('id', $check)->update($data);
+                $message['message'][] = 'Data berhasil di update';
+                $message['message'][] = $data;
+            } catch (\Exception  $e) {
+                $message['message'][] = $e->getMessage();
+            }
+        }
+
+        return response()->json($message, 200);
+    }
+
+    public function storeCLT(Request $request) # STORE PROSESS PACKING HOUSE - CEK LIST TIMBANG #
+    {
+        $listIdProd = json_decode(DB::table('EWS_CLT_PRODUK')->pluck('id'),TRUE); # convert object to array
+        $validator = Validator::make($request->all(), [
+            'userid' => 'required',
+            'codeBlok' => 'required',
+            'idProduk' => [
+                'required', 
+                Rule::in($listIdProd)
+            ],
+            'berat' => 'required|integer',
+            'note' => 'nullable|between:0,255',
+            'tanggal' => 'required',
+            'waktu' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errMessage(400,$validator->messages()->first());
+        }
+
+        $date = date_create($request->tanggal.' '.$request->waktu);
+        # tanggal bulan tahun
+        $dateCLT = date_format($date, 'Y-m-d H:i:s.B');
+
+        $data = array(
+            'codeBlok' => $request->codeBlok,
+            'userid' => $request->userid,
+            'idProduk' => $request->idProduk,
+            'berat' => $request->berat, 
+            'note' => $request->note, 
+            'date' => $dateCLT
+        );
+
+        try {
+            DB::table('EWS_TRANS_PH_CLT')->insert($data);
+            $message['message'][] = 'Data berhasil di input';
+            $message['message'][] = $data;
+        } catch (\Exception  $e) {
+            $message['message'][] = $e->getMessage();
+        }
+
+        return response()->json($message, 200);
+    }
+    # /PACKING HOUSE BERAT TANDAN-HITUNG TANDAN-CEK LIST TIMBANG #
+
+    public function storePH_old(Request $request)
     {
         $date = date_create($request->tanggal.' '.$request->waktu);
         # tanggal bulan tahun
@@ -1996,6 +2504,9 @@ class DevController extends Controller
 
                     case 'PANEN':
                         $parentJob = 'panen';
+                        break;
+                    case 'PACKING HOUSE':
+                        $parentJob = 'packingHouse';
                         break;
                 }
                 $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
