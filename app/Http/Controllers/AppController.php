@@ -112,6 +112,8 @@ class AppController extends Controller
             ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
             ->select('EWS_MANDOR_PEKERJA.id', 'EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
             ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
+            ->where('EWS_MANDOR_PEKERJA.AccMonth', '=', date('m'))
+            ->where('EWS_MANDOR_PEKERJA.AccYear', '=', date('Y'))
             ->orderBy('nama', 'asc')
             ->get());
         if (empty($tukang)) {
