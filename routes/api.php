@@ -26,6 +26,7 @@ Route::group(['prefix' => 'app'], function () { # Use DB GPS_APS
 
 	Route::post('storeMandor', 'AppController@storeMandor');
 	Route::post('storeKawil', 'AppController@storeKawil');
+	Route::post('storePH', 'AppController@storePH');
 
 	Route::get('pokok', 'AppController@getAllPokok');
 	Route::get('pokokCT', 'AppController@getCTPokok');
