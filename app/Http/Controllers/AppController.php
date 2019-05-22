@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 // use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 
 class AppController extends Controller
 {
@@ -14,7 +15,7 @@ class AppController extends Controller
     	# code...
     	ini_set('max_execution_time', '300');
     }
-    
+
 	public function test(Request $request)
 	{
 		# code...
