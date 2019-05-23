@@ -38,36 +38,40 @@ class DevController extends Controller
             return $this->errMessage(400,$validator->messages()->first());
         }
 
-        $user2 = $this->removeWhitespace(DB::table('users')
-            ->select('id','name','username','password_decrypt as password','codePekerja')
-            ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
-            ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
-            ->get());
+        $user2 = $this->removeWhitespace3(
+                User::select(['id','name','username','password_decrypt as password','codePekerja'])
+                ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
+                ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
+                ->first()
+            );
         if (empty($user2)) {
             # code...
             return $this->errMessage(400,'Username atau Password salah.');
         }
-
-        $identitasPekerja = $this->removeWhitespace2(DB::table('EWS_PEKERJA')
-            ->join('users', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-            ->select('namaPekerja as nama', 'idRole')
-            ->where('EWS_PEKERJA.codePekerja', '=', $user2[0]['codePekerja'])
-            ->first());
+        
+        $identitasPekerja = $this->removeWhitespace3(
+            Pekerja::select(['namaPekerja as nama'])->find($user2['codePekerja'])
+        );
         if (empty($identitasPekerja)) {
             # code...
             return $this->errMessage(400,'Tidak ada data pekerja');
         }
 
-        $detailRole = $this->removeWhitespace2(DB::table('EWS_ROLE_USER')
-            ->select('id', 'namaRole as nama', 'descRole as desc')
-            ->where('id', '=', $identitasPekerja['idRole'])
-            ->first());
+        $detailRole = User::find($user2['id'])->roles->first();
         if (empty($detailRole)) {
             # code...
             return $this->errMessage(400,'Tidak ada data role');
         }
         
-        if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
+        $detailRole['desc'] = $detailRole['name'];
+        unset($detailRole['guard_name']);
+        unset($detailRole['created_at']);
+        unset($detailRole['updated_at']);
+        unset($detailRole['pivot']);
+        $user[0] = $user2;
+        $user2 = $user;
+
+        if ($detailRole['name'] == "Mandor") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
             ]);
@@ -77,7 +81,7 @@ class DevController extends Controller
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
-        if ($detailRole['id'] == 7) {
+        if ($detailRole['name'] == "Kawil") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
             ]);
@@ -86,8 +90,8 @@ class DevController extends Controller
             }
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
-        
-        if ($detailRole['id'] == 9) {
+
+        if ($detailRole['name'] == "Mandor PH") {
             $validator = Validator::make($request->all(), [
                 'data' => [
                     'required', 
@@ -2004,6 +2008,15 @@ class DevController extends Controller
         return $arr;
     }
 
+    public function removeWhitespace3($arr)
+    {
+        $arr = json_decode($arr,TRUE);
+        // $arr = (array) $arr;
+        $arr = array_map('rtrim',$arr);
+
+        return $arr;
+    }
+
     /**
     * @param $interval
     * @param $datefrom
@@ -2132,6 +2145,7 @@ class DevController extends Controller
 
     public function getUser2 (Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required',
@@ -2140,38 +2154,40 @@ class DevController extends Controller
             return $this->errMessage(400,$validator->messages()->first());
         }
 
-        $user2 = User::where('username', $request->username)->where('password_decrypt', $request->password)->first();
-        // $user2 = $this->removeWhitespace(DB::table('users')
-        //     ->select('id','name','username','password_decrypt as password','codePekerja')
-        //     ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
-        //     ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
-        //     ->get());
+        $user2 = $this->removeWhitespace3(
+                User::select(['id','name','username','password_decrypt as password','codePekerja'])
+                ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
+                ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
+                ->first()
+            );
         if (empty($user2)) {
             # code...
             return $this->errMessage(400,'Username atau Password salah.');
         }
-        return $user2;
-
-        $identitasPekerja = $this->removeWhitespace2(DB::table('EWS_PEKERJA')
-            ->join('users', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-            ->select('namaPekerja as nama', 'idRole')
-            ->where('EWS_PEKERJA.codePekerja', '=', $user2[0]['codePekerja'])
-            ->first());
+        
+        $identitasPekerja = $this->removeWhitespace3(
+            Pekerja::select(['namaPekerja as nama'])->find($user2['codePekerja'])
+        );
         if (empty($identitasPekerja)) {
             # code...
             return $this->errMessage(400,'Tidak ada data pekerja');
         }
 
-        $detailRole = $this->removeWhitespace2(DB::table('EWS_ROLE_USER')
-            ->select('id', 'namaRole as nama', 'descRole as desc')
-            ->where('id', '=', $identitasPekerja['idRole'])
-            ->first());
+        $detailRole = User::find($user2['id'])->roles->first();
         if (empty($detailRole)) {
             # code...
             return $this->errMessage(400,'Tidak ada data role');
         }
         
-        if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
+        $detailRole['desc'] = $detailRole['name'];
+        unset($detailRole['guard_name']);
+        unset($detailRole['created_at']);
+        unset($detailRole['updated_at']);
+        unset($detailRole['pivot']);
+        $user[0] = $user2;
+        $user2 = $user;
+
+        if ($detailRole['name'] == "Mandor") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
             ]);
@@ -2181,7 +2197,7 @@ class DevController extends Controller
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
-        if ($detailRole['id'] == 7) {
+        if ($detailRole['name'] == "Kawil") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
             ]);
@@ -2190,8 +2206,8 @@ class DevController extends Controller
             }
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
-        
-        if ($detailRole['id'] == 9) {
+
+        if ($detailRole['name'] == "Mandor PH") {
             $validator = Validator::make($request->all(), [
                 'data' => [
                     'required', 
@@ -2203,9 +2219,32 @@ class DevController extends Controller
             }
             return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
         }
+
+        // if ($detailRole['id'] == 7) {
+        //     $validator = Validator::make($request->all(), [
+        //         'date' => 'required|date|date_format:d-m-Y'
+        //     ]);
+        //     if ($validator->fails()) {
+        //         return $this->errMessage(400,$validator->messages()->first());
+        //     }
+        //     return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
+        // }
+        
+        // if ($detailRole['id'] == 9) {
+        //     $validator = Validator::make($request->all(), [
+        //         'data' => [
+        //             'required', 
+        //             Rule::in(['bruto', 'bonggol'])
+        //         ],
+        //     ]);
+        //     if ($validator->fails()) {
+        //         return $this->errMessage(400,$validator->messages()->first());
+        //     }
+        //     return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
+        // }
     }
 
-    public function getRKMMandor2 ($user2, $identitasPekerja, $detailRole)
+    public function getRKMMandor2 ($user2, $identitasPekerja, $detailRole, $reqDate)
     {
     	$codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
             ->select('codeMandor')
@@ -2247,6 +2286,7 @@ class DevController extends Controller
         );
         array_unshift($tukang, $pilihTukang); #inserts new elements into beginning of array
         $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
+        return $user2;
 
         ####################################GET ALL DATA###################################################
 

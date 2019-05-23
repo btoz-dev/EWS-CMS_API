@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use DB;
+use App\User;
+use App\Roles;
+use App\Pekerja;
+use App\Permission;
+use App\Authorizable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 // use Illuminate\Http\Response;
@@ -33,36 +38,40 @@ class AppController extends Controller
             return $this->errMessage(400,$validator->messages()->first());
         }
 
-        $user2 = $this->removeWhitespace(DB::table('users')
-            ->select('id','name','username','password_decrypt as password','codePekerja')
-            ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
-            ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
-            ->get());
+        $user2 = $this->removeWhitespace3(
+                User::select(['id','name','username','password_decrypt as password','codePekerja'])
+                ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
+                ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
+                ->first()
+            );
         if (empty($user2)) {
             # code...
             return $this->errMessage(400,'Username atau Password salah.');
         }
-
-        $identitasPekerja = $this->removeWhitespace2(DB::table('EWS_PEKERJA')
-            ->join('users', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-            ->select('namaPekerja as nama', 'idRole')
-            ->where('EWS_PEKERJA.codePekerja', '=', $user2[0]['codePekerja'])
-            ->first());
+        
+        $identitasPekerja = $this->removeWhitespace3(
+            Pekerja::select(['namaPekerja as nama'])->find($user2['codePekerja'])
+        );
         if (empty($identitasPekerja)) {
             # code...
             return $this->errMessage(400,'Tidak ada data pekerja');
         }
 
-        $detailRole = $this->removeWhitespace2(DB::table('EWS_ROLE_USER')
-            ->select('id', 'namaRole as nama', 'descRole as desc')
-            ->where('id', '=', $identitasPekerja['idRole'])
-            ->first());
+        $detailRole = User::find($user2['id'])->roles->first();
         if (empty($detailRole)) {
             # code...
             return $this->errMessage(400,'Tidak ada data role');
         }
         
-        if ($detailRole['id'] == self::ID_ROLE_MANDOR) {#8
+        $detailRole['desc'] = $detailRole['name'];
+        unset($detailRole['guard_name']);
+        unset($detailRole['created_at']);
+        unset($detailRole['updated_at']);
+        unset($detailRole['pivot']);
+        $user[0] = $user2;
+        $user2 = $user;
+
+        if ($detailRole['name'] == "Mandor") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
             ]);
@@ -72,7 +81,7 @@ class AppController extends Controller
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
-        if ($detailRole['id'] == 7) {
+        if ($detailRole['name'] == "Kawil") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
             ]);
@@ -81,8 +90,8 @@ class AppController extends Controller
             }
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
-        
-        if ($detailRole['id'] == 9) {
+
+        if ($detailRole['name'] == "Mandor PH") {
             $validator = Validator::make($request->all(), [
                 'data' => [
                     'required', 
