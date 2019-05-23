@@ -1,7 +1,7 @@
 @extends('layouts.cmsApp')
 
 @section('stylesheet')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="{{ asset('css/bootstrap-select.min.css') }}">
 @endsection
 
 @section('content')
@@ -34,37 +34,25 @@
             <div class="form-group">
                 <label for="nameInput">Name</label>
                 <input type="text" class="form-control" id="nameInput" name="name" placeholder="name" maxlength="255" value="{{$user['name']}}">
+                @if ($errors->has('roles')) <p class="form-text">{{ $errors->first('roles') }}</p> @endif
             </div>
 
             <div class="form-group">
                 <label for="usernameInput">Username</label>
                 <input type="text" class="form-control" id="usernameInput" name="username" placeholder="username" maxlength="255" value="{{$user['username']}}">
+                @if ($errors->has('roles')) <p class="form-text">{{ $errors->first('roles') }}</p> @endif
             </div>
 
             <div class="form-group">
-                <label for="emailInput">E-Mail Address</label>
-                <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" value="{{$user['email']}}">
+                {!! Form::label('roles[]', 'Roles') !!}
+                {!! Form::select('roles[]', $roles, isset($user) ? $user->roles->pluck('id')->toArray() : null,  ['class' => 'form-control', 'multiple']) !!}
+                @if ($errors->has('roles')) <p class="form-text">{{ $errors->first('roles') }}</p> @endif
             </div>
 
             <div class="form-group">
-                <label for="roleInput">Role</label>
-                <select class="form-control selectpicker" id="roleInput" name="role">
-                    <option value="0">Pilih Role User</option>
-                    @foreach($role as $role)
-                        @if ($user['idRole'] == $role['id'])
-                            <option value="{{$role['id']}}" selected="true">{{$role['namaRole']}}</option>
-                        @else
-                            <option value="{{$role['id']}}">{{$role['namaRole']}}</option>
-                        @endif
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="pekerjaInput" id="pekerjaInputLabel">Kode Pekerja</label>
-                <select class="form-control selectpicker" id="pekerjaInput" name="pekerja">
-                    
-                </select>
+                {!! Form::label('codePekerja', 'Pekerja') !!}
+                {!! Form::select('codePekerja', $listPekerja, $pekerja->codePekerja,  ['class' => 'selectpicker form-control']) !!}
+                @if ($errors->has('codePekerja')) <p class="form-text">{{ $errors->first('codePekerja') }}</p> @endif
             </div>
         @endif
 
@@ -74,16 +62,19 @@
             <div class="form-group">
                 <label for="newPasswordInput">Old Password</label>
                 <input type="password" class="form-control" id="newPasswordInput" name="old_password">
+                @if ($errors->has('old_password')) <p class="form-text">{{ $errors->first('old_password') }}</p> @endif
             </div>
 
             <div class="form-group">
                 <label for="oldasswordInput">New Password</label>
                 <input type="password" class="form-control" id="oldasswordInput" name="new_password">
+                @if ($errors->has('new_password')) <p class="form-text">{{ $errors->first('new_password') }}</p> @endif
             </div>
 
             <div class="form-group">
                 <label for="confirmPasswordInput">Confirm Password</label>
                 <input type="password" class="form-control" id="confirmPasswordInput" name="new_password_confirmation">
+                @if ($errors->has('new_password_confirmation')) <p class="form-text">{{ $errors->first('new_password_confirmation') }}</p> @endif
             </div>
         @endif
 
@@ -93,7 +84,7 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/js/bootstrap-select.min.js"></script>
+    <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -103,54 +94,10 @@
 
         $.fn.selectpicker.Constructor.BootstrapVersion = '4';
 
-        $('#roleInput, #pekerjaInput').selectpicker({
+        $('#codePekerja').selectpicker({
             liveSearch : true,
             size : 5
         });
 
-        var idRole = '{{$user['idRole']}}';
-        var idUser = '{{$user['id']}}';
-        if (idRole == 8 || idRole == 7) {
-            CallData(idRole, idUser);
-        }else{
-            $('#pekerjaInput').html('');
-            $('#pekerjaInput').selectpicker('refresh');
-            $('#pekerjaInput').prop('disabled', true);
-            $('#pekerjaInput').selectpicker('hide');
-            document.getElementById("pekerjaInputLabel").style.display = 'none';
-        }
-
-        $('#roleInput').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            // body...
-            if ($(this).val() == 8 || $(this).val() == 7) {
-                $.post('{{route('usermgmt.postRoleDropdown')}}',{id: $(this).val()}, function (e) {
-                    // body...
-                    console.log(e);
-                    $('#pekerjaInput').prop('disabled', false);
-                    $('#pekerjaInput').html(e);
-                    $('#pekerjaInput').selectpicker('refresh');
-                    $('#pekerjaInput').selectpicker('show');
-                    document.getElementById("pekerjaInputLabel").style.display = 'block';
-                })
-            }else{
-                $('#pekerjaInput').html('');
-                $('#pekerjaInput').selectpicker('refresh');
-                $('#pekerjaInput').prop('disabled', true);
-                $('#pekerjaInput').selectpicker('hide');
-                document.getElementById("pekerjaInputLabel").style.display = 'none';
-            }
-        })
-
-        function CallData(idRole, idUser) {
-            $.post('{{route('usermgmt.callDropdownEdit')}}',{idRole: idRole, idUser: idUser}, function (e) {
-                // body...
-                console.log(e);
-                $('#pekerjaInput').prop('disabled', false);
-                $('#pekerjaInput').html(e);
-                $('#pekerjaInput').selectpicker('refresh');
-                $('#pekerjaInput').selectpicker('show');
-                document.getElementById("pekerjaInputLabel").style.display = 'block';
-            })
-        }
     </script>
 @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.cmsApp')
 
 @section('stylesheet')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="{{ asset('css/bootstrap-select.min.css') }}">
 @endsection
 
 @section('content')
@@ -25,42 +25,37 @@
         <div class="form-group">
             <label for="nameInput">Name</label>
             <input type="text" class="form-control" id="nameInput" name="name" placeholder="name" maxlength="255">
+            @if ($errors->has('name')) <p class="form-text">{{ $errors->first('name') }}</p> @endif
         </div>
 
         <div class="form-group">
             <label for="usernameInput">Username</label>
             <input type="text" class="form-control" id="usernameInput" name="username" placeholder="username" maxlength="255">
+            @if ($errors->has('username')) <p class="form-text">{{ $errors->first('username') }}</p> @endif
         </div>
 
         <div class="form-group">
-            <label for="emailInput">E-Mail Address</label>
-            <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com">
+            {!! Form::label('roles[]', 'Roles') !!}
+            {!! Form::select('roles[]', $role, isset($user) ? $user->roles->pluck('id')->toArray() : null,  ['class' => 'form-control', 'multiple']) !!}
+            @if ($errors->has('roles')) <p class="form-text">{{ $errors->first('roles') }}</p> @endif
         </div>
 
         <div class="form-group">
-            <label for="roleInput">Role</label>
-            <select class="form-control selectpicker" id="roleInput" name="role">
-                <option value="">Pilih Role User</option>
-                @foreach($role as $role)
-                    <option value="{{$role['id']}}">{{$role['namaRole']}}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="pekerjaInput" id="pekerjaInputLabel">Nama Pekerja</label>
-            <select class="form-control selectpicker" id="pekerjaInput" name="pekerja">
-            </select>
+            {!! Form::label('codePekerja', 'Pekerja') !!}
+            {!! Form::select('codePekerja', $pekerja, null,  ['placeholder' => 'Nothing Selected...', 'class' => 'selectpicker form-control']) !!}
+            @if ($errors->has('codePekerja')) <p class="form-text">{{ $errors->first('codePekerja') }}</p> @endif
         </div>
 
         <div class="form-group">
             <label for="passwordInput">Password</label>
             <input type="password" class="form-control" id="passwordInput" name="password">
+            @if ($errors->has('password')) <p class="form-text">{{ $errors->first('password') }}</p> @endif
         </div>
 
         <div class="form-group">
             <label for="confirmPasswordInput">Confirm Password</label>
             <input type="password" class="form-control" id="confirmPasswordInput" name="password_confirmation">
+            @if ($errors->has('password_confirmation')) <p class="form-text">{{ $errors->first('password_confirmation') }}</p> @endif
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -69,7 +64,7 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.8/dist/js/bootstrap-select.min.js"></script>
+    <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -79,30 +74,9 @@
         
         $.fn.selectpicker.Constructor.BootstrapVersion = '4';
 
-        $('#roleInput, #pekerjaInput').selectpicker({
+        $('#codePekerja').selectpicker({
             liveSearch : true,
             size : 5
         });
-
-        $('#roleInput').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            // body...
-            if ($(this).val() == 8 || $(this).val() == 7) {
-                $.post('{{route('usermgmt.postRoleDropdown')}}',{id: $(this).val()}, function (e) {
-                    // body...
-                    console.log(e);
-                    $('#pekerjaInput').prop('disabled', false);
-                    $('#pekerjaInput').html(e);
-                    $('#pekerjaInput').selectpicker('refresh');
-                    $('#pekerjaInput').selectpicker('show');
-                    document.getElementById("pekerjaInputLabel").style.display = 'block';
-                })
-            }else{
-                $('#pekerjaInput').html('');
-                $('#pekerjaInput').selectpicker('refresh');
-                $('#pekerjaInput').prop('disabled', true);
-                $('#pekerjaInput').selectpicker('hide');
-                document.getElementById("pekerjaInputLabel").style.display = 'none';
-            }
-        })
     </script>
 @endsection

@@ -8,7 +8,9 @@
                 <h2>User Management</h2>
             </div>
             <div class="form-group mx-sm-3 mb-2">
-                <a href = "{{route('usermgmt.create')}}" id="add" class="btn btn-primary btn-sm" tabindex="-1" role="button" aria-disabled="false">Tambah</a>
+                @can('add_usermgmt')
+                    <a href = "{{route('usermgmt.create')}}" id="add" class="btn btn-primary btn-sm" tabindex="-1" role="button" aria-disabled="false">Tambah</a>
+                @endcan
             </div>
             @if (session('alert'))
                 <div class="alert alert-info alert-dismissible" role="alert">
@@ -25,9 +27,11 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Name</th>
                         <th>Username</th>
                         <th>Role</th>
-                        <th>Aksi</th>
+                        <th>Created At</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
             </table>
@@ -86,8 +90,10 @@
             ajax: '{{ route('usermgmt.index') }}',
             columns: [
                 {data: 'id', name: 'id'},
+                {data: 'name', name: 'name'},
                 {data: 'username', name: 'username'},
-                {data: 'namaRole', name: 'namaRole'},
+                {data: 'role', name: 'role'},
+                {data: 'created', name: 'created'},
                 {data: 'aksi', name: 'aksi', orderable: false, searchable: false}
             ]
         });
