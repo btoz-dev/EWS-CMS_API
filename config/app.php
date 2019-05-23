@@ -170,7 +170,7 @@ return [
         Laravel\Passport\PassportServiceProvider::class,
         yajra\DataTables\DataTablesServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-
+        Spatie\Permission\PermissionServiceProvider::class,
         /*
          * Application Service Providers...
          */
