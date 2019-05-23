@@ -56,5 +56,27 @@ class Trans extends Model
     	}
 
     	return $query;
+	}
+	
+	public static function ph($job)
+    {
+        # code...
+        if ($job == 'BT') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_PH_BT_TRANS');
+        }
+
+        if ($job == 'HT') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_PH_HT_TRANS');
+        }
+        
+        if ($job == 'CLT') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_PH_CLT_TRANS');
+        }
+
+        return $query;
     }
+
 }
