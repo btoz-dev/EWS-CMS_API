@@ -178,6 +178,113 @@ class TransReportController extends CMSController
 		return Excel::download($export, 'trans.xlsx');
     }
 
+    public function phbtReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
+
+            $query = Trans::ph('BT');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+
+        return view('cms.phbtReport');
+    }
+
+    public function exportPHBT(Request $request)
+    {
+        # code...
+        $export = new PHBTExport();
+        $export->setHeading($request->heading);
+        $export->setJob($request->job);
+        $export->setDateAw($request->date_aw);
+        $export->setDateAk($request->date_ak);
+
+        return Excel::download($export, 'trans.xlsx');
+    }
+
+    public function phhtReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
+
+            $query = Trans::ph('HT');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+
+        return view('cms.phhtReport');
+    }
+
+    public function exportPHHT(Request $request)
+    {
+        # code...
+        $export = new PHHTExport();
+        $export->setHeading($request->heading);
+        $export->setJob($request->job);
+        $export->setDateAw($request->date_aw);
+        $export->setDateAk($request->date_ak);
+
+        return Excel::download($export, 'trans.xlsx');
+    }
+
+    public function phcltReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
+
+            $query = Trans::ph('CLT');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->make(true);
+        }
+
+        return view('cms.phcltReport');
+    }
+
+    public function exportPHCLT(Request $request)
+    {
+        # code...
+        $export = new PHCLTExport();
+        $export->setHeading($request->heading);
+        $export->setJob($request->job);
+        $export->setDateAw($request->date_aw);
+        $export->setDateAk($request->date_ak);
+
+        return Excel::download($export, 'trans.xlsx');
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *
