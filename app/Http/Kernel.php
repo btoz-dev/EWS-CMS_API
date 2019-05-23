@@ -59,6 +59,5 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         // added or new
         'changeDB' => \App\Http\Middleware\changeDBconnection::class,
-        'roles' => \App\Http\Middleware\CheckRole::class,
     ];
 }
