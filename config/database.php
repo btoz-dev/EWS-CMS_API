@@ -75,7 +75,7 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
-            'prefix' => '',
+            'prefix' => env('DB_TABLE_PREFIX', ''),
         ],
 
         'sqlsrv2' => [
@@ -86,7 +86,7 @@ return [
             'username' => env('DB_USERNAME_2', 'forge'),
             'password' => env('DB_PASSWORD_2', ''),
             'charset' => 'utf8',
-            'prefix' => '',
+            'prefix' => env('DB_TABLE_PREFIX2', ''),
         ],
 
     ],
