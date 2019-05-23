@@ -124,24 +124,30 @@
                                 </a>
                             </li>
                         @endcan
+                        @can('view_phBTReport')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('phbtReport*') ? 'active' : '' }}" href="{{ url('/phbtReport') }}">
                             <i class="far fa-chart-bar"></i>
                             PH BT Reports
                             </a>
                         </li>
+                        @endcan
+                        @can('view_phHTReport')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('phhtReport*') ? 'active' : '' }}" href="{{ url('/phhtReport') }}">
                             <i class="far fa-chart-bar"></i>
                             PH HT Reports
                             </a>
                         </li>
+                        @endcan
+                        @can('view_phCLTReport')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('phcltReport*') ? 'active' : '' }}" href="{{ url('/phcltReport') }}">
                             <i class="far fa-chart-bar"></i>
                             PH CLT Reports
                             </a>
                         </li>
+                        @endcan
                         @can('view_customReport')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->is('customReport*') ? 'active' : '' }}" href="{{ url('/customReport') }}">
@@ -158,12 +164,6 @@
                                 </a>
                             </li>
                         @endcan
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}" href="{{ url('/users') }}">
-                            <i class="fab fa-android"></i>
-                            user admin test
-                            </a>
-                        </li>
                     </ul>
                 </div>
             </nav>
