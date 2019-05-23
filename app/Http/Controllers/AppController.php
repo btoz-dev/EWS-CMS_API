@@ -2008,6 +2008,15 @@ class AppController extends Controller
         return $arr;
     }
 
+    public function removeWhitespace3($arr)
+    {
+        $arr = json_decode($arr,TRUE);
+        // $arr = (array) $arr;
+        $arr = array_map('rtrim',$arr);
+
+        return $arr;
+    }
+
     /**
     * @param $interval
     * @param $datefrom
