@@ -4,13 +4,20 @@ namespace App\Http\Controllers\CMS;
 
 use DataTables;
 use DB;
+use App\User;
+use App\Roles;
+use App\Pekerja;
+use App\Permission;
+use App\Authorizable;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CMSController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UsermgmtController extends CMSController
 {
+    use Authorizable;
     /**
      * Display a listing of the resource.
      *
@@ -19,32 +26,54 @@ class UsermgmtController extends CMSController
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = DB::table('EWS_VW_DETAIL_USER')
-            // $query = DB::table('users')
-            // ->join('EWS_PEKERJA', 'users.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-            // ->join('EWS_ROLE_USER', 'EWS_PEKERJA.idRole', '=', 'EWS_ROLE_USER.id')
-            // ->select('users.id', 'users.username', 'users.email', 'EWS_PEKERJA.codePekerja', 'EWS_PEKERJA.namaPekerja', 'EWS_ROLE_USER.namaRole', 'EWS_ROLE_USER.descRole')
-            ->get();
-            $users = $this->removeWhitespace($query);
+            // $query = User::detail()->get();
+            // $query = User::with('roles')->all();
+            $users = User::select(['id', 'name', 'username', 'created_at'])->with('roles');
+            
+            // $users = $this->removeWhitespace($query);
             return DataTables::of($users)
+                ->addColumn('role', function ($users) {
+                    if (isset($users->roles->first()->name)) {
+                        return ucfirst($users->roles->implode('name', ', '));
+                    }
+                })
                 ->addColumn('aksi', function ($users)
                 {
+                    $user = Auth::user();
+                    $userid = Auth::id();
+
+                    if ($user->hasPermissionTo('view_usermgmt')) {
+                        $view = "<button type='button' class='btn btn-secondary btn-success' id='showDetail' data-id=".$users["id"].">Show</button>";
+                    } else { $view = ""; }
+                    if ($user->hasPermissionTo('edit_usermgmt')) {
+                        $edit = "
+                            <div class='btn-group' role='group'>
+                                <button id='btnGroupDrop1' type='button' class='btn btn-secondary dropdown-toggle btn-info' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                                Ubah
+                                </button>
+                                <div class='dropdown-menu' aria-labelledby='btnGroupDrop1'>
+                                    <a href=".route("usermgmt.edit", ["id" => $users["id"]."_detail"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Detail</a> 
+
+                                    <a href=".route("usermgmt.edit", ["id" => $users["id"]."_password"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Password</a> 
+                                </div>
+                            </div>
+                            ";
+                    } else { $edit = ""; }
+                    if ($user->hasPermissionTo('delete_usermgmt')) {
+                        $delete = "<button type='button' class='btn btn-secondary btn-danger' id='penghapusan' data-toggle='modal' data-target='#hapusModal' data-url=".route("usermgmt.destroy", ["id" => $users["id"]]).">Hapus</button>";
+                    } else { $delete = ""; }
+
                     return "
                     <div class='btn-group' role='group' aria-label='Button group with nested dropdown' id='btn-group-aksi'>
-                        <button type='button' class='btn btn-secondary btn-success' id='showDetail' data-id=".$users["id"].">Show</button>
-                        <div class='btn-group' role='group'>
-                            <button id='btnGroupDrop1' type='button' class='btn btn-secondary dropdown-toggle btn-info' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-                            Ubah
-                            </button>
-                            <div class='dropdown-menu' aria-labelledby='btnGroupDrop1'>
-                                <a href=".route("usermgmt.edit", ["id" => $users["id"]."_detail"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Detail</a> 
-
-                                <a href=".route("usermgmt.edit", ["id" => $users["id"]."_password"])." id='edit' class='btn dropdown-item' tabindex='-1' role='button' aria-disabled='false'>Password</a> 
-                            </div>
-                        </div>
-                        <button type='button' class='btn btn-secondary btn-warning' id='penghapusan' data-toggle='modal' data-target='#hapusModal' data-url=".route("usermgmt.destroy", ["id" => $users["id"]]).">Hapus</button>
+                        ".$view."
+                        ".$edit."
+                        ".$delete."
                     </div>
                     ";
+                })
+                ->addColumn('created', function ($users)
+                {
+                    return $users->created_at->toFormattedDateString();
                 })
                 ->rawColumns(['aksi'])
                 ->make(true);
@@ -60,8 +89,9 @@ class UsermgmtController extends CMSController
      */
     public function create()
     {
-        $data['pekerja'] = $this->removeWhitespace(DB::table('EWS_PEKERJA')->orderBy('namaPekerja', 'asc')->get());
-        $data['role'] = $this->removeWhitespace(DB::table('EWS_ROLE_USER')->orderBy('id', 'asc')->get());
+        $data['pekerja'] = Pekerja::all()->sortBy('namaPekerja')->pluck('name_code', 'codePekerja');
+        $data['role'] = Roles::pluck('name', 'id');
+        // $data['role'] = $this->removeWhitespace(DB::table('EWS_ROLE_USER')->orderBy('id', 'asc')->get());
         return view('cms.usermgmt.create', $data);
     }
 
@@ -73,74 +103,29 @@ class UsermgmtController extends CMSController
      */
     public function store(Request $request)
     {
-        $messages = [
-            'required' => 'Kotak :attribute harus diisi/dipilih || ',
-            'email' => 'Alamat email harus benar || ',
-            'integer' => 'Kotak :attribute harus diisi/dipilih || ',
-        ];
-        
-        if ($request->role == 8) {
-            # code...
-            $rules = [
-                'username' => 'required|max:255|unique:users',
-                'email' => 'required|email|max:255|unique:users',
-                'pekerja' => 'required|integer|unique:users,codePekerja',
-                'role' => 'required|integer',
-                'password' => 'required|string|min:6|confirmed'
-            ];
-            
-            $validator = Validator::make($request->all(), $rules, $messages)->validate();
-        }else{
-            # code...
-            $rules = [
-                'username' => 'required|max:255|unique:users',
-                'email' => 'required|email|max:255|unique:users',
-                'role' => 'required|integer',
-                'password' => 'required|string|min:6|confirmed'
-            ];
-            
-            $validator = Validator::make($request->all(), $rules, $messages)->validate();
+        $this->validate($request, [
+            'name' => 'bail|required|min:2|max:255',
+            'username' => 'required|max:255|unique:users',
+            'roles' => 'required|min:1',
+            'codePekerja' => 'required|integer',
+            'password' => 'required|min:6|confirmed'
+        ]);
 
-            if ($request->role == 1) {
-                # code...
-                $request->pekerja = 1;
-            }
+        // hash password
+        $request->merge(['password' => bcrypt($request->get('password')), 'password_decrypt' => $request->get('password')]);
 
-            if ($request->role == 2) {
-                # code...
-                $request->pekerja = 2;
-            }
+        // Create the user
+        if ( $user = User::create($request->except('roles', 'permissions')) ) {
 
-            if ($request->role == 3) {
-                # code...
-                $request->pekerja = 3;
-            }
+            $this->syncPermissions($request, $user);
+
+            flash('User has been created.');
+
+        } else {
+            flash()->error('Unable to create user.');
         }
 
-        
-        try {
-            DB::table('users')->insert([
-                'name' => $request->name,
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'password_decrypt' => $request->password,
-                'codePekerja' => $request->pekerja,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            if ($request->pekerja != NULL) {
-                # code...
-                DB::table('EWS_PEKERJA')
-                    ->where('codePekerja', '=', $request->pekerja)
-                    ->update(['idRole' => $request->role]);
-            }
-        } catch (Exception $e) {
-            return $e;
-        }
-
-        return view('cms.usermgmt.index');
+        return redirect()->route('usermgmt.index');
     }
 
     /**
@@ -151,10 +136,21 @@ class UsermgmtController extends CMSController
      */
     public function show($id)
     {
-        $query = DB::table('EWS_VW_DETAIL_USER') 
-            ->where('id', '=', $id)
-            ->first();
-        $user = $this->removeWhitespace2($query);
+        $user = User::find($id);
+        $pekerja = User::find($id)->pekerja;
+
+        if (Auth::user()->hasRole('Super Admin')) {
+            $forAdmin = "
+                <div class='row'>
+                    <div class='col-sm'>
+                        Password
+                    </div>
+                    <div class='col-sm'>
+                        ".$user['password_decrypt']."
+                    </div>
+                </div>
+            ";
+        }else { $forAdmin = ""; }
         return "
             <div class='modal-header'>
                 <h5 class='modal-title' id='showDetailLabel'>User Detail</h5>
@@ -180,28 +176,13 @@ class UsermgmtController extends CMSController
                             ".$user['username']."
                         </div>
                     </div>
-                    <div class='row'>
-                        <div class='col-sm'>
-                            Email
-                        </div>
-                        <div class='col-sm'>
-                            ".$user['email']."
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col-sm'>
-                            Password
-                        </div>
-                        <div class='col-sm'>
-                            ".$user['password_decrypt']."
-                        </div>
-                    </div>
+                    ".$forAdmin."
                     <div class='row'>
                         <div class='col-sm'>
                             Kode Pekerja
                         </div>
                         <div class='col-sm'>
-                            ".$user['codePekerja']."
+                            ".$pekerja['codePekerja']."
                         </div>
                     </div>
                     <div class='row'>
@@ -209,7 +190,7 @@ class UsermgmtController extends CMSController
                             Nama Pekerja
                         </div>
                         <div class='col-sm'>
-                            ".$user['namaPekerja']."
+                            ".$pekerja['namaPekerja']."
                         </div>
                     </div>
                 </div>
@@ -231,24 +212,19 @@ class UsermgmtController extends CMSController
         $param = explode('_', $id);
 
         $data['id'] = $param[0];
-        $data['status'] = $param[1];
-        $data['user'] = $this->removeWhitespace2(DB::table('EWS_VW_DETAIL_USER')
-            ->where('id', '=', $param[0])
-            ->first());
-        $data['role'] = $this->removeWhitespace(DB::table('EWS_ROLE_USER')->orderBy('id', 'asc')->get());
 
-        if ($data['user']['idRole'] == 8) 
-        {
-            # code...
-            $data['pekerja'] = $this->removeWhitespace(DB::table('EWS_VW_DETAIL_MANDOR')
-                ->orderBy('namaPekerja', 'asc')
-                ->get());
-        }else
-        {   
-            $data['pekerja'] = $this->removeWhitespace(DB::table('EWS_PEKERJA')
-                ->orderBy('namaPekerja', 'asc')
-                ->get());
-        }
+        $data['status'] = $param[1];
+
+        $data['user'] = User::find($param[0]);
+
+        $data['roles'] = Roles::pluck('name', 'id');
+
+        $data['permissions'] = Permission::all('name', 'id');
+        
+        $data['listPekerja'] = Pekerja::all()->sortBy('namaPekerja')->pluck('name_code', 'codePekerja');
+
+        $data['pekerja'] = User::find($param[0])->pekerja;
+        
         return view('cms.usermgmt.edit', $data);
     }
 
@@ -261,89 +237,52 @@ class UsermgmtController extends CMSController
      */
     public function update(Request $request, $id)
     {
-        $request->pekerja = $request->pekerja == 0 ? 'NULL' : $request->pekerja;
         
-        $messages = [
-            'required' => 'Kotak :attribute harus diisi/dipilih || ',
-            'email' => 'Alamat email harus benar || ',
-            'integer' => 'Kotak :attribute harus diisi/dipilih || ',
-        ];
-
         if ($request->status == 'detail') {
             # code...
-            $rules = [
-                'name' => 'required|max:255',
+            $this->validate($request, [
+                'name' => 'bail|required|min:2|max:255',
                 'username' => 'required|max:255',
-                'email' => 'required|email|max:255',
-                'pekerja' => 'integer',
-                'role' => 'integer',
-            ];
-
-            if ($request->role == 1) {
-                # code...
-                $request->pekerja = 1;
-            }
-
-            if ($request->role == 2) {
-                # code...
-                $request->pekerja = 2;
-            }
-
-            if ($request->role == 3) {
-                # code...
-                $request->pekerja = 3;
-            }
+                'roles' => 'required|min:1',
+                'codePekerja' => 'required|integer',
+            ]);
             
-            $array = array(
-                'name' => $request->name,
-                'username' => $request->username,
-                'email' => $request->email,
-                'codePekerja' => $request->pekerja,
-                'updated_at' => now(),
-            );
         }
 
         if ($request->status == 'password') {
             # code...
-            $rules = [
+            $this->validate($request, [
                 'old_password' => 'required|string|min:6',
                 'new_password' => 'required|string|min:6|confirmed'
-            ];
-            
-            $array = array(
-                'password' => bcrypt($request->new_password),
-                'password_decrypt' => $request->new_password,
-                'updated_at' => now(),
-            );
+            ]);
 
             $hashedPassword = DB::table('users')->where('id', '=', $id)->value('password');
-            // return $hashedPassword;
             if (!Hash::check($request->old_password, $hashedPassword)) {
                 // The passwords not match...
                 return back()->with('password', 'Password lama salah');
             }
         }
 
-        $validator = Validator::make($request->all(), $rules, $messages)->validate();
+        // Get the user
+        $user = User::findOrFail($id);
 
-        try {
+        // Update user
+        $user->fill($request->except('roles', 'permissions'));
 
-            DB::table('users')
-                ->where('id', '=', $id)
-                ->update($array);
-
-            if ($request->status == 'detail' && $request->pekerja != NULL) {
-                # code...
-                DB::table('EWS_PEKERJA')
-                    ->where('codePekerja', '=', $request->pekerja)
-                    ->update(['idRole' => $request->role]);
-            }
-
-        } catch (Exception $e) {
-            return $e;            
+        // check for password change
+        if($request->get('new_password')) {
+            $user->password = bcrypt($request->get('new_password'));
+            $user->password_decrypt = $request->get('new_password');
         }
 
-        return view('cms.usermgmt.index');
+        // Handle the user roles
+        $this->syncPermissions($request, $user);
+
+        $user->save();
+
+        flash()->success('User has been updated.');
+
+        return redirect()->route('usermgmt.index');
     }
 
     /**
@@ -354,8 +293,18 @@ class UsermgmtController extends CMSController
      */
     public function destroy($id)
     {
-        DB::table('users')->where('id', '=', $id)->delete();
-        return redirect()->back()->with('alert', 'User Deleted!');
+        if ( Auth::user()->id == $id ) {
+            flash()->warning('Deletion of currently logged in user is not allowed :(')->important();
+            return redirect()->back();
+        }
+
+        if( User::findOrFail($id)->delete() ) {
+            flash()->success('User has been deleted');
+        } else {
+            flash()->success('User not deleted');
+        }
+
+        return redirect()->back();
     }
 
     public function postRoleDropdown(Request $request)
@@ -438,5 +387,35 @@ class UsermgmtController extends CMSController
                 }
             return $return;
         }
+    }
+
+    /**
+     * Sync roles and permissions
+     *
+     * @param Request $request
+     * @param $user
+     * @return string
+     */
+    private function syncPermissions(Request $request, $user)
+    {
+        // Get the submitted roles
+        $roles = $request->get('roles', []);
+        $permissions = $request->get('permissions', []);
+
+        // Get the roles
+        $roles = Roles::find($roles);
+
+        // check for current role changes
+        if( ! $user->hasAllRoles( $roles ) ) {
+            // reset all direct permissions for user
+            $user->permissions()->sync([]);
+        } else {
+            // handle permissions
+            $user->syncPermissions($permissions);
+        }
+
+        $user->syncRoles($roles);
+
+        return $user;
     }
 }
