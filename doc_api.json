@@ -3,7 +3,7 @@
 *IP* -> (*10.254.128.66(ip private)* | *101.255.125.227 (ip publik)* | *10.10.18.18:9090 (ip vpn)*)
 *URL* -> */api/app* (production) | */api/dev* (development) 
 --------------------------------------------------------------
-
+[LOGIN MANDOR] [LOGIN KAWIL]
 /user
 => Ambil data user
 method = POST
@@ -14,10 +14,18 @@ body =
     "date" : "(format tanggal-bulan-tahun, eg: 11-04-2019)"
 }
 
-MANDOR DAN KAWIL MENGAKSES LEWAT SINI
-
+[LOGIN PH]
+/user
+=> Ambil data user
+method = POST
+body = 
+{
+    "username" : "(username user)",
+    "password" : "(password user)",
+    "data" : "(data yang ingin diambil) (bruto, bonggol) (lowercase)"
+}
 ---------------------------------------------
-
+[SYNC MANDOR]
 /storeMandor
 => INSERT DATA RKM Mandor
 method = POST
@@ -43,7 +51,7 @@ body =
 nb:
 untuk pokokAwal dan pokokAkhir hanya dilakukan ketika pengerjaan plantcare! dan ketika pengerjaan plantcare, codeTanaman hanya sampai baris!
 ---------------------------------------------
-
+[SYNC KAWIL]
 /storeKawil
 => INSERT DATA RKM Kawil
 method = POST
@@ -62,7 +70,82 @@ body =
 
 
 ---------------------------------------------
+[SYNC PH]
+/storePH
+=> INSERT DATA BERAT BRUTO PADA BERAT TANDAN (BT)
+method = POST
+body = 
+{
+    "input" : "(di isi dengan 'BT')",
+    "data" : "(di isi dengan 'bruto')",
+    "userid" : "(id user)",
+    "idPokok" : "(id yang ada di listPokok dari listBT)",
+    "codeTK" : "(kode tk)",
+    "berat" : "(berat bruto)",
+    "note" : "(catatan bruto) (boleh kosong)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)"
+}
+=> INSERT DATA BERAT BONGGOL PADA BERAT TANDAN (BT)
+method = POST
+body = 
+{
+    "input" : "(di isi dengan 'BT')",
+    "data" : "(di isi dengan 'bonggol')",
+    "userid" : "(id user)",
+    "idPokok" : "(id yang ada di listPokok dari listBT)",
+    "codeTK" : "(kode tk)",
+    "berat" : "(berat bruto)",
+    "note" : "(catatan bruto) (boleh kosong)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)"
+}
+=> INSERT DATA PADA HITUNG TANDAN (HT)
+method = POST
+body = 
+{
+    "input" : "(di isi dengan 'HT')",
+    "userid" : "(id user)",
+    "codeTK" : "(kode tk)",
+    "idPokok" : "(id yang ada di listPokok dari listHT)",
+    "handClass" : "(Hand Class)", 
+    "calHandClass2" : "(Calibrasi/Hand Class 2)", 
+    "calHandClass4" : "(Calibrasi/Hand Class 4)", 
+    "calHandClass6" : "(Calibrasi/Hand Class 6)", 
+    "calHandClass8" : "(Calibrasi/Hand Class 8)", 
+    "calHandClass10" : "(Calibrasi/Hand Class 10)", 
+    "calHandClassAkhir" : "(Calibrasi/Hand Class Akhir)", 
+    "fingerLen2" : "(Finger Length 2)", 
+    "fingerLen4" : "(Finger Length 4)", 
+    "fingerLen6" : "(Finger Length 6)", 
+    "fingerLen8" : "(Finger Length 8)", 
+    "fingerLen10" : "(Finger Length 10)", 
+    "fingerLenAkhir" : "(Finger Length Akhir)", 
+    "fingerHand2" : "(Jumlah Finger/Hand Class 2)", 
+    "fingerHand4" : "(Jumlah Finger/Hand Class 4)", 
+    "fingerHand6" : "(Jumlah Finger/Hand Class 6)", 
+    "fingerHand8" : "(Jumlah Finger/Hand Class 8)", 
+    "fingerHand10" : "(Jumlah Finger/Hand Class 10)", 
+    "fingerHandAkhir" : "(Jumlah Finger/Hand Class Akhir)", 
+    "note" : "(catatan hitung tandan)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)"
+}
+=> INSERT DATA PADA CEK LIST TIMBANG (CLT)
+method = POST
+body = 
+{
+    "input" : "(di isi dengan 'CLT')",
+    "userid" : "(id user)",
+    "codeBlok" : "(codeBlok dari listCLT)",
+    "idProduk" : "(id yang ada di listProdukCLT)",
+    "berat" : "(berat produk)",
+    "note" : "(catatan produk)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)"
+}
 
+---------------------------------------------
 /pokok
 => GET LIST POKOK
 method = GET
