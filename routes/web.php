@@ -40,6 +40,7 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::get('phcltReport', 'CMS\TransReportController@phcltReport')->name('phcltReport.index');
 
 	Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');
+	Route::post('exportRKM', 'CMS\RKMReportController@exportRKM')->name('exportRKM');
 
 	Route::get('customReport', 'CMS\CustomReportController@index')->name('customReport.index');
 	Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
@@ -49,5 +50,6 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::post('chartDataSet', 'CMS\CustomReportController@chartDataSet')->name('getDataChart');
 
 	Route::get('apk', 'CMS\FileController@index')->name('apk');
-	Route::post('insertapk', 'CMS\FileController@upload')->name('uploadapk');
+	Route::post('uploadApkRKH', 'CMS\FileController@uploadApkRKH')->name('uploadApkRKH');
+	Route::post('uploadApkPH', 'CMS\FileController@uploadApkPH')->name('uploadApkPH');
 });
