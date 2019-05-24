@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\CMS;
 
 use DataTables;
-use Illuminate\Http\Request;
 use App\Http\Controllers\CMSController;
 use App\Trans;
 use App\Exports\MandorExport;
 use App\Exports\KawilExport;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TransReportController extends CMSController
@@ -26,6 +26,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -48,6 +50,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -70,6 +74,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -109,6 +115,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -131,6 +139,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -153,6 +163,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -188,6 +200,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -223,6 +237,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -258,6 +274,8 @@ class TransReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
