@@ -12,12 +12,23 @@
                     <label for="date_aw">Dari</label>
                     <input type="date" class="form-control mx-sm-3" name="date_aw" id="date_aw" placeholder="search tanggal dari (MM/DD/YYYY)">
                 </div>
+
                 <div class="form-group">
                     <label for="date_ak">Sampai</label>
                     <input type="date" class="form-control mx-sm-3" name="date_ak" id="date_ak" placeholder="search tanggal ke (MM/DD/YYYY)">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Cari</button>
+                <div class="form-group">
+                    <button type="submit" class="form-control mx-sm-3 btn btn-primary">Cari</button>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="form-control mx-sm-3 btn btn-success" name="export">Export</button>
+                    <div class="spinner-border text-warning" role="status" style="display:none;" id="loading-export">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
             </form>
           </div>
         </div>
@@ -48,6 +59,18 @@
 
 @section('script')
     <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(document).ajaxSend(function(e,x,o){
+            $("#loading-export").show();
+        });
+        $(document).ajaxStop(function(e,x,o){
+            $("#loading-export").hide();
+        });
+        
         var oTable = $('#data-table').DataTable({
             processing: true,
             serverSide: true,
@@ -74,6 +97,13 @@
             ]
         });
 
+        var headings = [];
+        $(oTable.table().header()).find('th').each(function () {
+          // access each tr's tds from here using $(this)
+          var head = $(this).text()
+          headings.push(head);
+        });
+
         $('#search-form').on('submit', function(e) {
             oTable.draw();
             e.preventDefault();
@@ -92,6 +122,47 @@
             if ($(this).val() < $('#date_aw').val()) {
                 $('#date_aw').val($(this).val());
             }
+        })
+
+        $('button[name="export"]').on('click', function(e) {
+            var url = '{{route('exportRKM')}}';
+            var params = { 
+                    heading: headings, 
+                    date_aw: $('input[name=date_aw]').val(), 
+                    date_ak: $('input[name=date_ak]').val() 
+                };
+
+            // downloadFromAjaxPost(url, params);
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: params,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(response, status, request) {
+                    var data = new Blob([response]);
+
+                    if (navigator.msSaveOrOpenBlob) {
+                        navigator.msSaveOrOpenBlob(data, "report.xlsx");
+                    } else {
+                        var a = document.createElement('a');
+                        var url = window.URL.createObjectURL(response);
+                        
+                        a.setAttribute("type", "hidden"); // make it hidden if needed
+                        a.href = url;
+                        a.download = '';
+
+                        // Add the element to the DOM
+                        document.body.appendChild(a); //Support for firefox
+
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    }
+                }
+            });
         })
     </script>
 @endsection
