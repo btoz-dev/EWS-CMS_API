@@ -2,45 +2,104 @@
 
 @section('content')
     <div class="row mt-3">
-        <div class="col">
-            <h2>Upload APK File</h2>
-        </div>
+        @can('add_apk')
+            <div class="col">
+                <h2>Upload APK RKH File</h2>
+            </div>
+        @endcan
 
-        <div class="col">
-            <h2>Download APK File</h2>
-        </div>
+        @can('view_apk')
+            <div class="col">
+                <h2>Download APK RKH File</h2>
+            </div>
+        @endcan
     </div>
 
     <div class="row mt-3">
-        <div class="col">
-            <form method="POST" action="{{ route('uploadapk') }}" enctype="multipart/form-data">
-                @if (session('alert'))
-                    <div class="alert alert-info alert-dismissible" role="alert">
-                        {{ session('alert') }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+        @can('add_apk')
+            <div class="col">
+                <form method="POST" action="{{ route('uploadApkRKH') }}" enctype="multipart/form-data">
+                    @if (session('alertRKH'))
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                            {{ session('alertRKH') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    {{ csrf_field() }}
+
+                    <div class="form-group">
+                        <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
                     </div>
-                @endif
 
-                {{ csrf_field() }}
+                    <div class="form-group">
+                        <label for="logapk">Log APK</label>
+                        <textarea class="form-control" id="logapk" rows="3" name="logapk">{{ $logTxtRKH }}</textarea>
+                    </div>
 
-                <div class="form-group">
-                    <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
-                </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
 
-                <div class="form-group">
-                    <label for="logapk">Log APK</label>
-                    <textarea class="form-control" id="logapk" rows="3" name="logapk">{{ $logTxt }}</textarea>
-                </div>
+                </form>
+            </div>
+        @endcan
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+        @can('view_apk')
+            <div class="col">
+                <a class="btn btn-primary" href="{{ asset('storage/apkfile/ews_rkh.apk') }}" role="button">Download APK</a>
+            </div>
+        @endcan
+    </div>
 
-            </form>
-        </div>
+    <div class="row mt-3">
+        @can('add_apk')
+            <div class="col">
+                <h2>Upload APK PH File</h2>
+            </div>
+        @endcan
 
-        <div class="col">
-            <a class="btn btn-primary" href="{{ asset('storage/apkfile/ews.apk') }}" role="button">Download APK</a>
-        </div>
+        @can('view_apk')
+            <div class="col">
+                <h2>Download APK PH File</h2>
+            </div>
+        @endcan
+    </div>
+
+    <div class="row mt-3">
+        @can('add_apk')
+            <div class="col">
+                <form method="POST" action="{{ route('uploadApkRKH') }}" enctype="multipart/form-data">
+                    @if (session('alertPH'))
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                            {{ session('alertPH') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    {{ csrf_field() }}
+
+                    <div class="form-group">
+                        <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="logapk">Log APK</label>
+                        <textarea class="form-control" id="logapk" rows="3" name="logapk">{{ $logTxtPH }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+
+                </form>
+            </div>
+        @endcan
+
+        @can('view_apk')
+            <div class="col">
+                <a class="btn btn-primary" href="{{ asset('storage/apkfile/ews_ph.apk') }}" role="button">Download APK</a>
+            </div>
+        @endcan
     </div>
 @endsection
