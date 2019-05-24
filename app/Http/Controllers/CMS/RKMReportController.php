@@ -4,8 +4,10 @@ namespace App\Http\Controllers\CMS;
 
 use DataTables;
 use DB;
-use Illuminate\Http\Request;
+use App\Exports\RKMExport;
 use App\Http\Controllers\CMSController;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RKMReportController extends CMSController
 {
@@ -17,6 +19,7 @@ class RKMReportController extends CMSController
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            // $query = Trans::rkm();
             $query = DB::table('EWS_JADWAL_RKM')
             ->select('EWS_JADWAL_RKM.id', 'EWS_JADWAL_RKM.rkhCode', 'EWS_VW_DETAIL_MANDOR.namaPekerja', 'EWS_SUB_JOB.Description', 'EWS_JADWAL_RKM.codeBlok', 'EWS_JADWAL_RKM.barisStart', 'EWS_JADWAL_RKM.barisEnd', 'EWS_JADWAL_RKM.rkhDate')
             ->selectRaw('convert(varchar, EWS_JADWAL_RKM.rkhDate, 106) as tanggal')
@@ -30,6 +33,8 @@ class RKMReportController extends CMSController
             if ($request->date_aw != NULL) {
                 # code...
                 $query->whereBetween('EWS_JADWAL_RKM.rkhDate', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+                $query->whereBetween('EWS_JADWAL_RKM.rkhDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -107,5 +112,16 @@ class RKMReportController extends CMSController
     public function destroy($id)
     {
         //
+    }
+
+    public function exportRKM(Request $request)
+    {
+        # code...
+        $export = new RKMExport();
+        $export->setHeading($request->heading);
+        $export->setDateAw($request->date_aw);
+        $export->setDateAk($request->date_ak);
+
+        return Excel::download($export, 'trans.xlsx');
     }
 }
