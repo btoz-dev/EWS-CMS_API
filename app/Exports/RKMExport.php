@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use DB;
-use App\Trans;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -38,7 +37,6 @@ class RKMExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMap
     */
     public function collection()
     {
-        // $query =  Trans::rkm();
         $query =  DB::table('EWS_JADWAL_RKM')
             ->select('EWS_JADWAL_RKM.id', 'EWS_JADWAL_RKM.rkhCode', 'EWS_VW_DETAIL_MANDOR.namaPekerja', 'EWS_SUB_JOB.Description', 'EWS_JADWAL_RKM.codeBlok', 'EWS_JADWAL_RKM.barisStart', 'EWS_JADWAL_RKM.barisEnd', 'EWS_JADWAL_RKM.rkhDate')
             ->selectRaw('convert(varchar, EWS_JADWAL_RKM.rkhDate, 106) as tanggal')
