@@ -38,6 +38,7 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::get('phbtReport', 'CMS\TransReportController@phbtReport')->name('phbtReport.index');
 	Route::get('phhtReport', 'CMS\TransReportController@phhtReport')->name('phhtReport.index');
 	Route::get('phcltReport', 'CMS\TransReportController@phcltReport')->name('phcltReport.index');
+	Route::post('exportPH', 'CMS\TransReportController@exportPH')->name('exportPH');
 
 	Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');
 	Route::post('exportRKM', 'CMS\RKMReportController@exportRKM')->name('exportRKM');

@@ -166,10 +166,10 @@
         });
 
         $('button[name="export"]').on('click', function(e) {
-            var url = '{{route('exportMandor')}}';
+            var url = '{{route('exportPH')}}';
             var params = { 
                     heading: headings, 
-                    job: "PLANTCARE", 
+                    job: "HT", 
                     date_aw: $('input[name=date_aw]').val(), 
                     date_ak: $('input[name=date_ak]').val() 
                 };

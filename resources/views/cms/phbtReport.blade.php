@@ -43,6 +43,7 @@
                         <th>Kode Tanaman</th>
                         <th>Berat Bruto</th>
                         <th>Berat Bonggol</th>
+                        <th>Berat Bersih</th>
                         <th>Catatan Bruto</th>
                         <th>Catatan Bonggol</th>
                         <th>Tanggal Timbang Bruto</th>
@@ -97,6 +98,7 @@
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'brutoBerat', name: 'brutoBerat'},
                 {data: 'bonggolBerat', name: 'bonggolBerat'},
+                {data: 'beratBersih', name: 'beratBersih'},
                 {data: 'brutoNote', name: 'brutoNote'},
                 {data: 'bonggolNote', name: 'bonggolNote'},
                 {data: 'brutoDate', name: 'brutoDate'},
@@ -140,10 +142,10 @@
         });
 
         $('button[name="export"]').on('click', function(e) {
-            var url = '{{route('exportMandor')}}';
+            var url = '{{route('exportPH')}}';
             var params = { 
                     heading: headings, 
-                    job: "PLANTCARE", 
+                    job: "BT", 
                     date_aw: $('input[name=date_aw]').val(), 
                     date_ak: $('input[name=date_ak]').val() 
                 };

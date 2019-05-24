@@ -7,6 +7,7 @@ use App\Http\Controllers\CMSController;
 use App\Trans;
 use App\Exports\MandorExport;
 use App\Exports\KawilExport;
+use App\Exports\PHExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -199,9 +200,11 @@ class TransReportController extends CMSController
 
             if ($request->date_aw != NULL) {
                 # code...
-                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+                $query->whereBetween('brutoDate', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+                $query->orWhereBetween('bonggolDate', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
             }else {
-            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+                $query->whereBetween('brutoDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            	$query->orWhereBetween('bonggolDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -209,22 +212,16 @@ class TransReportController extends CMSController
             $report = $this->removeWhitespace($res);
 
             return DataTables::of($report)
+                ->addColumn('beratBersih', function ($report){
+                    if (!empty($report['brutoBerat']) && !empty($report['bonggolBerat'])) {
+                        # code...
+                        return (int)$report['brutoBerat'] - (int)$report['bonggolBerat'];
+                    }
+                })
                 ->make(true);
         }
 
         return view('cms.phbtReport');
-    }
-
-    public function exportPHBT(Request $request)
-    {
-        # code...
-        $export = new PHBTExport();
-        $export->setHeading($request->heading);
-        $export->setJob($request->job);
-        $export->setDateAw($request->date_aw);
-        $export->setDateAk($request->date_ak);
-
-        return Excel::download($export, 'trans.xlsx');
     }
 
     public function phhtReport(Request $request)
@@ -236,9 +233,9 @@ class TransReportController extends CMSController
 
             if ($request->date_aw != NULL) {
                 # code...
-                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+                $query->whereBetween('date', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
             }else {
-            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            	$query->whereBetween('date', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -252,18 +249,6 @@ class TransReportController extends CMSController
         return view('cms.phhtReport');
     }
 
-    public function exportPHHT(Request $request)
-    {
-        # code...
-        $export = new PHHTExport();
-        $export->setHeading($request->heading);
-        $export->setJob($request->job);
-        $export->setDateAw($request->date_aw);
-        $export->setDateAk($request->date_ak);
-
-        return Excel::download($export, 'trans.xlsx');
-    }
-
     public function phcltReport(Request $request)
     {
         # code...
@@ -273,9 +258,9 @@ class TransReportController extends CMSController
 
             if ($request->date_aw != NULL) {
                 # code...
-                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+                $query->whereBetween('date', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
             }else {
-            	$query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            	$query->whereBetween('date', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -289,10 +274,10 @@ class TransReportController extends CMSController
         return view('cms.phcltReport');
     }
 
-    public function exportPHCLT(Request $request)
+    public function exportPH(Request $request)
     {
         # code...
-        $export = new PHCLTExport();
+        $export = new PHExport();
         $export->setHeading($request->heading);
         $export->setJob($request->job);
         $export->setDateAw($request->date_aw);
