@@ -101,6 +101,8 @@ class AppController extends Controller
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
             }
+            $detailRole['nama'] = $detailRole['name'];
+            unset($detailRole['name']);
             return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
         }
     }
@@ -1371,11 +1373,11 @@ class AppController extends Controller
         array_unshift($TK, $pilihTukang); #inserts new elements into beginning of array
         $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $TK;
 
-        // $date_frst = date('Y-m-d');
-        // $date_scnd = date('Y-m-d', strtotime('-7 days'));
+        $date_frst = date('Y-m-d');
+        $date_scnd = date('Y-m-d', strtotime('-7 days'));
 
-        $date_frst = '2019-05-08';
-        $date_scnd = '2019-05-01';
+        // $date_frst = '2019-05-08';
+        // $date_scnd = '2019-05-01';
         # mencari blok-blok dari transaksi panen selama seminggu terakhir dari hari ini
         $listBlokPanen  = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
             ->select('codeBlok as blok')
@@ -1987,34 +1989,46 @@ class AppController extends Controller
 
     public function removeWhitespace($arr)
     {
-        $arr = json_decode($arr,TRUE);
-        foreach ($arr as $key => $value) {
-            # code...
-            $arr[$key] = array_map('rtrim',$arr[$key]);
-            if (isset($arr[$key]['codeBlok'])) {
+        if (!empty($arr)) {
+            $arr = json_decode($arr,TRUE);
+            foreach ($arr as $key => $value) {
                 # code...
-                $arr[$key]['codeBlok'] = str_replace('-', '.', $arr[$key]['codeBlok']);
+                $arr[$key] = array_map('rtrim',$arr[$key]);
+                if (isset($arr[$key]['codeBlok'])) {
+                    # code...
+                    $arr[$key]['codeBlok'] = str_replace('-', '.', $arr[$key]['codeBlok']);
+                }
             }
+            // $arr = json_encode($arr, JSON_PRETTY_PRINT);
+            return $arr;
+        } else {
+            return false;
         }
-        // $arr = json_encode($arr, JSON_PRETTY_PRINT);
-        return $arr;
     }
 
     public function removeWhitespace2($arr)
     {
-        $arr = (array) $arr;
-        $arr = array_map('rtrim',$arr);
+        if (!empty($arr)) {
+            $arr = (array) $arr;
+            $arr = array_map('rtrim',$arr);
 
-        return $arr;
+            return $arr;
+        } else {
+            return false;
+        }
     }
 
     public function removeWhitespace3($arr)
     {
-        $arr = json_decode($arr,TRUE);
-        // $arr = (array) $arr;
-        $arr = array_map('rtrim',$arr);
-
-        return $arr;
+        if (!empty($arr)) {
+            $arr = json_decode($arr,TRUE);
+            // $arr = (array) $arr;
+            $arr = array_map('rtrim',$arr);
+    
+            return $arr;
+        } else {
+            return false;
+        }
     }
 
     /**
