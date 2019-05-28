@@ -359,7 +359,7 @@ class AppController extends Controller
         $trans_mandor2 = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
             ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode')
             ->where('userid', '=', $user2[0]['id'])
-            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
+            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
             ->get());
         foreach ($subJob2 as $key_sj => $subJob) {#Pokok
             # code...
@@ -515,7 +515,7 @@ class AppController extends Controller
             ->join('EWS_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR.codePekerja')
             // ->select('EWS_JADWAL_RKM.*')
             ->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName', 'EWS_PEKERJA.namaPekerja as namaMandor')
-            ->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
+            ->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
             ->distinct()
             ->get());
         if (empty($rkm2)) {
@@ -836,7 +836,7 @@ class AppController extends Controller
         $trans_kawil2 = $this->removeWhitespace(DB::table('EWS_TRANS_KAWIL')
             ->select('id', 'idEWSTransMandor')
             ->where('userid', '=', $user2[0]['id'])
-            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
+            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
             ->get());
         foreach ($subJob2 as $key_sj => $subJob) {#Pokok
             # code...
@@ -1384,7 +1384,7 @@ class AppController extends Controller
             ->distinct('codeBlok')
             ->orderBy('codeBlok', 'asc')
             ->where('subJobCode', '=', '5410400000')
-            ->whereBetween('created_at', [$date_scnd.' 00:00:00.000', $date_frst.' 23:59:59.999'])
+            ->whereBetween('created_at', [$date_scnd.' 00:00:00.000', $date_frst.' 23:59:59.000'])
             ->get());
         
         # mencari transaksi panen selama seminggu terakhir dari hari ini
@@ -1392,7 +1392,7 @@ class AppController extends Controller
             // ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode', 'codeBlok')
             ->select('id', 'codeTanaman as code', 'codeBlok as blok')
             ->where('subJobCode', '=', '5410400000')
-            ->whereBetween('created_at', [$date_scnd.' 00:00:00.000', $date_frst.' 23:59:59.999'])
+            ->whereBetween('created_at', [$date_scnd.' 00:00:00.000', $date_frst.' 23:59:59.000'])
             ->orderBy('code', 'asc')
             ->get());
 
@@ -2443,7 +2443,7 @@ class AppController extends Controller
         $trans_mandor2 = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
             ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode')
             ->where('userid', '=', $user2[0]['id'])
-            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.999'])
+            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
             ->get());
         foreach ($subJob2 as $key_sj => $subJob) {#Pokok
             # code...
