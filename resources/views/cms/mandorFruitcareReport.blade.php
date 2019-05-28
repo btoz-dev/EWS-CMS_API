@@ -10,12 +10,12 @@
 
                 <div class="form-group">
                     <label for="date_aw">Dari</label>
-                    <input type="date" class="form-control mx-sm-3" name="date_aw" id="date_aw" placeholder="MM/DD/YYYY">
+                    <input type="date" class="form-control mx-sm-3" name="date_aw" id="date_aw" placeholder="{{ date('m/d/Y') }}" value="{{ date('Y-m-d') }}">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="date_ak">Sampai</label>
-                    <input type="date" class="form-control mx-sm-3" name="date_ak" id="date_ak" placeholder="MM/DD/YYYY">
+                    <input type="date" class="form-control mx-sm-3" name="date_ak" id="date_ak" placeholder="{{ date('m/d/Y') }}" value="{{ date('Y-m-d') }}">
                 </div>
 
                 <div class="form-group">
