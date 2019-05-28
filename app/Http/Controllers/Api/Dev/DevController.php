@@ -68,9 +68,12 @@ class DevController extends Controller
         unset($detailRole['created_at']);
         unset($detailRole['updated_at']);
         unset($detailRole['pivot']);
+        // $detailRole['nama'] = $detailRole['name'];
+        // unset($detailRole['name']);
         $user[0] = $user2;
         $user2 = $user;
 
+        // if ($detailRole['nama'] == "Mandor") {
         if ($detailRole['name'] == "Mandor") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
@@ -81,6 +84,7 @@ class DevController extends Controller
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
+        // if ($detailRole['nama'] == "Kawil") {
         if ($detailRole['name'] == "Kawil") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
@@ -91,6 +95,7 @@ class DevController extends Controller
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
+        // if ($detailRole['nama'] == "Mandor PH") {
         if ($detailRole['name'] == "Mandor PH") {
             $validator = Validator::make($request->all(), [
                 'data' => [
@@ -101,6 +106,8 @@ class DevController extends Controller
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
             }
+            $detailRole['nama'] = $detailRole['name'];
+            unset($detailRole['name']);
             return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
         }
     }
@@ -1987,34 +1994,46 @@ class DevController extends Controller
 
     public function removeWhitespace($arr)
     {
-        $arr = json_decode($arr,TRUE);
-        foreach ($arr as $key => $value) {
-            # code...
-            $arr[$key] = array_map('rtrim',$arr[$key]);
-            if (isset($arr[$key]['codeBlok'])) {
+        if (!empty($arr)) {
+            $arr = json_decode($arr,TRUE);
+            foreach ($arr as $key => $value) {
                 # code...
-                $arr[$key]['codeBlok'] = str_replace('-', '.', $arr[$key]['codeBlok']);
+                $arr[$key] = array_map('rtrim',$arr[$key]);
+                if (isset($arr[$key]['codeBlok'])) {
+                    # code...
+                    $arr[$key]['codeBlok'] = str_replace('-', '.', $arr[$key]['codeBlok']);
+                }
             }
+            // $arr = json_encode($arr, JSON_PRETTY_PRINT);
+            return $arr;
+        } else {
+            return false;
         }
-        // $arr = json_encode($arr, JSON_PRETTY_PRINT);
-        return $arr;
     }
 
     public function removeWhitespace2($arr)
     {
-        $arr = (array) $arr;
-        $arr = array_map('rtrim',$arr);
+        if (!empty($arr)) {
+            $arr = (array) $arr;
+            $arr = array_map('rtrim',$arr);
 
-        return $arr;
+            return $arr;
+        } else {
+            return false;
+        }
     }
 
     public function removeWhitespace3($arr)
     {
-        $arr = json_decode($arr,TRUE);
-        // $arr = (array) $arr;
-        $arr = array_map('rtrim',$arr);
-
-        return $arr;
+        if (!empty($arr)) {
+            $arr = json_decode($arr,TRUE);
+            // $arr = (array) $arr;
+            $arr = array_map('rtrim',$arr);
+    
+            return $arr;
+        } else {
+            return false;
+        }
     }
 
     /**
