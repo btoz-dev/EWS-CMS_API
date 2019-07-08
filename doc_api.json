@@ -1,7 +1,7 @@
 *API* 
 *Security* -> http [*yes*] | https [*no*]
 *IP* -> (*10.254.128.66(ip private)* | *101.255.125.227 (ip publik)* | *10.10.18.18:9090 (ip vpn)*)
-*URL* -> */api/app* (production) | */api/dev* (development) 
+*URL* -> */api/app* (production) | */api/staging* (staging) | */api/dev* (development) 
 --------------------------------------------------------------
 [LOGIN MANDOR] [LOGIN KAWIL]
 /user
@@ -22,7 +22,31 @@ body =
 {
     "username" : "(username user)",
     "password" : "(password user)",
-    "data" : "(data yang ingin diambil) (bruto, bonggol) (lowercase)"
+    "data" : "(data yang ingin diambil) (tandan, bonggol, qc, clt) (lowercase)"
+}
+
+[LOGIN SPI SENSUS]
+/user
+=> Ambil data user spi sebagai sensus
+method = POST
+body = 
+{
+    "username" : "(username user)",
+    "password" : "(password user)",
+    "sensus" : "1"
+}
+
+[LOGIN SPI MANDOR]
+/user
+=> Ambil data user spi sebagai mandor
+method = POST
+body = 
+{
+    "username" : "(username user)",
+    "password" : "(password user)",
+    "sensus" : "0",
+    "mandor" : "(kode mandor)",
+    "date" : "(format tanggal-bulan-tahun, eg: 11-04-2019)",
 }
 ---------------------------------------------
 [SYNC MANDOR]
@@ -72,42 +96,40 @@ body =
 ---------------------------------------------
 [SYNC PH]
 /storePH
-=> INSERT DATA BERAT BRUTO PADA BERAT TANDAN (BT)
+=> INSERT DATA BERAT BRUTO TANDAN (bt)
 method = POST
 body = 
 {
-    "input" : "(di isi dengan 'BT')",
-    "data" : "(di isi dengan 'bruto')",
+    "input" : "(di isi dengan 'bt')",
     "userid" : "(id user)",
-    "idPokok" : "(id yang ada di listPokok dari listBT)",
+    "codePokok" : "(code yang ada di listPokok dari Berat Tandan)",
     "codeTK" : "(kode tk)",
     "berat" : "(berat bruto)",
     "note" : "(catatan bruto) (boleh kosong)",
     "tanggal" : "(tanggal dibuatnya)",
     "waktu" : "(waktu dibuatnya)"
 }
-=> INSERT DATA BERAT BONGGOL PADA BERAT TANDAN (BT)
+=> INSERT DATA BERAT BONGGOL TANDAN (bb)
 method = POST
 body = 
 {
-    "input" : "(di isi dengan 'BT')",
-    "data" : "(di isi dengan 'bonggol')",
+    "input" : "(di isi dengan 'bb')",
     "userid" : "(id user)",
-    "idPokok" : "(id yang ada di listPokok dari listBT)",
+    "codePokok" : "(code yang ada di listPokok dari Berat Bonggol)",
     "codeTK" : "(kode tk)",
     "berat" : "(berat bruto)",
     "note" : "(catatan bruto) (boleh kosong)",
     "tanggal" : "(tanggal dibuatnya)",
     "waktu" : "(waktu dibuatnya)"
 }
-=> INSERT DATA PADA HITUNG TANDAN (HT)
+=> INSERT DATA PADA QUALITY CONTROL (qc)
 method = POST
 body = 
 {
-    "input" : "(di isi dengan 'HT')",
+    "input" : "(di isi dengan 'qc')",
     "userid" : "(id user)",
     "codeTK" : "(kode tk)",
-    "idPokok" : "(id yang ada di listPokok dari listHT)",
+    "codePokok" : "(code yang ada di listPokok dari Quality Control)",
     "handClass" : "(Hand Class)", 
     "calHandClass2" : "(Calibrasi/Hand Class 2)", 
     "calHandClass4" : "(Calibrasi/Hand Class 4)", 
@@ -131,20 +153,60 @@ body =
     "tanggal" : "(tanggal dibuatnya)",
     "waktu" : "(waktu dibuatnya)"
 }
-=> INSERT DATA PADA CEK LIST TIMBANG (CLT)
+=> INSERT DATA PADA CEK LIST TIMBANG (clt)
 method = POST
 body = 
 {
-    "input" : "(di isi dengan 'CLT')",
+    "input" : "(di isi dengan 'clt')",
     "userid" : "(id user)",
-    "codeBlok" : "(codeBlok dari listCLT)",
-    "idProduk" : "(id yang ada di listProdukCLT)",
+    "codeBlok" : "(codeBlok dari Cek List Timbang)",
+    "idProduk" : "(id yang ada di Cek List Timbang)",
     "berat" : "(berat produk)",
     "note" : "(catatan produk)",
     "tanggal" : "(tanggal dibuatnya)",
     "waktu" : "(waktu dibuatnya)"
 }
 
+---------------------------------------------
+[SYNC SPI]
+/storeSPI
+=> INSERT DATA SPI SENSUS
+method = POST
+body = 
+{
+    "sensus" : "1",
+    "codeTanaman" : "(kode tanaman satuan)",
+    "week" : "(week tanaman atau umur tanaman)",
+    "girth" : "(girth tanaman)",
+    "jumlahDaun" : "(jumlah daun)",
+    "corrAct" : "(note corrective action)",
+    "dueDate" : "(due date)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)",
+    "userid" : "(id user)"
+}
+=> INSERT DATA SPI MANDOR
+method = POST
+body = 
+{
+    "sensus" : "0",
+    "codeRKH" : "(kode rencana kerja harian)",
+    "subJobCode" : "(kode pekerjaan dari child job)",
+    "userid" : "(id user)",
+    "codeMandor" : "(kode mandor)",
+    "codeTukang" : "(kode tukang)",
+    "codeTanaman" : "(kode tanaman satuan)",
+    "note" : "(catatan spi (boleh kosong))",
+    "totalHand" : "(total hand (boleh kosong) (pekerjaan marking))",
+    "totalFinger" : "(total finger (boleh kosong) (pekerjaan marking))",
+    "totalLeaf" : "(total leaf (boleh kosong) (pekerjaan marking))",
+    "ribbonColor" : "(ribbon color (boleh kosong) (pekerjaan marking) (Blue, Red, Yellow, White, Black, Green)",
+    "skimmingSize" : "(skimming size (boleh kosong) (pekerjaan skimming))",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)",
+    "pokokAwal" : "(pokok awal (boleh kosong))",
+    "pokokAkhir" : "(pokok akhir (boleh kosong))",
+}
 ---------------------------------------------
 /pokok
 => GET LIST POKOK
