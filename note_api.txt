@@ -1,0 +1,257 @@
+MANDOR DAN KAWIL
+
+	1. User di dapat dari tabel SH_USER (DONE)
+		=> https://xd.adobe.com/view/63250fc1-8729-43bf-64ce-ab494f779d68-1514/
+			
+
+	2. Download jadwal RKM dari ERP (NOT DONE) ==> ada di Tabel EWS_JadwalRKM
+		Download data RKM dari ERP 
+		'select Rkhcode,rkhdate,mandorcode,CodeAlojob,codeblok,BarisStart,BarisEnd from PR_TRX_RKH a inner join PR_TRX_RKHLN_MJOB b on a.rkhcode=b.CodeRKH where mandorcode=[MD] and RKHdate=[DT]' 
+		parameter MD : sesuai NIK Login Mandor, DT : Tanggal login
+		=> https://xd.adobe.com/view/63250fc1-8729-43bf-64ce-ab494f779d68-1514/screen/051a20ac-57ce-4a9c-83c6-6b221d3e75da/RKM
+			
+
+	3. RKM terdiri dari bbrp Job, sprt Bud Injection, Marking, Pemupukan, dst.. (DONE)
+		kode pekerjaan dapat di ambil dari query ini 
+		'select JobCode,Description from PR_STP_BKJOB where loccode='KL01' and SubCatID='TMP'', 
+		contoh bud injection itu kodenya 5210410000
+		=> https://xd.adobe.com/view/63250fc1-8729-43bf-64ce-ab494f779d68-1514/screen/051a20ac-57ce-4a9c-83c6-6b221d3e75da/RKM
+			
+
+	4. Ambil data Blok -> Plot -> Baris -> Pokok dari tabel GL_SUBBLKHILL 
+			
+
+	5. Ambil data Pekerja dari Tabel HR_TRX_EMPLOYEE
+		Pada tabel ini berisi data seluruh karyawan,
+		Mandor diambil dari tabel ini, 
+			'select MandorCode, EmpCode, EmpName from GPS_APS_EWS.dbo.HR_TRX_EMPMANDOR a inner join GPS_APS_EWS.dbo.HR_TRX_EMPLOYEE b on a.CodeEmp = b.EmpCode'
+		Pekerja yang dibawahi mandor ambil dari sini,
+
+
+	6. Input Data ke tabel EWS_TRANS
+		PLANT CARE: PEMUPUKAN, WEED SPRAY, IRIGASI, DESEASE SURVEY & ERADIKASI, LEAF DESEASE CONTROL
+		FRUIT CARE: BUD INJECTION, BAGGING, MARKING
+		PANEN: SKIMMING, PANEN
+			
+
+MANDOR DAN KAWIL
+
+nb*
+* ga ada table yang menyatakan bahwa user ini mandor atau kawil
+** no.1 untuk mandorcode didapat dari mana? karena di tabel sh_user tidak ada mandorcode. mandorcode adanya di tabel HR_TRX_EMPMANDOR dan HR_TRX_EMPMANDORLN, tapi tidak ditemukan kecocokan data antara user di tabel sh_user dengan mandorcode di kedua table tsb.
+*** no.4 tidak ada tabel khusus pekerja
+**** CodeAloJob -> Kode Aktivitas, penjelasannya ada di Wireframe || CodeBlok -> Kode Blok
+----------------------------------------------------------------
+Database: GPS_APS_EWS
+Table RKM:
+PR_TRX_RKH
+PR_TRX_RKHLN_MJOB
+PR_TRX_RKHLN_MBHN
+
+Table Master:
+GL_BLKGRP => Ga tau buat apa tabelnya
+GL_BLOK => Ga ada tablenya di GPS_APS_EWS/GPS_APS/GPS_GSJ  => namanya GL_BLOCK
+GL_SUBBLOK -> Dateplanted (Umur Tanaman) => Ga ada tablenya di GPS_APS_EWS/GPS_APS/GPS_GSJ => namanya GL_SUBBLK
+GL_SUBBLKHILL (Tabel Pokok) => Kode Tanaman dan Letak 
+HR_TRX_EMPLOYEE (Master Karyawan) -> Empcode, Empname => ga ada table di GPS_APS_EWS/GPS_APS/GPS_GSJ (Tabel Pekerja)
+HR_TRX_EMPMANDOR (Master Kemandoran) => 
+HR_TRX_EMPMANDORLN (Master Kemandoran) => 
+
+
+1. tabel pekerja di HR_TRX_EMPLOYE
+2. codeAlojob smaa dengan jobCode | parent job beda lagi
+3. 
+
+API
+===============Login================
+[POST] http://10.254.128.66:8000/oauth/token 														[TUJUAN] = untuk mendapatkan akses token dan refresh token
+[BODY]																								[DESC]
+	[																								
+        'grant_type' => 'password',																	di isi dengan "password"
+        'client_id' => 2,																			client id "2"
+        'client_secret' => CA7dgALwWEOScayx5uO06gCZ8HVx9bFUNXXhtZjZ,								client secret "CA7dgALwWEOScayx5uO06gCZ8HVx9bFUNXXhtZjZ"
+        'username' => 'username',																	username di isi sesuai dengan masing-masing akun
+        'password' => 'password',																	password di isi sesuai dengan masing-masing akun
+        'scope' => '',																				dikosongkan
+    ]
+[RETURN]																							
+	{
+	    "token_type": "Bearer",																		tipe token
+	    "expires_in": 1295999,																		token expire
+	    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjVmODZhNjA1MDZlOW...",		akses token untuk mengakses data API
+	    "refresh_token": "def502006f5abc9c5874c2e7100bc3af9d0dc8d7b0ecdc805de1f2419aace..."			token refresh untuk mengambil ulang akses token baru
+	}
+===============Refresh Token================
+[POST] http://10.254.128.66:8000/oauth/token 														[TUJUAN] = untuk mendapatkan akses token yang baru
+[BODY]																								[DESC]
+	[
+        'grant_type' => 'refresh_token',															di isi dengan "refresh_token"
+        'refresh_token' => 'def502006f5abc9c5874c2e7100bc3af9d0dc8d7b0ecdc80...',					isi dengan refresh token yang diambil ketika login
+        'client_id' => 2,																			client id "2"
+        'client_secret' => CA7dgALwWEOScayx5uO06gCZ8HVx9bFUNXXhtZjZ,								client secret "CA7dgALwWEOScayx5uO06gCZ8HVx9bFUNXXhtZjZ"
+        'username' => 'username',																	username di isi sesuai dengan masing-masing akun
+        'password' => 'password',																	password di isi sesuai dengan masing-masing akun
+        'scope' => '',																				dikosongkan
+    ]
+[RETURN]																							
+	{
+	    "token_type": "Bearer",																		tipe token
+	    "expires_in": 1295999,																		token expire
+	    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjVmODZhNjA1MDZlOW...",		akses token untuk mengakses data API
+	    "refresh_token": "def502006f5abc9c5874c2e7100bc3af9d0dc8d7b0ecdc805de1f2419aace..."			token refresh baru untuk mengambil ulang akses token baru
+	}
+===============GET USER================
+[GET] http://10.254.128.66:8000/api/user 															[TUJUAN] = untuk mendapatkan detail user
+[BODY]																								[DESC]
+	[
+        'grant_type' => 'refresh_token',															di isi dengan "refresh_token"
+        'refresh_token' => 'def502006f5abc9c5874c2e7100bc3af9d0dc8d7b0ecdc80...',					isi dengan refresh token yang diambil ketika login
+        'client_id' => 2,																			client id "2"
+        'client_secret' => CA7dgALwWEOScayx5uO06gCZ8HVx9bFUNXXhtZjZ,								client secret "CA7dgALwWEOScayx5uO06gCZ8HVx9bFUNXXhtZjZ"
+        'username' => 'username',																	username di isi sesuai dengan masing-masing akun
+        'password' => 'password',																	password di isi sesuai dengan masing-masing akun
+        'scope' => '',																				dikosongkan
+    ]
+[RETURN]																							
+	{
+	    "token_type": "Bearer",																		tipe token
+	    "expires_in": 1295999,																		token expire
+	    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjVmODZhNjA1MDZlOW...",		akses token untuk mengakses data API
+	    "refresh_token": "def502006f5abc9c5874c2e7100bc3af9d0dc8d7b0ecdc805de1f2419aace..."			token refresh baru untuk mengambil ulang akses token baru
+	}
+
+API:
+				user/					[GET]		=> Get All User
+				user/{$username}		[GET]		=> Get User By Username
+API:
+				rkm/					[GET]		=> Get All RKM Schedule where mandorcode and RKHdate
+API:
+				job/					[GET]		=> Get All Job where loccode='KL01' and SubCatID='TMP'
+				job/{$id}				[GET]		=> Get Job where loccode='KL01' and SubCatID='TMP' and Id=$id
+API:
+				plantloc/									[GET]		=> Get All Plant Location
+				plantloc/{$blok}							[GET]		=> Get All Plant where SubBlkCode=$blok
+				plantloc/{$blok}/{$plot}					[GET]		=> Get All Plant where SubBlkCode=$blok and Plot=$plot
+				plantloc/{$blok}/{$plot}/{$baris}			[GET]		=> Get All Plant where SubBlkCode=$blok and Plot=$plot and Baris=$row
+				plantloc/{$blok}/{$plot}/{$baris}/{$pokok}	[GET]		=> Get Plant where SubBlkCode=$blok and Plot=$plot Baris=$row and NoTanam=$pokok
+API:
+				worker/					[GET]		=> Get All Worker
+API:
+				care/				[POST]		=> Input data Plant Care, Fruit Care, Panen
+					[BODY] => {
+						idKegiatan		NotNull 	Berisi id bentuk kegiatan		
+						idPokok 		NotNull		Berisi lokasi pokok		
+						idKawil			Null 		Berisi id Kawil jika pengguna sebagai kawil		
+						idMandor 		NotNull 	Berisi id Mandor		
+						idPekerja 		NotNull 	Berisi id Tukang		
+						qrCode 			NotNull		Berisi QR Code		
+						mandorNote 		Null 		Berisi catatan dari mandor jika ada		
+						kawilNote 		Null 		Berisi catatan dari kawil jika ada		
+						totalHand		Null 		Berisi data jika melakukan marking		
+						totalFinger		Null 		Berisi data jika melakukan marking		
+						totalLeaf		Null 		Berisi data jika melakukan marking		
+						ribbonColor		Null 		Berisi data jika melakukan marking
+						skimmingSize	Null 		Berisi data jika melakukan skimming
+					}
+
+
+KAWIL
+	PEMUPUKAN
+		id
+		date
+		blok-plot-baris
+		pokok awal
+		pokok akhir
+		tk
+		mandor
+		note
+		qrcode
+	BI
+		id
+		date
+		pokok
+		tk
+		mandor
+		note
+		qrcode
+	MARKING
+		id
+		date
+		pokok
+		jmlhMinggu
+		tk
+		mandor
+		jmlHand
+		jmlFinger
+		jmlDaun
+		ribColor
+		note
+		qrcode
+	SKIMMING
+		id
+		date
+		pokok
+		jmlMinggu
+		tk
+		mandor
+		sizeSkim
+		note
+		qrcode
+MANDOR
+	PEMUPUKAN
+		id
+		date
+		blok
+		plot
+		baris
+		pokokAwal
+		pokokAkhir
+		tk
+		note
+		qrcode
+	BI
+		id
+		date
+		blok
+		plot
+		baris
+		pokok
+		tk
+		note
+		qrcode
+	MARKING
+		id
+		date
+		blok
+		plot
+		baris
+		pokok
+		jmlMinggu
+		tk
+		jmlHand
+		jmlFinger
+		jmlDaun
+		ribColor
+		note
+	SKIMMING
+		id
+		date
+		blok
+		plot
+		baris
+		pokok
+		tk
+		qrcode
+		jmlMinggu
+		simSize
+		note
+	PANEN
+		id
+		date
+		blok
+		plot
+		baris
+		pokok
+		tk
+		qrcode
+		note
