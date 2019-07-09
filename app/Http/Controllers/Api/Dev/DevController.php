@@ -1033,6 +1033,11 @@ class DevController extends Controller
 
 	        $user2[0]['RKM'] = $job2;
 
+	        ############################# CORRECTIVE ACTION #############################
+	        $user2[0]['CA'] = array();
+	        $ca2    = $this->removeWhitespace(DB::table('EWS_TRANS_SPI_SENSUS')->where('useridKawil', NULL)->get());
+	        $user2[0]['CA'] = $ca2;
+
 	        return $user2;
 	    }
 	    
@@ -3023,42 +3028,33 @@ class DevController extends Controller
 	                'week' => $request->week,
 	                'girth' => $request->girth,
 	                'jumlahDaun' => $request->jumlahDaun,
-	                'corrAct' => $request->corrAct,
+	                'corrActSPI' => $request->corrAct,
 	                'dueDate' => $dueDate,
-	                'created_at' => $created_at,
-	                'userid' => $request->userid,
+	                'created_atSPI' => $created_at,
+	                'useridSPI' => $request->userid,
 	            );
 
-	        try {
-                DB::table('EWS_TRANS_SPI_SENSUS')->insert($data);
-                $message['message'][] = 'Data berhasil di input';
-                $message['message'][] = $data;
-            } catch (\Exception  $e) {
-                $message['message'][] = $e->getMessage();
-            }
-
-	        // $check = DB::table('EWS_TRANS_SPI_SENSUS')
-	        // 			->where('codeTanaman', $request->codeTanaman)
-	        // 			->where('week', $request->week)
-	        // 			->value('id');
-	        // if (empty($check)) {
-	        //     # code...
-	        //     try {
-	        //         DB::table('EWS_TRANS_SPI_SENSUS')->insert($data);
-	        //         $message['message'][] = 'Data berhasil di input';
-	        //         $message['message'][] = $data;
-	        //     } catch (\Exception  $e) {
-	        //         $message['message'][] = $e->getMessage();
-	        //     }
-	        // }else{
-	        //     try {
-	        //         DB::table('EWS_TRANS_SPI_SENSUS')->where('id', $check)->update($data);
-	        //         $message['message'][] = 'Data berhasil di update';
-	        //         $message['message'][] = $data;
-	        //     } catch (\Exception  $e) {
-	        //         $message['message'][] = $e->getMessage();
-	        //     }
-	        // }
+	        $check = DB::table('EWS_TRANS_SPI_SENSUS')
+	        			->where('codeTanaman', $request->codeTanaman)
+	        			->value('id');
+	        if (empty($check)) {
+	            # code...
+	            try {
+	                DB::table('EWS_TRANS_SPI_SENSUS')->insert($data);
+	                $message['message'][] = 'Data berhasil di input';
+	                $message['message'][] = $data;
+	            } catch (\Exception  $e) {
+	                $message['message'][] = $e->getMessage();
+	            }
+	        }else{
+	            try {
+	                DB::table('EWS_TRANS_SPI_SENSUS')->where('id', $check)->update($data);
+	                $message['message'][] = 'Data berhasil di update';
+	                $message['message'][] = $data;
+	            } catch (\Exception  $e) {
+	                $message['message'][] = $e->getMessage();
+	            }
+	        }
 
 	        return response()->json($message, 200);
 	    }
