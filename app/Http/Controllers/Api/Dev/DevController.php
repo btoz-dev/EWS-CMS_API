@@ -1556,6 +1556,7 @@ class DevController extends Controller
 		            $this->move_to_top($listBT[$lbp], 'pokokNDone');
 		            $this->move_to_top($listBT[$lbp], 'pokokDone');
 		            $this->move_to_top($listBT[$lbp], 'blok');
+		        	unset($listBT[$lbp]['listPokok']);
 		        }
 		        if ($user2[0]['data'] == 'tandan') {
 		        	# code...
@@ -1577,13 +1578,14 @@ class DevController extends Controller
 		        # membuat data untuk HT (Bruto & Bonggol)
 		        $listHT = $listBlokPanen;
 		        foreach ($listHT as $lbp => $blokPanen) {
-		            # code...
+		        	$blokTtk = str_replace('-', '.', $blokPanen['blok']);
 		            foreach ($listPokokPanen as $lpp => $pokokPanen) {
 		                # masukkan pokok sesuai dengan bloknya
 		                if ($blokPanen['blok'] == $pokokPanen['blok']) {
+		                	$pokokPanen['code'] = str_replace($blokTtk.'.', '', $pokokPanen['code']);
 		                    # pokok panen id dibuat dari id pada aktifitas panen di tabel trans mandor.
-		                    $pokokPanen['id'] = 'QC;'.$pokokPanen['id'];
-		                    $pokokPanen['status'] = 0;
+		                    $pokokPanen['stat'] = 0;
+		                    unset($pokokPanen['id']);
 		                    unset($pokokPanen['blok']);
 		                    $listHT[$lbp]['listPokok'][] = $pokokPanen; 
 		                }
@@ -1593,9 +1595,9 @@ class DevController extends Controller
 		            foreach ($blokPanen['listPokok'] as $lp => $pokok) {
 		                foreach ($listMarking as $lm => $marking) {
 		                    if ($pokok['code'] == $marking['code']) {
-		                        $listHT[$lbp]['listPokok'][$lp]['ribbonColor'] = $marking['ribbonColor'];
+		                        $listHT[$lbp]['listPokok'][$lp]['ribClr'] = $marking['ribbonColor'];
 		                    } else {
-		                        $listHT[$lbp]['listPokok'][$lp]['ribbonColor'] = '-';
+		                        $listHT[$lbp]['listPokok'][$lp]['ribClr'] = '-';
 		                    }
 		                    
 		                }
@@ -1619,7 +1621,7 @@ class DevController extends Controller
 		            $pokokDone = 0;
 		            $pokokNDone = 0;
 		            foreach ($blokPanen['listPokok'] as $lpp => $pokokPanen) {
-		                if ($pokokPanen['status'] == 1) {
+		                if ($pokokPanen['stat'] == 1) {
 		                    $pokokDone++;
 		                }else{
 		                    $pokokNDone++;
@@ -1631,6 +1633,13 @@ class DevController extends Controller
 		            $this->move_to_top($listHT[$lbp], 'pokokNDone');
 		            $this->move_to_top($listHT[$lbp], 'pokokDone');
 		            $this->move_to_top($listHT[$lbp], 'blok');
+		        }
+
+	            # menghapus status di dalam listPokok
+		        foreach ($listHT as $lbp => $blokPanen) {
+		            foreach ($blokPanen['listPokok'] as $lpp => $pokokPanen) {
+		            	unset($listHT[$lbp]['listPokok'][$lpp]['stat']);
+		            }
 		        }
 		        $listChildJob = array(array(
 	                'subJobCode' => 3,
