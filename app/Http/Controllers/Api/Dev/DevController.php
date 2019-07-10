@@ -1035,8 +1035,68 @@ class DevController extends Controller
 
 	        ############################# CORRECTIVE ACTION #############################
 	        $user2[0]['CA'] = array();
-	        $ca2    = $this->removeWhitespace(DB::table('EWS_TRANS_SPI_SENSUS')->where('useridKawil', NULL)->get());
-	        $user2[0]['CA'] = $ca2;
+	        $listBlokCA = $this->removeWhitespace(DB::table('EWS_TRANS_SPI_SENSUS')
+	        	->select('codeBlok as blok')
+	            ->distinct('codeBlok')
+	        	->join('EWS_LOK_TANAMAN', 'EWS_TRANS_SPI_SENSUS.codeTanaman', '=', 'EWS_LOK_TANAMAN.codeTanaman')
+	        	->where('useridKawil', NULL)
+	        	->get());
+	        $listPlotCA = $this->removeWhitespace(DB::table('EWS_TRANS_SPI_SENSUS')
+	        	->select('codeBlok as blok', 'plot')
+	            ->distinct('codeBlok')
+	        	->join('EWS_LOK_TANAMAN', 'EWS_TRANS_SPI_SENSUS.codeTanaman', '=', 'EWS_LOK_TANAMAN.codeTanaman')
+	        	->where('useridKawil', NULL)
+	        	->get());
+	        $listBarisCA = $this->removeWhitespace(DB::table('EWS_TRANS_SPI_SENSUS')
+	        	->select('codeBlok as blok', 'plot', 'baris')
+	            ->distinct('codeBlok')
+	        	->join('EWS_LOK_TANAMAN', 'EWS_TRANS_SPI_SENSUS.codeTanaman', '=', 'EWS_LOK_TANAMAN.codeTanaman')
+	        	->where('useridKawil', NULL)
+	        	->get());
+	        $listPokokCA = $this->removeWhitespace(DB::table('EWS_TRANS_SPI_SENSUS')
+	        	->select('EWS_TRANS_SPI_SENSUS.codeTanaman as code', 'EWS_LOK_TANAMAN.codeBlok as blok', 'EWS_LOK_TANAMAN.plot', 'EWS_LOK_TANAMAN.baris')
+	        	->selectRaw('MAX(EWS_TRANS_SPI_SENSUS.week) as week')
+	        	->join('EWS_LOK_TANAMAN', 'EWS_TRANS_SPI_SENSUS.codeTanaman', '=', 'EWS_LOK_TANAMAN.codeTanaman')
+	        	->where('useridKawil', NULL)
+	        	->groupBy('EWS_TRANS_SPI_SENSUS.codeTanaman', 'EWS_LOK_TANAMAN.codeBlok', 'EWS_LOK_TANAMAN.plot', 'EWS_LOK_TANAMAN.baris')
+	        	->get());
+
+	        # MASUKIN PLOT-BARIS-POKOK ke dalam BLOK
+	        for ($a=0; $a < count($listBlokCA); $a++) { 
+	        	$dataBlok[$a] = $listBlokCA[$a];
+	        	for ($b=0; $b < count($listPlotCA); $b++) {
+	        		if ($dataBlok[$a]['blok'] == $listPlotCA[$b]['blok']) {
+	        		 	$dataBlok[$a]['listPlot'][$b] = $listPlotCA[$b];
+		        		for ($c=0; $c < count($listBarisCA); $c++) { 
+		        			if 	(($dataBlok[$a]['listPlot'][$b]['plot'] == $listBarisCA[$c]['plot']) && 
+		        				($dataBlok[$a]['listPlot'][$b]['blok'] == $listBarisCA[$c]['blok'])) {
+			        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c] = $listBarisCA[$c];
+			        			for ($d=0; $d < count($listPokokCA); $d++) { 
+			        				$pokok = $listPokokCA[$d];
+				        			if	(($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok'] == $listPokokCA[$d]['blok']) &&
+			        				 	($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot'] == $listPokokCA[$d]['plot']) && 
+				        				($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['baris'] == $listPokokCA[$d]['baris'])) {
+
+					        		 	unset($pokok['blok']);
+		                                unset($pokok['plot']);
+		                                unset($pokok['baris']);
+
+					        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
+				        			}
+			        			}
+		        				unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok']);
+                                unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot']);
+		        				$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok']);
+		        			}
+		        		}
+		        		unset($dataBlok[$a]['listPlot'][$b]['blok']);
+		        		$dataBlok[$a]['listPlot'][$b]['listBaris'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris']);
+        		 	} 
+	        	}
+        		$dataBlok[$a]['listPlot'] = array_values($dataBlok[$a]['listPlot']);
+	        }
+
+	        $user2[0]['CA'] = $dataBlok;
 
 	        return $user2;
 	    }
@@ -2535,6 +2595,7 @@ class DevController extends Controller
 
 	        $check = DB::table('EWS_TRANS_SPI_SENSUS')
 	        			->where('codeTanaman', $request->codeTanaman)
+	        			->where('week', $request->week)
 	        			->value('id');
 	        if (empty($check)) {
 	            # code...
