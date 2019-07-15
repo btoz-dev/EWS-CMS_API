@@ -60,7 +60,7 @@ class Trans extends Model
 	
 	public static function ph($job)
     {
-        # code...
+        # Berat Tandan
         if ($job == 'BT') {
             # code...
             $query = DB::table('EWS_VW_CMS_PH_BT_TRANS');
@@ -79,4 +79,17 @@ class Trans extends Model
         return $query;
     }
 
+    public static function custom($table, $arr = array())
+    {
+        if ($table == 'BLOK') {
+            $query = DB::select('EXEC EWS_sp_blokByDateAndJob @date = ?, @codeAloJob = ?', $arr);
+        }
+
+        if ($table == 'DETIL') {
+            # code...
+            $query = DB::select('EXEC EWS_sp_allPokokStatus @DATE = ?, @AKTIFITAS = ?, @PARENT = ?, @BLOK = ?, @RKH = ?', $arr);
+        }
+
+        return collect($query);
+    }
 }

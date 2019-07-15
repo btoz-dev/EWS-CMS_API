@@ -47,6 +47,9 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::post('postDropdown', 'CMS\CustomReportController@postDropdown')->name('postDropdown');
 	Route::post('postFilter', 'CMS\CustomReportController@postFilter')->name('postFilter');
 	Route::post('filterByDate', 'CMS\CustomReportController@filterByDate')->name('filterByDate');
+	Route::get('getDetilBlok', 'CMS\CustomReportController@getDetilBlok')->name('getDetilBlok');
+	Route::get('getDetilPokok', 'CMS\CustomReportController@getDetilPokok')->name('getDetilPokok');
+	Route::post('exportCustom', 'CMS\CustomReportController@exportCustom')->name('exportCustom');
 	
 	Route::post('chartDataSet', 'CMS\CustomReportController@chartDataSet')->name('getDataChart');
 
