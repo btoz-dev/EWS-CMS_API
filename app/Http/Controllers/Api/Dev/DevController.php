@@ -69,12 +69,9 @@ class DevController extends Controller
         unset($detailRole['created_at']);
         unset($detailRole['updated_at']);
         unset($detailRole['pivot']);
-        // $detailRole['nama'] = $detailRole['name'];
-        // unset($detailRole['name']);
         $user[0] = $user2;
         $user2 = $user;
 
-        // if ($detailRole['nama'] == "Mandor") {
         if ($detailRole['name'] == "Mandor") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
@@ -85,7 +82,6 @@ class DevController extends Controller
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
-        // if ($detailRole['nama'] == "Kawil") {
         else if ($detailRole['name'] == "Kawil") {
             $validator = Validator::make($request->all(), [
                 'date' => 'required|date|date_format:d-m-Y'
@@ -96,9 +92,7 @@ class DevController extends Controller
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
-        // if ($detailRole['nama'] == "Mandor PH") {
         else if ($detailRole['name'] == "Mandor PH") {
-        	// SESUDAH CR
             $validator = Validator::make($request->all(), [
                 'data' => [
                     'required', 
@@ -111,22 +105,6 @@ class DevController extends Controller
             $detailRole['nama'] = $detailRole['name'];
             unset($detailRole['name']);
             return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
-            // SESUDAH CR
-
-            // SEBELUM CR
-            // $validator = Validator::make($request->all(), [
-            //     'data' => [
-            //         'required', 
-            //         Rule::in(['bruto', 'bonggol'])
-            //     ],
-            // ]);
-            // if ($validator->fails()) {
-            //     return $this->errMessage(400,$validator->messages()->first());
-            // }
-            // $detailRole['nama'] = $detailRole['name'];
-            // unset($detailRole['name']);
-            // return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
-            // SEBELUM CR
         }
 
         else if ($detailRole['name'] == "SPI") {
@@ -1642,7 +1620,7 @@ class DevController extends Controller
 		            foreach ($listPokokPanen as $lpp => $pokokPanen) {
 		                # masukkan pokok sesuai dengan bloknya
 		                if ($blokPanen['blok'] == $pokokPanen['blok']) {
-		                	$pokokPanen['code'] = str_replace($blokTtk.'.', '', $pokokPanen['code']);
+		                	// $pokokPanen['code'] = str_replace($blokTtk.'.', '', $pokokPanen['code']);
 		                    # pokok panen id dibuat dari id pada aktifitas panen di tabel trans mandor.
 		                    $pokokPanen['stat'] = 0;
 		                    unset($pokokPanen['id']);
@@ -1671,7 +1649,7 @@ class DevController extends Controller
 		                    // $pokok = explode(';',$pokokPanen['id']);
 		                    // if ($pokok[1] == $trans['idEWSTransMandor']) {
 		                    if ($pokokPanen['code'] == $trans['codeTanaman']) {
-		                        $listHT[$lbp]['listPokok'][$lpp]['status'] = 1; 
+		                        $listHT[$lbp]['listPokok'][$lpp]['stat'] = 1; 
 		                    } 
 		                }
 		            }
@@ -1870,7 +1848,7 @@ class DevController extends Controller
 	            try {
 	                DB::table('EWS_TRANS_PH_BT')->insert($data);
 	                $message['message'][] = 'Data berhasil di input';
-	                $message['message'][] = $data;
+	                // $message['message'][] = $data;
 	            } catch (\Exception  $e) {
 	                $message['message'][] = $e->getMessage();
 	            }
@@ -1878,7 +1856,7 @@ class DevController extends Controller
 	            try {
 	                DB::table('EWS_TRANS_PH_BT')->where('id', $check)->update($data);
 	                $message['message'][] = 'Data berhasil di update';
-	                $message['message'][] = $data;
+	                // $message['message'][] = $data;
 	            } catch (\Exception  $e) {
 	                $message['message'][] = $e->getMessage();
 	            }
@@ -1958,7 +1936,7 @@ class DevController extends Controller
 	            try {
 	                DB::table('EWS_TRANS_PH_HT')->insert($data);
 	                $message['message'][] = 'Data berhasil di input';
-	                $message['message'][] = $data;
+	                // $message['message'][] = $data;
 	            } catch (\Exception  $e) {
 	                $message['message'][] = $e->getMessage();
 	            }
@@ -1966,7 +1944,7 @@ class DevController extends Controller
 	            try {
 	                DB::table('EWS_TRANS_PH_HT')->where('id', $check)->update($data);
 	                $message['message'][] = 'Data berhasil di update';
-	                $message['message'][] = $data;
+	                // $message['message'][] = $data;
 	            } catch (\Exception  $e) {
 	                $message['message'][] = $e->getMessage();
 	            }
@@ -2011,7 +1989,7 @@ class DevController extends Controller
 	        try {
 	            DB::table('EWS_TRANS_PH_CLT')->insert($data);
 	            $message['message'][] = 'Data berhasil di input';
-	            $message['message'][] = $data;
+	            // $message['message'][] = $data;
 	        } catch (\Exception  $e) {
 	            $message['message'][] = $e->getMessage();
 	        }
@@ -2935,6 +2913,10 @@ class DevController extends Controller
                 if (isset($arr[$key]['codeBlok'])) {
                     # code...
                     $arr[$key]['codeBlok'] = str_replace('-', '.', $arr[$key]['codeBlok']);
+                }
+                if (isset($arr[$key]['blok'])) {
+                    # code...
+                    $arr[$key]['blok'] = str_replace('-', '.', $arr[$key]['blok']);
                 }
             }
             // $arr = json_encode($arr, JSON_PRETTY_PRINT);
