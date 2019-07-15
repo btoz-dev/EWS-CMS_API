@@ -2414,7 +2414,7 @@ class DevController extends Controller
 	    public function spiSensus($user2)
 	    {
 	    	$listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-	    		->selectRaw('codeTanaman as code, codeBlok as blok, plot, baris, noTanam, PlantingDate, DATEDIFF(wk, PlantingDate,GETDATE()) as week')
+	    		->selectRaw('codeTanaman as code, codeBlok as blok, plot, baris, noTanam, DATEDIFF(wk, PlantingDate,GETDATE()) as week')
 	    		->whereRaw('DATEDIFF(wk, PlantingDate,GETDATE()) % 4 = 0')
 	            ->get());
 	        if (empty($listPokok2)) {
@@ -2466,27 +2466,21 @@ class DevController extends Controller
 				        			if	(($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok'] == $listPokok2[$d]['blok']) &&
 			        				 	($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot'] == $listPokok2[$d]['plot']) && 
 				        				($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['baris'] == $listPokok2[$d]['baris'])) {
-
-			        				 	$date = date_create($pokok['PlantingDate']);
-                                        $pokok['date'] = date_format($date, 'd F Y');
-                                        unset($pokok['PlantingDate']);
-
 					        		 	unset($pokok['blok']);
 		                                unset($pokok['plot']);
 		                                unset($pokok['baris']);
 		                                unset($pokok['noTanam']);
 					        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
 
-				        				$allPokokPlot = $pokok;
-				        				unset($allPokokPlot['blok']);
-										unset($allPokokPlot['plot']);
-										unset($allPokokPlot['baris']);
-										unset($allPokokPlot['noTanam']);
-										unset($allPokokPlot['PlantingDate']);
-										unset($allPokokPlot['week']);
-										unset($allPokokPlot['status']);
-										unset($allPokokPlot['date']);
-				        		 		$dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
+				      //   				$allPokokPlot = $pokok;
+				      //   				unset($allPokokPlot['blok']);
+										// unset($allPokokPlot['plot']);
+										// unset($allPokokPlot['baris']);
+										// unset($allPokokPlot['noTanam']);
+										// unset($allPokokPlot['week']);
+										// unset($allPokokPlot['status']);
+										// unset($allPokokPlot['date']);
+				      //   		 		$dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
 				        			}
 			        			}
 		        				unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok']);
