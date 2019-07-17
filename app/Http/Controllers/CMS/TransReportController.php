@@ -8,6 +8,7 @@ use App\Trans;
 use App\Exports\MandorExport;
 use App\Exports\KawilExport;
 use App\Exports\PHExport;
+use App\Exports\SPIExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -191,12 +192,12 @@ class TransReportController extends CMSController
 		return Excel::download($export, 'trans.xlsx');
     }
 
-    public function phbtReport(Request $request)
+    public function phtbReport(Request $request)
     {
         # code...
         if ($request->ajax()) {
 
-            $query = Trans::ph('BT');
+            $query = Trans::ph('TB');
 
             if ($request->date_aw != NULL) {
                 # code...
@@ -204,7 +205,7 @@ class TransReportController extends CMSController
                 $query->orWhereBetween('bonggolDate', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
             }else {
                 $query->whereBetween('brutoDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
-            	$query->orWhereBetween('bonggolDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+                $query->orWhereBetween('bonggolDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
             }
 
             $res = $query->get();
@@ -221,7 +222,67 @@ class TransReportController extends CMSController
                 ->make(true);
         }
 
+        return view('cms.phtbReport');
+    }
+
+    public function phbtReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
+
+            $query = Trans::ph('BT');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('brutoDate', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+                $query->whereBetween('brutoDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->editColumn('brutoDate', function ($report) {
+                    $tgl = date_create($report['brutoDate']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->make(true);
+        }
+
         return view('cms.phbtReport');
+    }
+
+    public function phbbReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
+
+            $query = Trans::ph('BB');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('bonggolDate', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+                $query->whereBetween('bonggolDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->editColumn('bonggolDate', function ($report) {
+                    $tgl = date_create($report['bonggolDate']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->make(true);
+        }
+
+        return view('cms.phbbReport');
     }
 
     public function phhtReport(Request $request)
@@ -243,6 +304,11 @@ class TransReportController extends CMSController
             $report = $this->removeWhitespace($res);
 
             return DataTables::of($report)
+                ->editColumn('date', function ($report) {
+                    $tgl = date_create($report['date']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
                 ->make(true);
         }
 
@@ -268,6 +334,11 @@ class TransReportController extends CMSController
             $report = $this->removeWhitespace($res);
 
             return DataTables::of($report)
+                ->editColumn('date', function ($report) {
+                    $tgl = date_create($report['date']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
                 ->make(true);
         }
 
@@ -286,7 +357,89 @@ class TransReportController extends CMSController
         return Excel::download($export, 'trans.xlsx');
     }
 
+    public function spiMandorReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
 
+            $query = Trans::spi('MANDOR');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_at', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+                $query->whereBetween('created_at', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->editColumn('created_at', function ($report) {
+                    $tgl = date_create($report['created_at']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->make(true);
+        }
+
+        return view('cms.spiMandorReport');
+    }
+
+    public function spiSensusReport(Request $request)
+    {
+        # code...
+        if ($request->ajax()) {
+
+            $query = Trans::spi('SENSUS');
+
+            if ($request->date_aw != NULL) {
+                # code...
+                $query->whereBetween('created_atSPI', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+                $query->orWhereBetween('created_atKawil', [$request->date_aw, $request->date_ak." 23:59:59.000"]);
+            }else {
+                $query->whereBetween('created_atSPI', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+                $query->orWhereBetween('created_atKawil', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+            }
+
+            $res = $query->get();
+
+            $report = $this->removeWhitespace($res);
+
+            return DataTables::of($report)
+                ->editColumn('dueDate', function ($report) {
+                    $tgl = date_create($report['dueDate']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->editColumn('created_atSPI', function ($report) {
+                    $tgl = date_create($report['created_atSPI']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->editColumn('created_atKawil', function ($report) {
+                    $tgl = date_create($report['created_atKawil']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->make(true);
+        }
+
+        return view('cms.spiSensusReport');
+    }
+
+    public function exportSPI(Request $request)
+    {
+        # code...
+        $export = new SPIExport();
+        $export->setHeading($request->heading);
+        $export->setJob($request->job);
+        $export->setDateAw($request->date_aw);
+        $export->setDateAk($request->date_ak);
+
+        return Excel::download($export, 'trans.xlsx');
+    }
 
     /**
      * Show the form for creating a new resource.
