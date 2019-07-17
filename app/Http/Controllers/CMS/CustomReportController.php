@@ -80,21 +80,22 @@ class CustomReportController extends CMSController
             $res = $this->removeWhitespace($query);
 
             return DataTables::of($res)
-                    ->addColumn('aksi', function ($res)
-                    {
-                        $parent_aktifitas = $this->removeWhitespace2(DB::table("EWS_SUB_JOB")->select("jobCode")->where("subJobCode", $res['codeAlojob'])->value("jobCode"));
-                        return "
-                        <button type='submit' class='btn btn-primary' id='showDetail' 
-                        data-date='".$res['rkhDate']."'
-                        data-aktifitas='".$res['codeAlojob']."'
-                        data-parent='".$parent_aktifitas[0]."'
-                        data-blok='".$res['codeBlok']."'
-                        data-rkh='".$res['rkhCode']."'
-                        >Detail</button>
-                        ";
-                    })
-                    ->rawColumns(['aksi'])
-                    ->make(true);
+                ->addColumn('aksi', function ($res)
+                {
+                    $parent_aktifitas = $this->removeWhitespace2(DB::table("EWS_SUB_JOB")->select("jobCode")->where("subJobCode", $res['codeAlojob'])->value("jobCode"));
+                    return "
+                    <button type='submit' class='btn btn-primary' id='showDetail' 
+                    data-date='".$res['rkhDate']."'
+                    data-aktifitas='".$res['codeAlojob']."'
+                    data-parent='".$parent_aktifitas[0]."'
+                    data-blok='".$res['codeBlok']."'
+                    data-rkh='".$res['rkhCode']."'
+                    data-id='".$res['id']."'
+                    >Detail</button>
+                    ";
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
         }
         return FALSE;
     }
@@ -103,11 +104,16 @@ class CustomReportController extends CMSController
     {
         if ($request->ajax()) {
 
-            $query = Trans::custom('DETIL', array($request->date, $request->aktifitas, $request->parent, $request->blok, $request->rkh));
+            $query = Trans::custom('DETIL', array($request->date, $request->aktifitas, $request->parent, $request->blok, $request->rkh, $request->id));
             $res = $this->removeWhitespace($query);
 
             return DataTables::of($res)
-                    ->make(true);
+        		// ->editColumn('kawilDate', function ($report) {
+          //           $tgl = date_create($report['kawilDate']);
+          //           $tgl2 = date_format($tgl, 'd M Y');
+          //           return $tgl2;
+          //       })
+                ->make(true);
         }
     }
 

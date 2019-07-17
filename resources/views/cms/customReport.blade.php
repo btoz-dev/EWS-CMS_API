@@ -125,6 +125,10 @@
     <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/chart.js') }}"></script>
     <script type="text/javascript">
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         // Options header for post 
         $.ajaxSetup({
             headers: {
@@ -286,9 +290,9 @@
                 },
                 columns: [
                     {data: 'codeBlok', name: 'codeBlok'},
-                    {data: 'totalPokok', name: 'totalPokok'},
-                    {data: 'pokokDone', name: 'pokokDone'},
-                    {data: 'pokokNDone', name: 'pokokNDone'},
+                    {data: 'totalPokok', name: 'totalPokok', render: function (a) { return numberWithCommas(a) }},
+                    {data: 'pokokDone', name: 'pokokDone', render: function (a) { return numberWithCommas(a) }},
+                    {data: 'pokokNDone', name: 'pokokNDone', render: function (a) { return numberWithCommas(a) }},
                     {data: 'persentase', name: 'persentase'},
                     {data: 'aksi', name: 'aksi', orderable: false, searchable: false}
                 ],
@@ -304,7 +308,7 @@
                             return x + y;
                             }, 0);
                         // console.log(sum); //alert(sum);
-                        $(this.footer()).html(sum);
+                        $(this.footer()).html(numberWithCommas(sum));
                     });
                     $(api.columns(4).footer()).html(function() {
                         var total = parseFloat($(tfoot).find('th').eq(1).text());
@@ -327,6 +331,7 @@
                     data_parent = $(this).data('parent'),
                     data_blok = $(this).data('blok'),
                     data_rkh = $(this).data('rkh');
+                    data_id = $(this).data('id');
                 if (data_parent == '003') {
                     var columns2 = [
                         {data: 'codeTanaman', name: 'codeTanaman'},
@@ -367,7 +372,7 @@
                                 class: 'form-control mx-sm-3 btn btn-success',
                                 
                             },
-                            data: [data_date, data_aktifitas, data_parent, data_blok, data_rkh],
+                            data: [data_date, data_aktifitas, data_parent, data_blok, data_rkh, data_id],
                             action: function ( e, dt, node, config ) {
                                 var url = '{{route('exportCustom')}}';
                                 var params = { 
@@ -418,7 +423,8 @@
                             d.aktifitas = data_aktifitas,
                             d.parent = data_parent,
                             d.blok = data_blok,
-                            d.rkh = data_rkh
+                            d.rkh = data_rkh,
+                            d.id = data_id
                         }
                     },
                     columns: columns2,
