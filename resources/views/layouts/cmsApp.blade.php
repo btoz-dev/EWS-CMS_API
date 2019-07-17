@@ -68,6 +68,14 @@
                                 </a>
                             </li>
                         @endcan
+                        @can('view_clt')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->is('clt*') ? 'active' : '' }}" href="{{ url('/clt') }}">
+                                <i class="fas fa-boxes"></i>
+                                CLT Produk
+                                </a>
+                            </li>
+                        @endcan
                         @can('view_rkmReport')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->is('rkmReport*') ? 'active' : '' }}" href="{{ url('/rkmReport') }}">
@@ -124,19 +132,35 @@
                                 </a>
                             </li>
                         @endcan
-                        @can('view_phBTReport')
+                        @can('view_phTBReport')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('phbtReport*') ? 'active' : '' }}" href="{{ url('/phbtReport') }}">
+                            <a class="nav-link {{ request()->is('phtbReport*') ? 'active' : '' }}" href="{{ url('/phtbReport') }}">
                             <i class="far fa-chart-bar"></i>
-                            PH BT Reports
+                            PH Tandan Reports
                             </a>
                         </li>
                         @endcan
+                        <!-- @can('view_phBTReport')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('phbtReport*') ? 'active' : '' }}" href="{{ url('/phbtReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            PH Berat Tandan Reports
+                            </a>
+                        </li>
+                        @endcan
+                        @can('view_phBBReport')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('phbbReport*') ? 'active' : '' }}" href="{{ url('/phbbReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            PH Berat Bonggol Reports
+                            </a>
+                        </li>
+                        @endcan -->
                         @can('view_phHTReport')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('phhtReport*') ? 'active' : '' }}" href="{{ url('/phhtReport') }}">
                             <i class="far fa-chart-bar"></i>
-                            PH HT Reports
+                            PH Quality Control Reports
                             </a>
                         </li>
                         @endcan
@@ -144,7 +168,23 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('phcltReport*') ? 'active' : '' }}" href="{{ url('/phcltReport') }}">
                             <i class="far fa-chart-bar"></i>
-                            PH CLT Reports
+                            PH Cek List Timbang Reports
+                            </a>
+                        </li>
+                        @endcan
+                        @can('view_spiMandorReport')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('spiMandorReport*') ? 'active' : '' }}" href="{{ url('/spiMandorReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            SPI Mandor Reports
+                            </a>
+                        </li>
+                        @endcan
+                        @can('view_spiSensusReport')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('spiSensusReport*') ? 'active' : '' }}" href="{{ url('/spiSensusReport') }}">
+                            <i class="far fa-chart-bar"></i>
+                            SPI Sensus Reports
                             </a>
                         </li>
                         @endcan
