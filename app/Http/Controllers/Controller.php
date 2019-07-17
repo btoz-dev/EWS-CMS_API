@@ -23,20 +23,26 @@ class Controller extends BaseController
     
     public function removeWhitespace($arr)
     {
-        $arr = json_decode($arr,TRUE);
-        foreach ($arr as $key => $value) {
-            # code...
-            $arr[$key] = array_map('rtrim',$arr[$key]);
+        if (!empty($arr)) {
+            $arr = json_decode(json_encode($arr),TRUE);
+            foreach ($arr as $key => $value) {
+                $arr[$key] = array_map('rtrim',$arr[$key]);
+            }
+            return $arr;
+        } else {
+            return false;
         }
-        // $arr = json_encode($arr, JSON_PRETTY_PRINT);
-        return $arr;
     }
 
     public function removeWhitespace2($arr)
     {
-        $arr = (array) $arr;
-        $arr = array_map('rtrim',$arr);
+        if (!empty($arr)) {
+            $arr = (array) $arr;
+            $arr = array_map('rtrim',$arr);
 
-        return $arr;
+            return $arr;
+        } else {
+            return false;
+        }
     }
 }
