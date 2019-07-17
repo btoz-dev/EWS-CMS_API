@@ -4,7 +4,7 @@
     <div class="container">
         <hr>
         <div class="card rounded-0">
-          <h5 class="card-header">Packing House Quality Control Report</h5>
+          <h5 class="card-header">Packing House Berat Bonggol Report</h5>
           <div class="card-body">
             <form method="POST" id="search-form" class="form-inline" role="form">
 
@@ -42,27 +42,9 @@
                         <th>Kode Tanaman</th>
                         <th>Nama PH</th>
                         <th>TK PH</th>
-                        <th>Hand Class </th>
-                        <th>Calibrasi/Hand Class 2 </th>
-                        <th>Calibrasi/Hand Class 4 </th>
-                        <th>Calibrasi/Hand Class 6 </th>
-                        <th>Calibrasi/Hand Class 8 </th>
-                        <th>Calibrasi/Hand Class 10 </th>
-                        <th>Calibrasi/Hand Class Akhir </th>
-                        <th>Finger Length 2 </th>
-                        <th>Finger Length 4 </th>
-                        <th>Finger Length 6 </th>
-                        <th>Finger Length 8 </th>
-                        <th>Finger Length 10 </th>
-                        <th>Finger Length Akhir </th>
-                        <th>Jumlah Finger/Hand Class 2 </th>
-                        <th>Jumlah Finger/Hand Class 4 </th>
-                        <th>Jumlah Finger/Hand Class 6 </th>
-                        <th>Jumlah Finger/Hand Class 8 </th>
-                        <th>Jumlah Finger/Hand Class 10 </th>
-                        <th>Jumlah Finger/Hand Class Akhir </th>
+                        <th>Berat</th>
                         <th>Catatan</th>
-                        <th>Date</th>
+                        <th>Tanggal</th>
                     </tr>
                 </thead>
             </table>
@@ -87,7 +69,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('phhtReport.index') }}',
+                url: '{{ route('phbbReport.index') }}',
                 data: function (d) {
                     d.date_aw = $('input[name=date_aw]').val();
                     d.date_ak = $('input[name=date_ak]').val();
@@ -97,27 +79,9 @@
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'name', name: 'name'},
                 {data: 'namaPekerja', name: 'namaPekerja'},
-                {data: 'HandClass', name: 'HandClass'}, 
-                {data: 'CalHandClass2', name: 'CalHandClass2'}, 
-                {data: 'CalHandClass4', name: 'CalHandClass4'}, 
-                {data: 'CalHandClass6', name: 'CalHandClass6'}, 
-                {data: 'CalHandClass8', name: 'CalHandClass8'}, 
-                {data: 'CalHandClass10', name: 'CalHandClass10'}, 
-                {data: 'CalHandClassAkhir', name: 'CalHandClassAkhir'}, 
-                {data: 'FingerLen2', name: 'FingerLen2'}, 
-                {data: 'FingerLen4', name: 'FingerLen4'}, 
-                {data: 'FingerLen6', name: 'FingerLen6'}, 
-                {data: 'FingerLen8', name: 'FingerLen8'}, 
-                {data: 'FingerLen10', name: 'FingerLen10'}, 
-                {data: 'FingerLenAkhir', name: 'FingerLenAkhir'}, 
-                {data: 'FingerHand2', name: 'FingerHand2'}, 
-                {data: 'FingerHand4', name: 'FingerHand4'}, 
-                {data: 'FingerHand6', name: 'FingerHand6'}, 
-                {data: 'FingerHand8', name: 'FingerHand8'}, 
-                {data: 'FingerHand10', name: 'FingerHand10'}, 
-                {data: 'FingerHandAkhir', name: 'FingerHandAkhir'},
-                {data: 'Notes', name: 'Notes'},
-                {data: 'date', name: 'date'},
+                {data: 'bonggolBerat', name: 'bonggolBerat'},
+                {data: 'bonggolNote', name: 'bonggolNote'},
+                {data: 'bonggolDate', name: 'bonggolDate'},
             ],
         });
 
@@ -152,7 +116,7 @@
             var url = '{{route('exportPH')}}';
             var params = { 
                     heading: headings, 
-                    job: "HT", 
+                    job: "BB", 
                     date_aw: $('input[name=date_aw]').val(), 
                     date_ak: $('input[name=date_ak]').val() 
                 };

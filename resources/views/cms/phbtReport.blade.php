@@ -39,19 +39,12 @@
             <table class="table table-striped table-sm" id="data-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Kode Tanaman</th>
-                        <th>Berat Bruto</th>
-                        <th>Berat Bonggol</th>
-                        <th>Berat Bersih</th>
-                        <th>Catatan Bruto</th>
-                        <th>Catatan Bonggol</th>
-                        <th>Tanggal Timbang Bruto</th>
-                        <th>Tanggal Timbang Bonggol</th>
-                        <th>Penimbang Bruto</th>
-                        <th>Penimbang Bonggol</th>
-                        <th>TK Bruto</th>
-                        <th>TK Bonggol</th>
+                        <th>Nama PH</th>
+                        <th>TK PH</th>
+                        <th>Berat</th>
+                        <th>Catatan</th>
+                        <th>Tanggal</th>
                     </tr>
                 </thead>
             </table>
@@ -73,17 +66,6 @@
             $("#loading-export").hide();
         });
         var oTable = $('#data-table').DataTable({
-            // buttons: [
-            //     {
-            //         extend: 'excel',
-            //         text: 'Save current page',
-            //         exportOptions: {
-            //             modifier: {
-            //                 page: 'all'
-            //             }
-            //         }
-            //     }
-            // ],
             processing: true,
             serverSide: true,
             ajax: {
@@ -94,24 +76,13 @@
                 }
             },
             columns: [
-                {data: 'id', name: 'id'},
                 {data: 'codeTanaman', name: 'codeTanaman'},
+                {data: 'name', name: 'name'},
+                {data: 'namaPekerja', name: 'namaPekerja'},
                 {data: 'brutoBerat', name: 'brutoBerat'},
-                {data: 'bonggolBerat', name: 'bonggolBerat'},
-                {data: 'beratBersih', name: 'beratBersih'},
                 {data: 'brutoNote', name: 'brutoNote'},
-                {data: 'bonggolNote', name: 'bonggolNote'},
                 {data: 'brutoDate', name: 'brutoDate'},
-                {data: 'bonggolDate', name: 'bonggolDate'},
-                {data: 'userBruto', name: 'userBruto'},
-                {data: 'userBonggol', name: 'userBonggol'},
-                {data: 'TKBruto', name: 'TKBruto'},
-                {data: 'TKBonggol', name: 'TKBonggol'},
             ],
-            // initComplete : function () {
-            //     oTable.buttons().container()
-            //            .appendTo( $('#search-form .form-group:eq(3)'));
-            // }
         });
 
         var headings = [];

@@ -47,7 +47,7 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
         $query =  Trans::ph($this->job);
 
         switch ($this->job) {
-            case 'BT':
+            case 'TB':
                 if ($this->date_aw != NULL) {
                     # code...
                     $query->whereBetween('brutoDate', [$this->date_aw, $this->date_ak." 23:59:59.000"]);
@@ -55,6 +55,24 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
                 } else {
                     $query->whereBetween('brutoDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
                     $query->orWhereBetween('bonggolDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+                }
+                break;
+
+            case 'BT':
+                if ($this->date_aw != NULL) {
+                    # code...
+                    $query->whereBetween('brutoDate', [$this->date_aw, $this->date_ak." 23:59:59.000"]);
+                } else {
+                    $query->whereBetween('brutoDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
+                }
+                break;
+
+            case 'BB':
+                if ($this->date_aw != NULL) {
+                    # code...
+                    $query->whereBetween('bonggolDate', [$this->date_aw, $this->date_ak." 23:59:59.000"]);
+                } else {
+                    $query->whereBetween('bonggolDate', [date('Y-m-d'), date('Y-m-d')." 23:59:59.000"]);
                 }
                 break;
             
@@ -78,7 +96,7 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
 
     public function map($phExport): array
     {
-        if ($this->job == 'BT') {
+        if ($this->job == 'TB') {
             # code...
             return [
                 $phExport->id,
@@ -94,6 +112,32 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
                 $phExport->userBonggol,
                 $phExport->TKBruto,
                 $phExport->TKBonggol
+            ];
+        }
+
+        if ($this->job == 'BT') {
+            # code...
+            return [
+                $phExport->id,
+                $phExport->codeTanaman,
+                $phExport->name,
+                $phExport->namaPekerja,
+                $phExport->brutoBerat,
+                $phExport->brutoNote,
+                $phExport->brutoDate,
+            ];
+        }
+
+        if ($this->job == 'BB') {
+            # code...
+            return [
+                $phExport->id,
+                $phExport->codeTanaman,
+                $phExport->name,
+                $phExport->namaPekerja,
+                $phExport->bonggolBerat,
+                $phExport->bonggolNote,
+                $phExport->bonggolDate,
             ];
         }
 
