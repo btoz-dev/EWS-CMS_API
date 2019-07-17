@@ -41,6 +41,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Kode RKH</th>
+                        <th>Tgl RKH</th>
                         <th>Mandor</th>
                         <th>TK</th>
                         <th>Pekerjaan</th>
@@ -92,6 +93,7 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'rkhCode', name: 'rkhCode'},
+                {data: 'rkhDate', name: 'rkhDate'},
                 {data: 'mandor', name: 'mandor'},
                 {data: 'tk', name: 'tk'},
                 {data: 'Description', name: 'Description'},
@@ -100,6 +102,7 @@
                 {data: 'mandorNote', name: 'mandorNote'},
                 {data: 'created_at', name: 'created_at'},
             ],
+            // deferRender: true,
             // initComplete : function () {
             //     oTable.buttons().container()
             //            .appendTo( $('#search-form .form-group:eq(3)'));

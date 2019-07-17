@@ -66,6 +66,7 @@ class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, With
             return [
                 $mandorExport->id,
                 $mandorExport->rkhCode,
+                $mandorExport->rkhDate,
                 $mandorExport->mandor,
                 $mandorExport->tk,
                 $mandorExport->Description,
@@ -81,6 +82,7 @@ class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, With
             return [
                 $mandorExport->id,
                 $mandorExport->rkhCode,
+                $mandorExport->rkhDate,
                 $mandorExport->mandor,
                 $mandorExport->tk,
                 $mandorExport->Description,
@@ -100,6 +102,7 @@ class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, With
             return [
                 $mandorExport->id,
                 $mandorExport->rkhCode,
+                $mandorExport->rkhDate,
                 $mandorExport->mandor,
                 $mandorExport->tk,
                 $mandorExport->Description,

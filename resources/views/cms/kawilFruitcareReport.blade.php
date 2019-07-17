@@ -44,6 +44,7 @@
                         <th>Catatan Kawil</th>
                         <th>Date</th>
                         <th>RKH</th>
+                        <th>Tgl RKH</th>
                         <th>Aktifitas</th>
                         <th>Mandor</th>
                         <th>TK</th>
@@ -90,6 +91,7 @@
                 {data: 'kawilNote', name: 'kawilNote'},
                 {data: 'created_at', name: 'created_at'},
                 {data: 'rkhCode', name: 'rkhCode'},
+                {data: 'rkhDate', name: 'rkhDate'},
                 {data: 'Description', name: 'Description'},
                 {data: 'mandor', name: 'mandor'},
                 {data: 'tk', name: 'tk'},
