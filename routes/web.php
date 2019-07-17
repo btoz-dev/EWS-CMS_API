@@ -15,7 +15,7 @@ Auth::routes();
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('dashboard', 'CMSController@dashboard');#->name('home');
+Route::get('dashboard', 'CMSController@dashboard')->name('home');
 
 Route::group( ['middleware' => ['auth']], function() {
 	Route::resource('users', 'UserController');
@@ -24,6 +24,7 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::resource('usermgmt', 'CMS\UsermgmtController');
 	// Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
 	// Route::post('usermgmtCallDropdownEdit', 'CMS\UsermgmtController@callDropdownEdit')->name('usermgmt.callDropdownEdit');
+	Route::resource('clt', 'CMS\CLTController');
 
 	Route::get('mandorPlantcareReport', 'CMS\TransReportController@mandorPlantcare')->name('mandorPlantcareReport.index');
 	Route::get('mandorFruitcareReport', 'CMS\TransReportController@mandorFruitcare')->name('mandorFruitcareReport.index');
@@ -35,10 +36,16 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::get('kawilPanenReport', 'CMS\TransReportController@kawilPanen')->name('kawilPanenReport.index');
 	Route::post('exportKawil', 'CMS\TransReportController@exportKawil')->name('exportKawil');
 
+	Route::get('phtbReport', 'CMS\TransReportController@phtbReport')->name('phtbReport.index');
 	Route::get('phbtReport', 'CMS\TransReportController@phbtReport')->name('phbtReport.index');
+	Route::get('phbbReport', 'CMS\TransReportController@phbbReport')->name('phbbReport.index');
 	Route::get('phhtReport', 'CMS\TransReportController@phhtReport')->name('phhtReport.index');
 	Route::get('phcltReport', 'CMS\TransReportController@phcltReport')->name('phcltReport.index');
 	Route::post('exportPH', 'CMS\TransReportController@exportPH')->name('exportPH');
+
+	Route::get('spiMandorReport', 'CMS\TransReportController@spiMandorReport')->name('spiMandorReport.index');
+	Route::get('spiSensusReport', 'CMS\TransReportController@spiSensusReport')->name('spiSensusReport.index');
+	Route::post('exportSPI', 'CMS\TransReportController@exportSPI')->name('exportSPI');
 
 	Route::get('rkmReport', 'CMS\RKMReportController@index')->name('rkmReport.index');
 	Route::post('exportRKM', 'CMS\RKMReportController@exportRKM')->name('exportRKM');
