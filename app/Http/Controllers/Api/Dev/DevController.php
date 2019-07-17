@@ -2472,15 +2472,15 @@ class DevController extends Controller
 		                                unset($pokok['noTanam']);
 					        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
 
-				      //   				$allPokokPlot = $pokok;
-				      //   				unset($allPokokPlot['blok']);
-										// unset($allPokokPlot['plot']);
-										// unset($allPokokPlot['baris']);
-										// unset($allPokokPlot['noTanam']);
-										// unset($allPokokPlot['week']);
-										// unset($allPokokPlot['status']);
-										// unset($allPokokPlot['date']);
-				      //   		 		$dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
+				        				$allPokokPlot = $pokok;
+				        				unset($allPokokPlot['blok']);
+										unset($allPokokPlot['plot']);
+										unset($allPokokPlot['baris']);
+										unset($allPokokPlot['noTanam']);
+										unset($allPokokPlot['week']);
+										unset($allPokokPlot['status']);
+										unset($allPokokPlot['date']);
+				        		 		$dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
 				        			}
 			        			}
 		        				unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok']);
