@@ -13,7 +13,7 @@ class Trans extends Model
     	# code...
     	$query = DB::table('EWS_VW_CMS_MANDOR_TRANS')
 	                ->select('*')
-	                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at');
+	                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at, convert(CHAR(11), rkhDate, 113) as rkhDate');
 
     	if ($job == 'PLANTCARE') {
     		# code...
@@ -38,7 +38,7 @@ class Trans extends Model
     	# code...
     	$query = DB::table('EWS_VW_CMS_KAWIL_TRANS')
 	                ->select('*')
-	                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at');
+	                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at, convert(CHAR(11), rkhDate, 113) as rkhDate');
 
     	if ($job == 'PLANTCARE') {
     		# code...
@@ -60,20 +60,49 @@ class Trans extends Model
 	
 	public static function ph($job)
     {
+        # Tandan - Bonggol
+        if ($job == 'TB') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_PH_TB_TRANS');
+        }
+
         # Berat Tandan
         if ($job == 'BT') {
             # code...
             $query = DB::table('EWS_VW_CMS_PH_BT_TRANS');
         }
 
+        # Berat Bonggol
+        if ($job == 'BB') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_PH_BB_TRANS');
+        }
+
         if ($job == 'HT') {
             # code...
-            $query = DB::table('EWS_VW_CMS_PH_HT_TRANS');
+            $query = DB::table('EWS_VW_CMS_PH_QC_TRANS');
         }
         
         if ($job == 'CLT') {
             # code...
             $query = DB::table('EWS_VW_CMS_PH_CLT_TRANS');
+        }
+
+        return $query;
+    }
+
+    public static function spi($job)
+    {
+        # Tandan - Bonggol
+        if ($job == 'MANDOR') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_SPI_MANDOR');
+        }
+
+        # Berat Tandan
+        if ($job == 'SENSUS') {
+            # code...
+            $query = DB::table('EWS_VW_CMS_SPI_SENSUS');
         }
 
         return $query;
@@ -87,7 +116,7 @@ class Trans extends Model
 
         if ($table == 'DETIL') {
             # code...
-            $query = DB::select('EXEC EWS_sp_allPokokStatus @DATE = ?, @AKTIFITAS = ?, @PARENT = ?, @BLOK = ?, @RKH = ?', $arr);
+            $query = DB::select('EXEC EWS_sp_allPokokStatus @DATE = ?, @AKTIFITAS = ?, @PARENT = ?, @BLOK = ?, @RKH = ?, @ID = ?', $arr);
         }
 
         return collect($query);
