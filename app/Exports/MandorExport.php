@@ -3,12 +3,14 @@
 namespace App\Exports;
 
 use App\Trans;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping
+class MandorExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping
+// class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping
 {
 
     private $heading;
@@ -42,16 +44,19 @@ class MandorExport implements FromCollection, ShouldAutoSize, WithHeadings, With
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function query()
+    // public function collection()
     {
         $query =  Trans::mandor($this->job);
+        $query->orderBy('created_at');
 
         if ($this->date_aw != NULL) {
             # code...
             $query->whereBetween('created_at', [$this->date_aw, $this->date_ak." 23:59:59.000"]);
         }
 
-        return $query->get();
+        return $query;
+        // return $query->get();
     }
 
     public function headings(): array
