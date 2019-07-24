@@ -213,12 +213,12 @@ class TransReportController extends CMSController
             $report = $this->removeWhitespace($res);
 
             return DataTables::of($report)
-                ->addColumn('beratBersih', function ($report){
-                    if (!empty($report['brutoBerat']) && !empty($report['bonggolBerat'])) {
-                        # code...
-                        return (int)$report['brutoBerat'] - (int)$report['bonggolBerat'];
-                    }
-                })
+                // ->addColumn('beratBersih', function ($report){
+                //     if (!empty($report['brutoBerat']) && !empty($report['bonggolBerat'])) {
+                //         # code...
+                //         return (int)$report['brutoBerat'] - (int)$report['bonggolBerat'];
+                //     }
+                // })
                 ->make(true);
         }
 
