@@ -4,7 +4,7 @@
     <div class="container">
         <hr>
         <div class="card rounded-0">
-          <h5 class="card-header">SPI Plantcare Report</h5>
+          <h5 class="card-header">Mandor Plantcare Report</h5>
           <div class="card-body">
             <form method="POST" id="search-form" class="form-inline" role="form">
 
@@ -69,18 +69,8 @@
         $(document).ajaxStop(function(e,x,o){
             $("#loading-export").hide();
         });
+        $.fn.dataTable.ext.errMode = 'none';
         var oTable = $('#data-table').DataTable({
-            // buttons: [
-            //     {
-            //         extend: 'excel',
-            //         text: 'Save current page',
-            //         exportOptions: {
-            //             modifier: {
-            //                 page: 'all'
-            //             }
-            //         }
-            //     }
-            // ],
             processing: true,
             serverSide: true,
             ajax: {
@@ -93,20 +83,15 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'rkhCode', name: 'rkhCode'},
-                {data: 'rkhDate', name: 'rkhDate'},
+                {data: 'rkhDate2', name: 'rkhDate2'},
                 {data: 'mandor', name: 'mandor'},
                 {data: 'tk', name: 'tk'},
                 {data: 'Description', name: 'Description'},
                 {data: 'codeBlok', name: 'codeBlok'},
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'mandorNote', name: 'mandorNote'},
-                {data: 'created_at', name: 'created_at'},
+                {data: 'created_at2', name: 'created_at2'},
             ],
-            // deferRender: true,
-            // initComplete : function () {
-            //     oTable.buttons().container()
-            //            .appendTo( $('#search-form .form-group:eq(3)'));
-            // }
         });
 
         var headings = [];
@@ -117,8 +102,19 @@
         });
 
         $('#search-form').on('submit', function(e) {
-            oTable.draw();
             e.preventDefault();
+            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+            var firstDate = new Date($('#date_aw').val());
+            var secondDate = new Date($('#date_ak').val());
+
+            var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
+            if (diffDays > 31) {
+                alert('\n WARNING! \n Harap memilih tanggal dibawah 31 hari. \n Dikarenakan data yang besar, dapat menyebabkan kesalahan sistem');
+            }
+            else {
+                oTable.draw();
+            }
+            // console.log(diffDays);
         });
 
         $('#date_aw').on('change', function(e) {
