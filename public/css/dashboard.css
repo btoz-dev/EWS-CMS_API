@@ -62,11 +62,9 @@ body {
   text-transform: uppercase;
 }
 
-ul ul a {
-    padding-left: 40px !important;
-}
-ul ul ul a {
-    padding-left: 60px !important;
+.nav-item .list-unstyled {
+   padding-left: 20px;
+   list-style: none;
 }
 
 /*
