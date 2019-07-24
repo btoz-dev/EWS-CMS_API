@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\Access\AuthorizationException as AuthorizationException;
+use Symfony\Component\Debug\Exception\FatalErrorException as FatalErrorException;
 
 class Handler extends ExceptionHandler
 {
@@ -52,7 +53,11 @@ class Handler extends ExceptionHandler
         if ($exception instanceof AuthorizationException) {
             return $this->unauthorized($request, $exception);
         }
-    
+
+        if ($exception instanceof FatalErrorException) {
+            return $this->exceededTime($request, $exception);
+        }
+
         return parent::render($request, $exception);
     }
 
@@ -60,6 +65,16 @@ class Handler extends ExceptionHandler
     {
         if ($request->expectsJson()) {
             return response()->json(['error' => $exception->getMessage()], 403);
+        }
+
+        flash()->warning($exception->getMessage());
+        return redirect()->route('home');
+    }
+
+    private function exceededTime($request, Exception $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
 
         flash()->warning($exception->getMessage());
