@@ -52,94 +52,198 @@
                             Dashboard <span class="sr-only">(current)</span>
                             </a>
                         </li>
-                        @can('view_usermgmt')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('usermgmt*') ? 'active' : '' }}" href="{{ url('/usermgmt') }}">
+                        @if(auth()->user()->can('view_usermgmt') || auth()->user()->can('view_roles'))
+                        <li class="nav-item">
+                            <a href="#userMenu" data-toggle="collapse" aria-expanded="{{ (request()->is('usermgmt*') || request()->is('roles*')) ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ (request()->is('usermgmt*') || request()->is('roles*')) ? 'active' : '' }}">
                                 <i class="fas fa-users"></i>
                                 User Management
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_roles')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ url('/roles') }}">
-                                <i class="fas fa-users"></i>
-                                Role Management
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_clt')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('clt*') ? 'active' : '' }}" href="{{ url('/clt') }}">
-                                <i class="fas fa-boxes"></i>
-                                CLT Produk
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_rkmReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('rkmReport*') ? 'active' : '' }}" href="{{ url('/rkmReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                RKM Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_spiPlantReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('mandorPlantcareReport*') ? 'active' : '' }}" href="{{ url('/mandorPlantcareReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                SPI Plantcare Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_mandorFruitReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('mandorFruitcareReport*') ? 'active' : '' }}" href="{{ url('/mandorFruitcareReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                Mandor Fruitcare Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_mandorPanenReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('mandorPanenReport*') ? 'active' : '' }}" href="{{ url('/mandorPanenReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                Mandor Panen Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_kawilPlantReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('kawilPlantcareReport*') ? 'active' : '' }}" href="{{ url('/kawilPlantcareReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                Kawil Plantcare Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_kawilFruitReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('kawilFruitcareReport*') ? 'active' : '' }}" href="{{ url('/kawilFruitcareReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                Kawil Fruitcare Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_kawilPanenReport')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('kawilPanenReport*') ? 'active' : '' }}" href="{{ url('/kawilPanenReport') }}">
-                                <i class="far fa-chart-bar"></i>
-                                Kawil Panen Reports
-                                </a>
-                            </li>
-                        @endcan
-                        @can('view_phTBReport')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('phtbReport*') ? 'active' : '' }}" href="{{ url('/phtbReport') }}">
-                            <i class="far fa-chart-bar"></i>
-                            PH Tandan Reports
                             </a>
+                            <ul class="collapse list-unstyled {{ (request()->is('usermgmt*') || request()->is('roles*')) ? 'show' : '' }}" id="userMenu">
+                                @can('view_usermgmt')
+                                <li>
+                                    <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ url('/roles') }}">
+                                        <i class="fas fa-users"></i> 
+                                        Role
+                                    </a>
+                                </li>
+                                @endcan
+                                @can('view_roles')
+                                <li>
+                                    <a href="{{ url('/usermgmt') }}" class="nav-link {{ request()->is('usermgmt*') ? 'active' : '' }}">
+                                        <i class="fas fa-users"></i>
+                                        User
+                                    </a>
+                                </li>
+                                @endcan
+                            </ul>
                         </li>
-                        @endcan
+                        @endif
+                        @if(auth()->user()->can('view_clt'))
+                        <li class="nav-item">
+                            <a href="#produK" data-toggle="collapse" aria-expanded="{{ request()->is('clt*') ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ request()->is('clt*') ? 'active' : '' }}">
+                                <i class="fas fa-boxes"></i>
+                                Produk
+                            </a>
+                            <ul class="collapse list-unstyled {{ request()->is('clt*') ? 'show' : '' }}" id="produK">
+                                @can('view_clt')
+                                <li>
+                                    <a class="nav-link {{ request()->is('clt*') ? 'active' : '' }}" href="{{ url('/clt') }}">
+                                        <i class="fas fa-boxes"></i>
+                                        CLT
+                                    </a>
+                                </li>
+                                @endcan
+                            </ul>
+                        </li>
+                        @endif
+                        @if(auth()->user()->can('view_rkmReport')||auth()->user()->can('view_mandorPlantReport')||auth()->user()->can('view_mandorFruitReport')||auth()->user()->can('view_mandorPanenReport')||auth()->user()->can('view_kawilPlantReport')||auth()->user()->can('view_kawilFruitReport')||auth()->user()->can('view_kawilPanenReport')||auth()->user()->can('view_phTBReport')||auth()->user()->can('view_phHTReport')||auth()->user()->can('view_phCLTReport')||auth()->user()->can('view_spiMandorReport')||auth()->user()->can('view_spiSensusReport'))
+                        <li class="nav-item">
+                            <a href="#report" data-toggle="collapse" 
+                            aria-expanded="{{ request()->is('rkmReport*') || request()->is('mandorPlantcareReport*') || request()->is('mandorFruitcareReport*') || request()->is('mandorPanenReport*') || request()->is('kawilPlantcareReport*') || request()->is('kawilFruitcareReport*') || request()->is('kawilPanenReport*') || request()->is('phtbReport*') || request()->is('phhtReport*') || request()->is('phcltReport*') || request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'true' : 'false' }}" 
+                            class="nav-link dropdown-toggle {{ request()->is('rkmReport*') || request()->is('mandorPlantcareReport*') || request()->is('mandorFruitcareReport*') || request()->is('mandorPanenReport*') || request()->is('kawilPlantcareReport*') || request()->is('kawilFruitcareReport*') || request()->is('kawilPanenReport*') || request()->is('phtbReport*') || request()->is('phhtReport*') || request()->is('phcltReport*') || request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'active' : '' }}">
+                                <i class="far fa-chart-bar"></i>
+                                Report
+                            </a>
+                            <ul class="collapse list-unstyled {{ request()->is('rkmReport*') || request()->is('mandorPlantcareReport*') || request()->is('mandorFruitcareReport*') || request()->is('mandorPanenReport*') || request()->is('kawilPlantcareReport*') || request()->is('kawilFruitcareReport*') || request()->is('kawilPanenReport*') || request()->is('phtbReport*') || request()->is('phhtReport*') || request()->is('phcltReport*') || request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'show' : '' }}" id="report">
+                                @can('view_rkmReport')
+                                <li>
+                                    <a class="nav-link {{ request()->is('rkmReport*') ? 'active' : '' }}" href="{{ url('/rkmReport') }}">
+                                        <i class="far fa-chart-bar"></i>
+                                        RKM Reports
+                                    </a>
+                                </li>
+                                @endcan
+                                @if(auth()->user()->can('view_mandorPlantReport')||auth()->user()->can('view_mandorFruitReport')||auth()->user()->can('view_mandorPanenReport'))
+                                <li>
+                                    <a href="#mandor" data-toggle="collapse" aria-expanded="{{ request()->is('mandorPlantcareReport*') || request()->is('mandorFruitcareReport*') || request()->is('mandorPanenReport*') ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ request()->is('mandorPlantcareReport*') || request()->is('mandorFruitcareReport*') || request()->is('mandorPanenReport*') ? 'active' : '' }}">
+                                        <i class="far fa-chart-bar"></i>
+                                        Mandor
+                                    </a>
+                                    <ul class="collapse list-unstyled {{ request()->is('mandorPlantcareReport*') || request()->is('mandorFruitcareReport*') || request()->is('mandorPanenReport*') ? 'show' : '' }}" id="mandor">
+                                        @can('view_mandorPlantReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('mandorPlantcareReport*') ? 'active' : '' }}" href="{{ url('/mandorPlantcareReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Plantcare
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_mandorFruitReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('mandorFruitcareReport*') ? 'active' : '' }}" href="{{ url('/mandorFruitcareReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Fruitcare
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_mandorPanenReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('mandorPanenReport*') ? 'active' : '' }}" href="{{ url('/mandorPanenReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Panen
+                                            </a>
+                                        </li>
+                                        @endcan
+                                    </ul>
+                                </li>
+                                @endif
+                                @if(auth()->user()->can('view_kawilPlantReport')||auth()->user()->can('view_kawilFruitReport')||auth()->user()->can('view_kawilPanenReport'))
+                                <li>
+                                    <a href="#kawil" data-toggle="collapse" aria-expanded="{{ request()->is('kawilPlantcareReport*') || request()->is('kawilFruitcareReport*') || request()->is('kawilPanenReport*') ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ request()->is('kawilPlantcareReport*') || request()->is('kawilFruitcareReport*') || request()->is('kawilPanenReport*') ? 'active' : '' }}">
+                                        <i class="far fa-chart-bar"></i>
+                                        Kawil
+                                    </a>
+                                    <ul class="collapse list-unstyled {{ request()->is('kawilPlantcareReport*') || request()->is('kawilFruitcareReport*') || request()->is('kawilPanenReport*') ? 'show' : '' }}" id="kawil">
+                                        @can('view_mandorPlantReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('kawilPlantcareReport*') ? 'active' : '' }}" href="{{ url('/kawilPlantcareReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Plantcare
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_kawilFruitReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('kawilFruitcareReport*') ? 'active' : '' }}" href="{{ url('/kawilFruitcareReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Fruitcare
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_kawilPanenReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('kawilPanenReport*') ? 'active' : '' }}" href="{{ url('/kawilPanenReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Panen
+                                            </a>
+                                        </li>
+                                        @endcan
+                                    </ul>
+                                </li>
+                                @endif
+                                @if(auth()->user()->can('view_phTBReport')||auth()->user()->can('view_phHTReport')||auth()->user()->can('view_phCLTReport'))
+                                <li>
+                                    <a href="#ph" data-toggle="collapse" aria-expanded="{{ request()->is('phtbReport*') || request()->is('phhtReport*') || request()->is('phcltReport*') ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ request()->is('phtbReport*') || request()->is('phhtReport*') || request()->is('phcltReport*') ? 'active' : '' }}">
+                                        <i class="far fa-chart-bar"></i>
+                                        PH
+                                    </a>
+                                    <ul class="collapse list-unstyled {{ request()->is('phtbReport*') || request()->is('phhtReport*') || request()->is('phcltReport*') ? 'show' : '' }}" id="ph">
+                                        @can('view_phTBReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('phtbReport*') ? 'active' : '' }}" href="{{ url('/phtbReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Tandan
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_phHTReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('phhtReport*') ? 'active' : '' }}" href="{{ url('/phhtReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                QC
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_phCLTReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('phcltReport*') ? 'active' : '' }}" href="{{ url('/phcltReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                CLT
+                                            </a>
+                                        </li>
+                                        @endcan
+                                    </ul>
+                                </li>
+                                @endif
+                                @if(auth()->user()->can('view_spiMandorReport')||auth()->user()->can('view_spiSensusReport'))
+                                <li>
+                                    <a href="#spi" data-toggle="collapse" aria-expanded="{{ request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'active' : '' }}">
+                                        <i class="far fa-chart-bar"></i>
+                                        SPI
+                                    </a>
+                                    <ul class="collapse list-unstyled {{ request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'show' : '' }}" id="spi">
+                                        @can('view_spiMandorReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('spiMandorReport*') ? 'active' : '' }}" href="{{ url('/spiMandorReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Mandor
+                                            </a>
+                                        </li>
+                                        @endcan
+                                        @can('view_spiSensusReport')
+                                        <li>
+                                            <a class="nav-link {{ request()->is('spiSensusReport*') ? 'active' : '' }}" href="{{ url('/spiSensusReport') }}">
+                                                <i class="far fa-chart-bar"></i>
+                                                Sensus
+                                            </a>
+                                        </li>
+                                        @endcan
+                                    </ul>
+                                </li>
+                                @endif
+                            </ul>
+                        </li>
+                        @endif
                         <!-- @can('view_phBTReport')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('phbtReport*') ? 'active' : '' }}" href="{{ url('/phbtReport') }}">
@@ -156,38 +260,6 @@
                             </a>
                         </li>
                         @endcan -->
-                        @can('view_phHTReport')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('phhtReport*') ? 'active' : '' }}" href="{{ url('/phhtReport') }}">
-                            <i class="far fa-chart-bar"></i>
-                            PH Quality Control Reports
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view_phCLTReport')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('phcltReport*') ? 'active' : '' }}" href="{{ url('/phcltReport') }}">
-                            <i class="far fa-chart-bar"></i>
-                            PH Cek List Timbang Reports
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view_spiMandorReport')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('spiMandorReport*') ? 'active' : '' }}" href="{{ url('/spiMandorReport') }}">
-                            <i class="far fa-chart-bar"></i>
-                            SPI Mandor Reports
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view_spiSensusReport')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('spiSensusReport*') ? 'active' : '' }}" href="{{ url('/spiSensusReport') }}">
-                            <i class="far fa-chart-bar"></i>
-                            SPI Sensus Reports
-                            </a>
-                        </li>
-                        @endcan
                         @can('view_customReport')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->is('customReport*') ? 'active' : '' }}" href="{{ url('/customReport') }}">

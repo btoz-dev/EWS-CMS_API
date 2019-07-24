@@ -62,6 +62,13 @@ body {
   text-transform: uppercase;
 }
 
+ul ul a {
+    padding-left: 40px !important;
+}
+ul ul ul a {
+    padding-left: 60px !important;
+}
+
 /*
  * Content
  */
