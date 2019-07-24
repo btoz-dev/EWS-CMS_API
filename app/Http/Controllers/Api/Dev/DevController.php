@@ -376,14 +376,16 @@ class DevController extends Controller
 	                                            unset($listPokok['codeTanaman']);
 	                                            $listPokok['week'] = $listPokok['jmlMinggu'];
 	                                            unset($listPokok['jmlMinggu']);
-
 	                                            // $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
 	                                            unset($listPokok['id']);
-
-	                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
 	                                            unset($listPokok['date']);
-	                                            unset($listPokok['status']);
+	                                            $week = $listPokok['week'];
 	                                            unset($listPokok['week']);
+	                                            //
+	                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
+	                                            unset($listPokok['status']);
+	                                            $listPokok['week'] = $week;
+	                                            //
 	                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listAllPokokPlot'][] = $listPokok;
 	                                        }
 	                                    }
@@ -394,6 +396,7 @@ class DevController extends Controller
 	                }
 	            }
 	        }
+            unset($week);
 	        # MASUKIN BLOK-PLOT-BARIS-TANAM
 
 	        # MASUKIN STATUS KE POKOK
@@ -789,13 +792,16 @@ class DevController extends Controller
 	                                            unset($listPokok['mandor']);
 	                                            unset($listPokok['mandorTrans']);
 
-	                                            $listPokok['id'] = $listBlok['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
+	                                            // $listPokok['id'] = $listBlok['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
+	                                            unset($listPokok['id']);
 	                                            
+	                                            unset($listPokok['date']);
+	                                            $week = $listPokok['week'];
+	                                            unset($listPokok['week']);
 	                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
 
-	                                            unset($listPokok['date']);
+	                                            $listPokok['week'] = $week;
 	                                            unset($listPokok['status']);
-	                                            unset($listPokok['week']);
 	                                            unset($listPokok['mandor']);
 	                                            unset($listPokok['tk']);
 	                                            unset($listPokok['mandorTrans']);
@@ -809,6 +815,7 @@ class DevController extends Controller
 	                }
 	            }
 	        }
+	        unset($week);
 	        # MASUKIN BLOK-PLOT-BARIS-TANAM
 
 	        # FILTERING TANAM
@@ -1358,6 +1365,57 @@ class DevController extends Controller
 	            }
 	            return response()->json($message, 200);
 	        }
+	    }
+
+	    public function storeCA(Request $request)
+	    {
+	    	$validator = Validator::make($request->all(), [
+	            'codeTanaman' => 'required',
+	            'week' => 'required',
+	            'note' => 'nullable|between:0,255',
+	            'userid' => 'required|integer',
+	            'tanggal' => 'required',
+	            'waktu' => 'required'
+	        ]);
+
+	        if ($validator->fails()) {
+	            return $this->errMessage(400,$validator->messages()->first());
+	        }
+
+	        $date = date_create($request->tanggal.' '.$request->waktu);
+	        # tanggal bulan tahun
+	        $tbt = date_format($date, 'Y-m-d H:i:s.B');
+
+	        $data = array(
+	                'corrActKawil' => $request->note,
+	                'created_atKawil' => $tbt,
+	                'useridKawil' => $request->userid,
+	            );
+
+	    	$check = DB::table('EWS_TRANS_SPI_SENSUS')
+	    		->where('codeTanaman', $request->codeTanaman)
+	    		->where('week', $request->week)
+	    		->value('id');
+	        if (empty($check)) {
+	            # code...
+	            try {
+	                // DB::table('EWS_TRANS_PH_BT')->insert($data);
+	                $message['message'][] = 'Data tidak ada';
+	                // $message['message'][] = $data;
+	            } catch (\Exception  $e) {
+	                $message['message'][] = $e->getMessage();
+	            }
+	        }else{
+	            try {
+	                DB::table('EWS_TRANS_SPI_SENSUS')->where('id', $check)->update($data);
+	                $message['message'][] = 'Data berhasil di update';
+	                // $message['message'][] = $data;
+	            } catch (\Exception  $e) {
+	                $message['message'][] = $e->getMessage();
+	            }
+	        }
+
+            return response()->json($message, 200);
 	    }
 
 	    public function getAllPokok()
@@ -2240,6 +2298,7 @@ class DevController extends Controller
 			        				 	$date = date_create($listPokok2[$d]['PlantingDate']);
                                         $listPokok2[$d]['date'] = date_format($date, 'd F Y');
                                         unset($listPokok2[$d]['PlantingDate']);
+										unset($listPokok2[$d]['date']);
 					        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $listPokok2[$d];
 
 				      //   				$allPokokPlot = $listPokok2[$d];
@@ -2287,7 +2346,6 @@ class DevController extends Controller
 	                    					unset($dataBlok[$key_db]['listPlot'][$key_plot]['listBaris'][$key_baris]);
 	                    				}
 	                    			}
-                    				// $subJob2[$key_sj]['listBlok'][$key_lb]['listPlot'][] = $dataBlok[$key_db]['listPlot'][$key_plot];
                     				$listPlot[] = $dataBlok[$key_db]['listPlot'][$key_plot];
 	                    		}
                     		}
@@ -2320,6 +2378,7 @@ class DevController extends Controller
 			                            }else {
 		                                	$lpkNDone++;
 		                                }
+										unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['week']);
 		                                unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['codeBlok']);
 		                                unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['plot']);
 		                                unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['baris']);
@@ -2330,7 +2389,6 @@ class DevController extends Controller
 										unset($pokok['baris']);
 										unset($pokok['noTanam']);
 										unset($pokok['PlantingDate']);
-										unset($pokok['week']);
 										unset($pokok['status']);
 										unset($pokok['date']);
 				        		 		$listPlot[$key_plot]['listAllPokokPlot'][] = $pokok;
@@ -2364,6 +2422,7 @@ class DevController extends Controller
 	                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lb], 'plotNDone');
 	                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lb], 'plotDone');
 	                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lb], 'blok');
+	                        unset($listPlot);
                     	}
                     }
                 }
@@ -2470,14 +2529,16 @@ class DevController extends Controller
 		                                unset($pokok['plot']);
 		                                unset($pokok['baris']);
 		                                unset($pokok['noTanam']);
+		                                $week = $pokok['week'];
+										unset($pokok['week']);
 					        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
 
+		                                $pokok['week'] = $week;
 				        				$allPokokPlot = $pokok;
 				        				unset($allPokokPlot['blok']);
 										unset($allPokokPlot['plot']);
 										unset($allPokokPlot['baris']);
 										unset($allPokokPlot['noTanam']);
-										unset($allPokokPlot['week']);
 										unset($allPokokPlot['status']);
 										unset($allPokokPlot['date']);
 				        		 		$dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
@@ -2536,8 +2597,8 @@ class DevController extends Controller
 	            'codeTanaman' => 'required|between:0,20',
 	            'week' => 'required|integer',
 	            'girth' => 'required|integer',
-	            'jumlahDaun' => 'required|integer',
-	            'corrAct' => 'nullable|between:0,255',
+	            'totalLeaf' => 'required|integer',
+	            'note' => 'nullable|between:0,255',
 	            'dueDate' => 'required|date_format:d-m-Y',
 	            'tanggal' => 'required|date',
 	            'waktu' => 'required|date_format:H:i',
@@ -2558,8 +2619,8 @@ class DevController extends Controller
 	                'codeTanaman' => $request->codeTanaman,
 	                'week' => $request->week,
 	                'girth' => $request->girth,
-	                'jumlahDaun' => $request->jumlahDaun,
-	                'corrActSPI' => $request->corrAct,
+	                'jumlahDaun' => $request->totalLeaf,
+	                'corrActSPI' => $request->note,
 	                'dueDate' => $dueDate,
 	                'created_atSPI' => $created_at,
 	                'useridSPI' => $request->userid,
@@ -2743,7 +2804,7 @@ class DevController extends Controller
 	    	# code...
 	        $mandor      = $this->removeWhitespace(DB::table('EWS_MANDOR')
 	            ->join('EWS_PEKERJA', 'EWS_MANDOR.codePekerja', '=', 'EWS_PEKERJA.codePekerja')
-	        	->select('EWS_PEKERJA.namaPekerja as nama', 'EWS_MANDOR.codeMandor as code')
+	        	->select('EWS_PEKERJA.namaPekerja as label', 'EWS_MANDOR.codeMandor as key')
 	        	->orderBy('EWS_PEKERJA.namaPekerja', 'asc')
 	        	->get());
 	        return $mandor;
@@ -2854,29 +2915,6 @@ class DevController extends Controller
                     'MrkTulisSesuai' => $req->MrkTulisSesuai,
                     'MrkJmlHand' => $req->MrkJmlHand,
                     'ForTdkAdaGanggu' => $req->ForTdkAdaGanggu,
-                    'Notes' => $req->Notes,
-                    'userid' => $req->userid,
-                ]);
-        }
-
-        return $request;
-    }
-
-    public function storeCA(Request $request)
-    {
-        $date = date_create($request->tanggal.' '.$request->waktu);
-        # tanggal bulan tahun
-        $create_at = date_format($date, 'Y-m-d H:i:s.B');
-
-        foreach ($request as $key_req => $req) {
-                DB::table('EWS_CEKLIST_TIMBANG')->insert([
-                    'SubBlkHillCode' => $req->SubBlkHillCode,
-                    'Tgl' => $create_at,
-                    'CorrectiveCat' => $req->CorrectiveCat,
-                    'CorrAction' => $req->CorrAction,
-                    'DueDate' => $req->DueDate,
-                    'CorrDate' => $req->CorrDate,
-                    'EmpCode' => $req->EmpCode,
                     'Notes' => $req->Notes,
                     'userid' => $req->userid,
                 ]);
