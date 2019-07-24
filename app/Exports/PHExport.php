@@ -148,6 +148,7 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
                 $phExport->codeTanaman,
                 $phExport->name,
                 $phExport->namaPekerja,
+                $phExport->ribbonColor,
                 $phExport->HandClass,
                 $phExport->CalHandClass2,
                 $phExport->CalHandClass4,

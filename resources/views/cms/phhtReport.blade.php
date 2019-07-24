@@ -42,6 +42,7 @@
                         <th>Kode Tanaman</th>
                         <th>Nama PH</th>
                         <th>TK PH</th>
+                        <th>Ribbon Color </th>
                         <th>Hand Class </th>
                         <th>Calibrasi/Hand Class 2 </th>
                         <th>Calibrasi/Hand Class 4 </th>
@@ -97,6 +98,7 @@
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'name', name: 'name'},
                 {data: 'namaPekerja', name: 'namaPekerja'},
+                {data: 'ribbonColor', name: 'ribbonColor'}, 
                 {data: 'HandClass', name: 'HandClass'}, 
                 {data: 'CalHandClass2', name: 'CalHandClass2'}, 
                 {data: 'CalHandClass4', name: 'CalHandClass4'}, 
