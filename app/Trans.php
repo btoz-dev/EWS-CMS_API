@@ -13,7 +13,7 @@ class Trans extends Model
     	# code...
     	$query = DB::table('EWS_VW_CMS_MANDOR_TRANS')
 	                ->select('*')
-	                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at, convert(CHAR(11), rkhDate, 113) as rkhDate');
+	                ->selectRaw('convert(CHAR(17), created_at, 113) as created_at2, convert(CHAR(11), rkhDate, 113) as rkhDate2');
 
     	if ($job == 'PLANTCARE') {
     		# code...
