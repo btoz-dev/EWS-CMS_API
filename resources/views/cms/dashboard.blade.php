@@ -55,7 +55,7 @@
       @endcan
     </div>
     <div class="row text-center">
-      @can('view_spiPlantReport')
+      @can('view_mandorPlantReport')
       <div class="col-lg-2">
         <i class="far fa-chart-bar fa-5x"></i>
         <h6>Mandor Plantcare Reports</h6>
