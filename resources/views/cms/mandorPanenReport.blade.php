@@ -94,7 +94,7 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'rkhCode', name: 'rkhCode'},
-                {data: 'rkhDate', name: 'rkhDate'},
+                {data: 'rkhDate2', name: 'rkhDate2'},
                 {data: 'mandor', name: 'mandor'},
                 {data: 'tk', name: 'tk'},
                 {data: 'Description', name: 'Description'},
@@ -102,7 +102,7 @@
                 {data: 'codeTanaman', name: 'codeTanaman'},
                 {data: 'skimmingSize', name: 'skimmingSize'},
                 {data: 'mandorNote', name: 'mandorNote'},
-                {data: 'created_at', name: 'created_at'},
+                {data: 'created_at2', name: 'created_at2'},
             ],
             // initComplete : function () {
             //     oTable.buttons().container()
