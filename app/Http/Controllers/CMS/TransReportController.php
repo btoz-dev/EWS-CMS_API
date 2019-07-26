@@ -213,12 +213,16 @@ class TransReportController extends CMSController
             $report = $this->removeWhitespace($res);
 
             return DataTables::of($report)
-                // ->addColumn('beratBersih', function ($report){
-                //     if (!empty($report['brutoBerat']) && !empty($report['bonggolBerat'])) {
-                //         # code...
-                //         return (int)$report['brutoBerat'] - (int)$report['bonggolBerat'];
-                //     }
-                // })
+                ->editColumn('brutoDate', function ($report) {
+                    $tgl = date_create($report['brutoDate']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
+                ->editColumn('bonggolDate', function ($report) {
+                    $tgl = date_create($report['bonggolDate']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
                 ->make(true);
         }
 
