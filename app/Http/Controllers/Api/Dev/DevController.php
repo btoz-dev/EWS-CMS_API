@@ -1840,7 +1840,7 @@ class DevController extends Controller
 	            'userid' => 'required',
 	            'codePokok' => 'required',
 	            'codeTK' => 'required|between:0,20',
-	            'berat' => 'required|integer',
+	            'berat' => 'required',
 	            'note' => 'nullable|between:0,255',
 	            'tanggal' => 'required',
 	            'waktu' => 'required'
@@ -1849,6 +1849,8 @@ class DevController extends Controller
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
 	        }
+
+	        $request->berat = str_replace(',', '.', $request->berat);
 
 	        $date = date_create($request->tanggal.' '.$request->waktu);
 	        # tanggal bulan tahun
@@ -1872,7 +1874,7 @@ class DevController extends Controller
 	            'userid' => 'required',
 	            'codePokok' => 'required',
 	            'codeTK' => 'required|between:0,20',
-	            'berat' => 'required|integer',
+	            'berat' => 'required',
 	            'note' => 'nullable|between:0,255',
 	            'tanggal' => 'required',
 	            'waktu' => 'required'
@@ -1881,6 +1883,8 @@ class DevController extends Controller
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
 	        }
+
+	        $request->berat = str_replace(',', '.', $request->berat);
 
 	        $date = date_create($request->tanggal.' '.$request->waktu);
 	        # tanggal bulan tahun
@@ -1929,25 +1933,25 @@ class DevController extends Controller
 	            'userid' => 'required',
 	            'codeTK' => 'required|between:0,20',
 	            'codePokok' => 'required',
-	            'handClass' => 'required|integer', 
-	            'calHandClass2' => 'required|integer', 
-	            'calHandClass4' => 'required|integer', 
-	            'calHandClass6' => 'required|integer', 
-	            'calHandClass8' => 'required|integer', 
-	            'calHandClass10' => 'required|integer', 
-	            'calHandClassAkhir' => 'required|integer', 
-	            'fingerLen2' => 'required|integer', 
-	            'fingerLen4' => 'required|integer', 
-	            'fingerLen6' => 'required|integer', 
-	            'fingerLen8' => 'required|integer', 
-	            'fingerLen10' => 'required|integer', 
-	            'fingerLenAkhir' => 'required|integer', 
-	            'fingerHand2' => 'required|integer', 
-	            'fingerHand4' => 'required|integer', 
-	            'fingerHand6' => 'required|integer', 
-	            'fingerHand8' => 'required|integer', 
-	            'fingerHand10' => 'required|integer', 
-	            'fingerHandAkhir' => 'required|integer', 
+	            'handClass' => 'required', 
+	            'calHandClass2' => 'required', 
+	            'calHandClass4' => 'required', 
+	            'calHandClass6' => 'required', 
+	            'calHandClass8' => 'required', 
+	            'calHandClass10' => 'required', 
+	            'calHandClassAkhir' => 'required', 
+	            'fingerLen2' => 'required', 
+	            'fingerLen4' => 'required', 
+	            'fingerLen6' => 'required', 
+	            'fingerLen8' => 'required', 
+	            'fingerLen10' => 'required', 
+	            'fingerLenAkhir' => 'required', 
+	            'fingerHand2' => 'required', 
+	            'fingerHand4' => 'required', 
+	            'fingerHand6' => 'required', 
+	            'fingerHand8' => 'required', 
+	            'fingerHand10' => 'required', 
+	            'fingerHandAkhir' => 'required', 
 	            'note' => 'nullable|between:0,255',
 	            'tanggal' => 'required',
 	            'waktu' => 'required',
@@ -1956,6 +1960,26 @@ class DevController extends Controller
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
 	        }
+
+	        $request->handClass = str_replace(',', '.', $request->handClass);
+			$request->calHandClass2 = str_replace(',', '.', $request->calHandClass2);
+			$request->calHandClass4 = str_replace(',', '.', $request->calHandClass4);
+			$request->calHandClass6 = str_replace(',', '.', $request->calHandClass6);
+			$request->calHandClass8 = str_replace(',', '.', $request->calHandClass8);
+			$request->calHandClass10 = str_replace(',', '.', $request->calHandClass10);
+			$request->calHandClassAkhir = str_replace(',', '.', $request->calHandClassAkhir);
+			$request->fingerLen2 = str_replace(',', '.', $request->fingerLen2);
+			$request->fingerLen4 = str_replace(',', '.', $request->fingerLen4);
+			$request->fingerLen6 = str_replace(',', '.', $request->fingerLen6);
+			$request->fingerLen8 = str_replace(',', '.', $request->fingerLen8);
+			$request->fingerLen10 = str_replace(',', '.', $request->fingerLen10);
+			$request->fingerLenAkhir = str_replace(',', '.', $request->fingerLenAkhir);
+			$request->fingerHand2 = str_replace(',', '.', $request->fingerHand2);
+			$request->fingerHand4 = str_replace(',', '.', $request->fingerHand4);
+			$request->fingerHand6 = str_replace(',', '.', $request->fingerHand6);
+			$request->fingerHand8 = str_replace(',', '.', $request->fingerHand8);
+			$request->fingerHand10 = str_replace(',', '.', $request->fingerHand10);
+			$request->fingerHandAkhir = str_replace(',', '.', $request->fingerHandAkhir);
 
 	        $date = date_create($request->tanggal.' '.$request->waktu);
 	        # tanggal bulan tahun
@@ -2021,7 +2045,7 @@ class DevController extends Controller
 	                'required', 
 	                Rule::in($listIdProd)
 	            ],
-	            'berat' => 'required|integer',
+	            'berat' => 'required',
 	            'note' => 'nullable|between:0,255',
 	            'tanggal' => 'required',
 	            'waktu' => 'required'
@@ -2030,6 +2054,8 @@ class DevController extends Controller
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
 	        }
+
+	        $request->berat = str_replace(',', '.', $request->berat);
 
 	        $date = date_create($request->tanggal.' '.$request->waktu);
 	        # tanggal bulan tahun
