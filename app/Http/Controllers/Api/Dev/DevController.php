@@ -136,7 +136,7 @@ class DevController extends Controller
 
 	        $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
 	            ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
-	            ->select('EWS_MANDOR_PEKERJA.id', 'EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
+	            ->select('EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
 	            ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
 	            ->where('EWS_MANDOR_PEKERJA.AccMonth', '=', $bln_tukang)
 	            ->where('EWS_MANDOR_PEKERJA.AccYear', '=', $thn_tukang)
@@ -1556,7 +1556,7 @@ class DevController extends Controller
 
 	        # memasukkan TK PH
 	        $TK = $this->removeWhitespace(DB::table('EWS_PH_TK')
-	            ->select('id', 'namaPekerja as nama', 'codePekerja as code')
+	            ->select('namaPekerja as nama', 'codePekerja as code')
 	            ->orderBy('namaPekerja', 'asc')
 	            ->get());
 	        $pilihTukang = array(
@@ -2127,7 +2127,7 @@ class DevController extends Controller
 
 	            $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
 		            ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
-		            ->select('EWS_MANDOR_PEKERJA.id', 'EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
+		            ->select('EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
 		            ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $request->mandor)
 		            ->where('EWS_MANDOR_PEKERJA.AccMonth', '=', $bln_tukang)
 		            ->where('EWS_MANDOR_PEKERJA.AccYear', '=', $thn_tukang)
