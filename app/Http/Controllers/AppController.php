@@ -2421,13 +2421,13 @@ class AppController extends Controller
                                     $lbNDone+=$lpkNDone;
                                 }
                                 unset($listPlot[$key_plot]['codeBlok']);
-                                $subJob2[$key_sj]['listBlok'][$key_lb]['listPlot'] = $listPlot;
 
                                 $listPlot[$key_plot]['rowDone'] = $lbDone;
                                 $listPlot[$key_plot]['rowNDone'] = $lbNDone;
                                 $this->move_to_top($listPlot[$key_plot], 'rowNDone');
                                 $this->move_to_top($listPlot[$key_plot], 'rowDone');
                                 $this->move_to_top($listPlot[$key_plot], 'plot');
+                                $subJob2[$key_sj]['listBlok'][$key_lb]['listPlot'] = $listPlot;
 
                                 $lpDone+=$lbDone;
                                 $lpNDone+=$lbNDone;
