@@ -118,417 +118,386 @@ class DevController extends Controller
 
     # MANDOR KAWIL PLANTCARE-FRUITCARE-PANEN #
 	    public function getRKMMandor ($user2, $identitasPekerja, $detailRole, $reqDate)
-	    {
-	    	// $date = now();
-	        $tgl = date_create($reqDate);
+        {
+            // $date = now();
+            $tgl = date_create($reqDate);
 
-	    	$codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
-	            ->select('codeMandor')
-	            ->where('codePekerja', '=', $user2[0]['codePekerja'])
-	            ->first());
-	        if (empty($codeMandor)) {
-	            # code...
-	            return $this->errMessage(400,'Tidak ada data kode mandor');
-	        }
+            $codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
+                ->select('codeMandor')
+                ->where('codePekerja', '=', $user2[0]['codePekerja'])
+                ->first());
+            if (empty($codeMandor)) {
+                # code...
+                return $this->errMessage(400,'Tidak ada data kode mandor');
+            }
 
-	        $bln_tukang = date_format($tgl, 'm');
-	        $thn_tukang = date_format($tgl, 'Y');
+            $bln_tukang = date_format($tgl, 'm');
+            $thn_tukang = date_format($tgl, 'Y');
 
-	        $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
-	            ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
-	            ->select('EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
-	            ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
-	            ->where('EWS_MANDOR_PEKERJA.AccMonth', '=', $bln_tukang)
-	            ->where('EWS_MANDOR_PEKERJA.AccYear', '=', $thn_tukang)
-	            ->orderBy('nama', 'asc')
-	            ->get());
-	        if (empty($tukang)) {
-	            # code...
-	            return $this->errMessage(400,'Tidak ada data tukang');
-	        }
+            $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
+                ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
+                ->select('EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
+                ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
+                ->where('EWS_MANDOR_PEKERJA.AccMonth', '=', $bln_tukang)
+                ->where('EWS_MANDOR_PEKERJA.AccYear', '=', $thn_tukang)
+                ->orderBy('nama', 'asc')
+                ->get());
+            if (empty($tukang)) {
+                # code...
+                return $this->errMessage(400,'Tidak ada data tukang');
+            }
 
-	        $tgl_ubah = date_format($tgl, 'Y-m-d');
-	        $user2[0]['rkhDate'] = $tgl_ubah;
+            $tgl_ubah = date_format($tgl, 'Y-m-d');
+            $user2[0]['rkhDate'] = $tgl_ubah;
 
-	        unset($identitasPekerja['idRole']);
-	        $user2[0]['identitasPekerja'] = $identitasPekerja;
-	        $user2[0]['identitasPekerja']['detailRole'] = $detailRole;
-	        $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
+            unset($identitasPekerja['idRole']);
+            $user2[0]['identitasPekerja'] = $identitasPekerja;
+            $user2[0]['identitasPekerja']['detailRole'] = $detailRole;
+            $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
 
-	        $pilihTukang = array(
-	            'id' => '',
-	            'nama' => 'Pilih Pekerja',
-	            'code' => ''
-	        );
-	        array_unshift($tukang, $pilihTukang); #inserts new elements into beginning of array
-	        $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
+            $pilihTukang = array(
+                'id' => '',
+                'nama' => 'Pilih Pekerja',
+                'code' => ''
+            );
+            array_unshift($tukang, $pilihTukang); #inserts new elements into beginning of array
+            $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
 
-	        ####################################GET ALL DATA###################################################
+            ####################################GET ALL DATA###################################################
 
-	        $user2[0]['RKM'] = array();
-	        # rencana kerjaan harian
-	        $rkm2       = $this->removeWhitespace(DB::table('EWS_JADWAL_RKM')
-	            ->join('EWS_SUB_JOB', 'EWS_JADWAL_RKM.codeAlojob', '=', 'EWS_SUB_JOB.subJobCode')
-	            ->join('EWS_JOB', 'EWS_JOB.jobCode', '=', 'EWS_SUB_JOB.jobCode')
-	            ->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName')
-	            ->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
-	            ->where('EWS_JADWAL_RKM.mandorCode', '=', $codeMandor['codeMandor'])
-	            ->get());
-	        if (empty($rkm2)) {
-	            # code...
-	            return $this->errMessage(400,'Tidak ada RKM untuk tanggal '.date_format($tgl, 'd-m-Y'));
-	        }
+            $user2[0]['RKM'] = array();
+            # rencana kerjaan harian
+            $rkm2       = $this->removeWhitespace(DB::table('EWS_JADWAL_RKM')
+                ->join('EWS_SUB_JOB', 'EWS_JADWAL_RKM.codeAlojob', '=', 'EWS_SUB_JOB.subJobCode')
+                ->join('EWS_JOB', 'EWS_JOB.jobCode', '=', 'EWS_SUB_JOB.jobCode')
+                ->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName')
+                ->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
+                ->where('EWS_JADWAL_RKM.mandorCode', '=', $codeMandor['codeMandor'])
+                ->get());
+            if (empty($rkm2)) {
+                # code...
+                return $this->errMessage(400,'Tidak ada RKM untuk tanggal '.date_format($tgl, 'd-m-Y'));
+            }
+            foreach ($rkm2 as $key_rkm => $rkm) {
+                # code...
+                $date = date_create($rkm['rkhDate']);
+                unset($rkm2[$key_rkm]['rkhDate']);
+                # tanggal bulan tahun
+                $rkm2[$key_rkm]['rkhDate'] = date_format($date, 'd F Y');
+                # jam:menit:detik
+                $rkm2[$key_rkm]['rkhTime'] = date_format($date, 'H:i:s');
 
-	        $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
-	        if (empty($job2)) {
-	            # code...
-	            return $this->errMessage(400,'Aktifitas tidak ditemukan');
-	        }
-	        $subJob2    = $this->removeWhitespace(DB::table('EWS_SUB_JOB')->get());
-	        if (empty($subJob2)) {
-	            # code...
-	            return $this->errMessage(400,'Sub-Aktifitas tidak ditemukan');
-	        }
-	        foreach ($subJob2 as $key => $value) {
-	            # code...
-	            $subJob2[$key]['Description'] = rtrim(preg_replace('/- [A-Z]{3}\/[A-Z]{3}/', '', $value['Description']));
-	        }
+                $rkmListBlok[] = str_replace('.', '-', $rkm['codeBlok']);
+                $rkmListBlok = array_unique($rkmListBlok);
+                $rkmListBlok = array_values($rkmListBlok);
 
-	        foreach ($rkm2 as $key_rkm => $rkm) {
-	            # code...
-	            $date = date_create($rkm['rkhDate']);
-	            unset($rkm2[$key_rkm]['rkhDate']);
-	            # tanggal bulan tahun
-	            $rkm2[$key_rkm]['rkhDate'] = date_format($date, 'd F Y');
-	            # jam:menit:detik
-	            $rkm2[$key_rkm]['rkhTime'] = date_format($date, 'H:i:s');
-	        }
+                $rkmListSubJob[] = str_replace('.', '-', $rkm['childJobCode']);
+                $rkmListSubJob = array_unique($rkmListSubJob);
+                $rkmListSubJob = array_values($rkmListSubJob);
+            }
 
-	        $listBlok2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-	            ->select('codeBlok')
-	            ->distinct('codeBlok')
-	            ->orderBy('codeBlok', 'asc')
-	            ->get());
-	        if (empty($listBlok2)) {
-	            # code...
-	            return $this->errMessage(400,'List blok tidak ditemukan');
-	        }
-	        $listPlot2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-	            ->select('codeBlok', 'plot')
-	            ->distinct('codeBlok')
-	            ->orderBy('plot', 'asc')
-	            ->get());
-	        if (empty($listPlot2)) {
-	            # code...
-	            return $this->errMessage(400,'List plot tidak ditemukan');
-	        }
-	        $listBaris2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-	            ->select('codeBlok','plot', 'baris')
-	            ->distinct('baris')
-	            ->orderBy('baris', 'asc')
-	            ->get());
-	        if (empty($listBaris2)) {
-	            # code...
-	            return $this->errMessage(400,'List baris tidak ditemukan');
-	        }
-	        $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-	            ->orderBy('codeTanaman', 'asc')
-	            ->get());
-	        if (empty($listPokok2)) {
-	            # code...
-	            return $this->errMessage(400,'List pokok tidak ditemukan');
-	        }
+            $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
+            if (empty($job2)) {
+                # code...
+                return $this->errMessage(400,'Aktifitas tidak ditemukan');
+            }
 
-	        $newRKM = array();
-	        foreach ($rkm2 as $key => $value) {
-	            # code...
-	            $newList = array(
-	                'rkhCode' => $value['rkhCode'],
-	                'blok' => $value['codeBlok'],
-	                'rowStart' => $value['barisStart'],
-	                'rowEnd' => $value['barisEnd']
-	            );
-	            $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['parentJobCode'] = $value['parentJobCode'];
-	            $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['parentJobName'] = $value['parentJobName'];
-	            $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['childJobCode'] = $value['childJobCode'];
-	            $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['childJobName'] = $value['childJobName'];
-	            $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['listBlok'][] = $newList;
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhCode'] = $value['rkhCode'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['mandorCode'] = $value['mandorCode'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['codeAlojob'] = $value['codeAlojob'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['parentJobCode'] = $value['parentJobCode'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['parentJobName'] = $value['parentJobName'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['childJobCode'] = $value['childJobCode'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['childJobName'] = $value['childJobName'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhDate'] = $value['rkhDate'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhTime'] = $value['rkhTime'];
-	            // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['listBlok'][] = $newList;
-	        }
-	        $rkm2 = $newRKM;
+            $subJob2    = $this->removeWhitespace(DB::table('EWS_SUB_JOB')->whereIn('subJobCode', $rkmListSubJob)->get());
+            if (empty($subJob2)) {
+                # code...
+                return $this->errMessage(400,'Sub-Aktifitas tidak ditemukan');
+            }
+            foreach ($subJob2 as $key => $value) {
+                # code...
+                $subJob2[$key]['Description'] = rtrim(preg_replace('/- [A-Z]{3}\/[A-Z]{3}/', '', $value['Description']));
+            }
 
-	        foreach ($rkm2 as $key_rkm => $rkm) {
-	            # code...
-	            foreach ($subJob2 as $key_sj => $subJob) {
-	                # code...
-	                if (isset($rkm['childJobCode'])) {
-	                    # code...
-	                    if ($subJob['subJobCode'] == $rkm['childJobCode']) {
-	                        # code...
-	                        unset($rkm['parentJobCode']);
-	                        unset($rkm['parentJobName']);
-	                        unset($rkm['childJobCode']);
-	                        unset($rkm['childJobName']);
-	                        // unset($rkm['codeBlok']);
-	                        // unset($rkm['rowStart']);
-	                        // unset($rkm['rowEnd']);
-	                        // array_push($subJob2[$key_sj], $rkm);
-	                        $subJob2[$key_sj] = array_merge($subJob,$rkm);
-	                    }
-	                }
-	            }
-	        }
+            $listBlok2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+                ->select('codeBlok')
+                ->distinct('codeBlok')
+                ->whereIn('codeBlok', $rkmListBlok)
+                ->orderBy('codeBlok', 'asc')
+                ->get());
+            if (empty($listBlok2)) {
+                # code...
+                return $this->errMessage(400,'List blok tidak ditemukan');
+            }
 
-	        foreach ($subJob2 as $key_sj => $subJob) { # hapus subJob tak dipakai
-	            # code...
-	            foreach ($listBlok2 as $key_lb => $listBlok) {
-	                # code...
-	                if (!isset($subJob['listBlok'])) {
-	                    # code...
-	                    unset($subJob2[$key_sj]);
-	                }
-	            }
-	        }
+            $listPlot2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+                ->select('codeBlok', 'plot')
+                ->distinct('codeBlok')
+                ->whereIn('codeBlok', $rkmListBlok)
+                ->orderBy('plot', 'asc')
+                ->get());
+            if (empty($listPlot2)) {
+                # code...
+                return $this->errMessage(400,'List plot tidak ditemukan');
+            }
 
-	        # MASUKIN PLOT-BARIS-POKOK
-	        foreach ($subJob2 as $key_sj => $subJob) { #Plot
-	            # code...
-	            if (isset($subJob['listBlok'])) {
-	                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-	                    # code...
-	                    foreach ($listPlot2 as $key_lp => $listPlot) {
-	                        # code...
-	                        if ($listPlot['codeBlok'] == $listBlok['blok']) {
-	                            # code...
-	                            unset($listPlot['codeBlok']);
-	                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][] = $listPlot;
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	        foreach ($subJob2 as $key_sj => $subJob) {#Baris
-	            # code...
-	            if (isset($subJob['listBlok'])) {
-	                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-	                    if (isset($listBlok['listPlot'])) {
-	                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-	                            foreach ($listBaris2 as $key_lb => $listBaris) {
-	                                # code...
-	                                if (($listBaris['codeBlok'] == $listBlok['blok']) &&
-	                                    ($listBaris['plot'] == $listPlot['plot'])) {
-	                                    # code...
-	                                    if ($listBaris['baris'] >= $listBlok['rowStart']  && $listBaris['baris'] <= $listBlok['rowEnd']) {
-	                                        # code...
-	                                        unset($listBaris['codeBlok']);
-	                                        unset($listBaris['plot']);
-	                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
-	                                    }
+            $listBaris2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+                ->select('codeBlok','plot', 'baris')
+                ->distinct('baris')
+                ->whereIn('codeBlok', $rkmListBlok)
+                ->orderBy('baris', 'asc')
+                ->get());
+            if (empty($listBaris2)) {
+                # code...
+                return $this->errMessage(400,'List baris tidak ditemukan');
+            }
 
-	                                    if (($listBlok['rowStart'] == 0) && ($listBlok['rowEnd'] == 0)) {
-	                                        # code...
-	                                        unset($listBaris['codeBlok']);
-	                                        unset($listBaris['plot']);
-	                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
-	                                    }
-	                                }
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-	            # code...
-	            if (isset($subJob['listBlok'])) {
-	                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-	                    # code...
-	                    if (isset($listBlok['listPlot'])) {
-	                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-	                            if (isset($listPlot['listBaris'])) {
-	                                foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-	                                    foreach ($listPokok2 as $key_lpk => $listPokok) {
-	                                        # code...
-	                                        if (($listBlok['blok'] == $listPokok['codeBlok']) && 
-	                                        ($listPlot['plot'] == $listPokok['plot']) && 
-	                                        ($listBaris['baris'] == $listPokok['baris'])) {
-	                                            # code...
-	                                            $listPokok['status'] = 0;
-	                                            $listPokok['jmlMinggu'] = $this->datediff('ww', $listPokok['PlantingDate'], now());
-	                                            unset($listPokok['Description']);
-	                                            unset($listPokok['codeBlok']);
-	                                            unset($listPokok['plot']);
-	                                            unset($listPokok['baris']);
-	                                            unset($listPokok['noTanam']);
-	                                            $date = date_create($listPokok['PlantingDate']);
-	                                            $listPokok['date'] = date_format($date, 'd F Y');
-	                                            unset($listPokok['PlantingDate']);  
-	                                            $listPokok['code'] = $listPokok['codeTanaman'];
-	                                            unset($listPokok['codeTanaman']);
-	                                            $listPokok['week'] = $listPokok['jmlMinggu'];
-	                                            unset($listPokok['jmlMinggu']);
-	                                            // $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
-	                                            unset($listPokok['id']);
-	                                            unset($listPokok['date']);
-	                                            $week = $listPokok['week'];
-	                                            unset($listPokok['week']);
-	                                            //
-	                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
-	                                            unset($listPokok['status']);
-	                                            $listPokok['week'] = $week;
-	                                            //
-	                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listAllPokokPlot'][] = $listPokok;
-	                                        }
-	                                    }
-	                                }
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-            unset($week);
-	        # MASUKIN BLOK-PLOT-BARIS-TANAM
+            $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
+                ->selectRaw('codeTanaman as code, codeBlok, plot, baris, noTanam, PlantingDate, DATEDIFF(wk, PlantingDate,GETDATE()) as week, 0 as status')
+                ->whereIn('codeBlok', $rkmListBlok)
+                ->orderBy('codeTanaman', 'asc')
+                ->get());
+            if (empty($listPokok2)) {
+                # code...
+                return $this->errMessage(400,'List pokok tidak ditemukan');
+            }
 
-	        # MASUKIN STATUS KE POKOK
-	        # tanaman sudah dikerjakan
-	        $trans_mandor2 = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
-	            ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode')
-	            ->where('userid', '=', $user2[0]['id'])
-	            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
-	            ->get());
-	        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-	            # code...
-	            if (isset($subJob['listBlok'])) {
-	                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-	                    foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-	                        foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-	                            foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
-	                                # code...
-	                                // return $listPokok;
-	                                foreach ($trans_mandor2 as $key_tm => $trans_mandor) {
-	                                    # code...
-	                                    if (($trans_mandor['rkhCode'] == $listBlok['rkhCode']) && 
-	                                    ($trans_mandor['codeTanaman'] == $listPokok['code']) &&
-	                                    ($trans_mandor['subJobCode'] == $subJob['subJobCode'])) {
-	                                        # code...
-	                                        // return 'ada';
-	                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['status'] = 1;
-	                                    }
-	                                }
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	        # MASUKIN STATUS KE POKOK
+            $trans_mandor2 = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
+                ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode')
+                ->where('userid', '=', $user2[0]['id'])
+                // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
+                ->get());
 
-	        # MENGHITUNG TOTAL STATUS 0 || 1
-	        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-	            # code...
-	            if (isset($subJob['listBlok'])) {
-	                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-	                    $lpDone = 0;
-	                    $lpNDone = 0;
-	                    if (isset($listBlok['listPlot'])) {
-	                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-	                            $lbDone = 0;
-	                            $lbNDone = 0;
-	                            if (isset($listPlot['listBaris'])) {
-	                                foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-	                                    $lpkDone = 0;
-	                                    $lpkNDone = 0;
-	                                    if (isset($listBaris['listPokok'])) {
-	                                        foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
-	                                            # code...
-	                                            if ($listPokok['status'] == 1) {
-	                                                # code...
-	                                                $lpkDone++;
-	                                            }
-	                                            else{
-	                                                $lpkNDone++;
-	                                            }
-	                                        }
-	                                    }
-	                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokDone'] = $lpkDone;
-	                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokNDone'] = $lpkNDone;
-	                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokNDone');
-	                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokDone');
-	                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'baris');
+            $newRKM = array();
+            foreach ($rkm2 as $key => $value) {
+                # code...
+                $newList = array(
+                    'rkhCode' => $value['rkhCode'],
+                    'blok' => $value['codeBlok'],
+                    'rowStart' => $value['barisStart'],
+                    'rowEnd' => $value['barisEnd']
+                );
+                $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['parentJobCode'] = $value['parentJobCode'];
+                $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['parentJobName'] = $value['parentJobName'];
+                $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['childJobCode'] = $value['childJobCode'];
+                $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['childJobName'] = $value['childJobName'];
+                $newRKM[$value['parentJobCode'].'_'.$value['childJobCode']]['listBlok'][] = $newList;
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhCode'] = $value['rkhCode'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['mandorCode'] = $value['mandorCode'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['codeAlojob'] = $value['codeAlojob'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['parentJobCode'] = $value['parentJobCode'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['parentJobName'] = $value['parentJobName'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['childJobCode'] = $value['childJobCode'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['childJobName'] = $value['childJobName'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhDate'] = $value['rkhDate'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhTime'] = $value['rkhTime'];
+                // $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['listBlok'][] = $newList;
+            }
+            $rkm2 = $newRKM;
 
-	                                    $lbDone+=$lpkDone;
-	                                    $lbNDone+=$lpkNDone;
-	                                }
-	                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowDone'] = $lbDone;
-	                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowNDone'] = $lbNDone;
-	                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowNDone');
-	                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowDone');
-	                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'plot');
+            foreach ($rkm2 as $key_rkm => $rkm) {
+                # code...
+                foreach ($subJob2 as $key_sj => $subJob) {
+                    # code...
+                    if (isset($rkm['childJobCode'])) {
+                        # code...
+                        if ($subJob['subJobCode'] == $rkm['childJobCode']) {
+                            # code...
+                            unset($rkm['parentJobCode']);
+                            unset($rkm['parentJobName']);
+                            unset($rkm['childJobCode']);
+                            unset($rkm['childJobName']);
+                            // unset($rkm['codeBlok']);
+                            // unset($rkm['rowStart']);
+                            // unset($rkm['rowEnd']);
+                            // array_push($subJob2[$key_sj], $rkm);
+                            $subJob2[$key_sj] = array_merge($subJob,$rkm);
+                        }
+                    }
+                }
+            }
 
-	                                $lpDone+=$lbDone;
-	                                $lpNDone+=$lbNDone;
-	                            }
-	                        }
-	                        $subJob2[$key_sj]['listBlok'][$key_lt]['plotDone'] = $lpDone;
-	                        $subJob2[$key_sj]['listBlok'][$key_lt]['plotNDone'] = $lpNDone;
-	                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotNDone');
-	                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotDone');
-	                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'blok');
-	                    }
-	                }
-	            }
-	        }
-	        # MENGHITUNG TOTAL STATUS 0 || 1
-	        foreach ($job2 as $key_j => $job) {
-	            # code...
-	            foreach ($subJob2 as $key_sj => $subJob) {
-	                # code...
-	                $parentJob = '';
-	                switch ($job['Description']) {
-	                    case 'PLANT CARE':
-	                        $parentJob = 'plantCare';
-	                        break;
+            # MASUKIN PLOT-BARIS-POKOK ke dalam BLOK
+            for ($a=0; $a < count($listBlok2); $a++) { 
+                $dataBlok[$a] = $listBlok2[$a];
+                for ($b=0; $b < count($listPlot2); $b++) {
+                    if ($dataBlok[$a]['codeBlok'] == $listPlot2[$b]['codeBlok']) {
+                        $dataBlok[$a]['listPlot'][$b] = $listPlot2[$b];
+                        for ($c=0; $c < count($listBaris2); $c++) { 
+                            if  (($dataBlok[$a]['listPlot'][$b]['plot'] == $listBaris2[$c]['plot']) && 
+                                ($dataBlok[$a]['listPlot'][$b]['codeBlok'] == $listBaris2[$c]['codeBlok'])) {
+                                $dataBlok[$a]['listPlot'][$b]['listBaris'][$c] = $listBaris2[$c];
+                                for ($d=0; $d < count($listPokok2); $d++) { 
+                                    if  (($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['codeBlok'] == $listPokok2[$d]['codeBlok']) &&
+                                        ($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot'] == $listPokok2[$d]['plot']) && 
+                                        ($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['baris'] == $listPokok2[$d]['baris'])) {
+                                        $date = date_create($listPokok2[$d]['PlantingDate']);
+                                        $listPokok2[$d]['date'] = date_format($date, 'd F Y');
+                                        unset($listPokok2[$d]['PlantingDate']);
+                                        unset($listPokok2[$d]['date']);
+                                        $dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $listPokok2[$d];
 
-	                    case 'FRUIT CARE':
-	                        $parentJob = 'fruitCare';
-	                        break;
+                      //                $allPokokPlot = $listPokok2[$d];
+                      //                unset($allPokokPlot['codeBlok']);
+                                        // unset($allPokokPlot['plot']);
+                                        // unset($allPokokPlot['baris']);
+                                        // unset($allPokokPlot['noTanam']);
+                                        // unset($allPokokPlot['PlantingDate']);
+                                        // unset($allPokokPlot['week']);
+                                        // unset($allPokokPlot['status']);
+                                        // unset($allPokokPlot['date']);
+                      //                $dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
+                                    }
+                                }
+                                $dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok']);
+                            }
+                        }
+                        $dataBlok[$a]['listPlot'][$b]['listBaris'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris']);
+                    } 
+                }
+                $dataBlok[$a]['listPlot'] = array_values($dataBlok[$a]['listPlot']);
+            }
 
-	                    case 'PANEN':
-	                        $parentJob = 'panen';
-	                        break;
-	                    case 'PACKING HOUSE':
-	                        $parentJob = 'packingHouse';
-	                        break;
-	                }
-	                $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-	                $jobdesc = ucwords(strtolower($job['Description']));
-	                $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
-	                if ($subJob['jobCode'] == $job['jobCode']) {
-	                    # code...
-	                    unset($subJob['codeAlojob']);
-	                    unset($subJob['rkhTime']);
-	                    $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
-	                }
-	            }
-	            unset($job2[3]); # menghapus packing house
-	            unset($job2[$key_j]['jobCode']);
-	            unset($job2[$key_j]['Description']);
-	        }
+            # MASUKIN PLOT-BARIS-POKOK
+            foreach ($subJob2 as $key_sj => $subJob) { #Plot
+                # code...
+                foreach ($subJob['listBlok'] as $key_lb => $listBlok) {
+                    # code...
+                    foreach ($dataBlok as $key_db => $db) {
+                        # code...
+                        if ($listBlok['blok'] == $db['codeBlok']) {
+                            # code...
+                            if (($listBlok['rowStart'] == 0) && ($listBlok['rowEnd'] == 0)) {
+                                # code...
+                                // $subJob2[$key_sj]['listBlok'][$key_lb]['listPlot'] = $db['listPlot'];
+                                $listPlot = $db['listPlot'];
+                            } else {
+                                foreach ($db['listPlot'] as $key_plot => $plot) {
+                                    # code...
+                                    foreach ($plot['listBaris'] as $key_baris => $baris) {
+                                        # code...
+                                        if ($baris['baris'] >= $listBlok['rowStart']  && $baris['baris'] <= $listBlok['rowEnd']) {
+                                            # do nothing
+                                        }else {
+                                            unset($dataBlok[$key_db]['listPlot'][$key_plot]['listBaris'][$key_baris]);
+                                        }
+                                    }
+                                    $listPlot[] = $dataBlok[$key_db]['listPlot'][$key_plot];
+                                }
+                            }
+                            $lpDone = 0;
+                            $lpNDone = 0;
+                            foreach ($listPlot as $key_plot => $plot) {
+                                # code...
+                                $lbDone = 0;
+                                $lbNDone = 0;
+                                foreach ($plot['listBaris'] as $key_baris => $baris) {
+                                    # code...
+                                    $lpkDone = 0;
+                                    $lpkNDone = 0;
+                                    foreach ($baris['listPokok'] as $key_pokok => $pokok) {
+                                        # code...
+                                        foreach ($trans_mandor2 as $key_tm => $trans_spi) {
+                                            # code...
+                                            if (($trans_spi['rkhCode'] == $listBlok['rkhCode']) && 
+                                            ($trans_spi['codeTanaman'] == $pokok['code']) &&
+                                            ($trans_spi['subJobCode'] == $subJob['subJobCode'])) {
+                                                # code...
+                                                // return 'ada';
+                                                // $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['status'] = 1;
+                                                $listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['status'] = 1;
+                                            }
+                                        }
+                                        if ($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['status'] == 1) {
+                                            # code...
+                                            $lpkDone++;
+                                        }else {
+                                            $lpkNDone++;
+                                        }
+                                        unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['week']);
+                                        unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['codeBlok']);
+                                        unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['plot']);
+                                        unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['baris']);
+                                        unset($listPlot[$key_plot]['listBaris'][$key_baris]['listPokok'][$key_pokok]['noTanam']);
+                                        // $allPokokPlot = $listPokok2[$d];
+                                        unset($pokok['codeBlok']);
+                                        unset($pokok['plot']);
+                                        unset($pokok['baris']);
+                                        unset($pokok['noTanam']);
+                                        unset($pokok['PlantingDate']);
+                                        unset($pokok['status']);
+                                        unset($pokok['date']);
+                                        $listPlot[$key_plot]['listAllPokokPlot'][] = $pokok;
+                                    }
+                                    unset($listPlot[$key_plot]['listBaris'][$key_baris]['codeBlok']);
+                                    unset($listPlot[$key_plot]['listBaris'][$key_baris]['plot']);
 
-	        $user2[0]['RKM'] = $job2;
+                                    $listPlot[$key_plot]['listBaris'][$key_baris]['pokokDone'] = $lpkDone;
+                                    $listPlot[$key_plot]['listBaris'][$key_baris]['pokokNDone'] = $lpkNDone;
+                                    $this->move_to_top($listPlot[$key_plot]['listBaris'][$key_baris], 'pokokNDone');
+                                    $this->move_to_top($listPlot[$key_plot]['listBaris'][$key_baris], 'pokokDone');
+                                    $this->move_to_top($listPlot[$key_plot]['listBaris'][$key_baris], 'baris');
 
-	        return $user2;
-	    }
+                                    $lbDone+=$lpkDone;
+                                    $lbNDone+=$lpkNDone;
+                                }
+                                unset($listPlot[$key_plot]['codeBlok']);
+
+                                $listPlot[$key_plot]['rowDone'] = $lbDone;
+                                $listPlot[$key_plot]['rowNDone'] = $lbNDone;
+                                $this->move_to_top($listPlot[$key_plot], 'rowNDone');
+                                $this->move_to_top($listPlot[$key_plot], 'rowDone');
+                                $this->move_to_top($listPlot[$key_plot], 'plot');
+                                $subJob2[$key_sj]['listBlok'][$key_lb]['listPlot'] = $listPlot;
+
+                                $lpDone+=$lbDone;
+                                $lpNDone+=$lbNDone;
+                            }
+                            $subJob2[$key_sj]['listBlok'][$key_lb]['plotDone'] = $lpDone;
+                            $subJob2[$key_sj]['listBlok'][$key_lb]['plotNDone'] = $lpNDone;
+                            $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lb], 'plotNDone');
+                            $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lb], 'plotDone');
+                            $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lb], 'blok');
+                            unset($listPlot);
+                        }
+                    }
+                }
+            }
+            # MASUKIN BLOK-PLOT-BARIS-TANAM
+
+            foreach ($job2 as $key_j => $job) {
+                # code...
+                foreach ($subJob2 as $key_sj => $subJob) {
+                    # code...
+                    $parentJob = '';
+                    switch ($job['Description']) {
+                        case 'PLANT CARE':
+                            $parentJob = 'plantCare';
+                            break;
+
+                        case 'FRUIT CARE':
+                            $parentJob = 'fruitCare';
+                            break;
+
+                        case 'PANEN':
+                            $parentJob = 'panen';
+                            break;
+                        case 'PACKING HOUSE':
+                            $parentJob = 'packingHouse';
+                            break;
+                    }
+                    $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
+                    $jobdesc = ucwords(strtolower($job['Description']));
+                    $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+                    if ($subJob['jobCode'] == $job['jobCode']) {
+                        # code...
+                        unset($subJob['codeAlojob']);
+                        unset($subJob['rkhTime']);
+                        $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
+                    }
+                }
+                unset($job2[3]); # menghapus packing house
+                unset($job2[$key_j]['jobCode']);
+                unset($job2[$key_j]['Description']);
+            }
+
+            $user2[0]['RKM'] = $job2;
+
+            return $user2;
+        }
 
 	    public function getRKMKawil ($user2, $identitasPekerja, $detailRole, $reqDate)
 	    {
