@@ -22,25 +22,21 @@ Route::group(['prefix' => 'app'], function () { # Use DB GPS_APS
 
 	Route::post('user', 'AppController@getUser');
 
-	Route::post('user2', 'AppController@getUser2');
-
 	Route::post('storeMandor', 'AppController@storeMandor');
 	Route::post('storeKawil', 'AppController@storeKawil');
 	Route::post('storePH', 'AppController@storePH');
-	// Route::post('storeSPI', 'AppController@storeSPI');
+	Route::post('storeSPI', 'AppController@storeSPI');
 
 	Route::get('pokok', 'AppController@getAllPokok');
 	Route::get('pokokCT', 'AppController@getCTPokok');
 	Route::get('treePokok', 'AppController@getTreePokok');
-	// Route::get('getAllMandor', 'AppController@getAllMandor');
+	Route::get('getAllMandor', 'AppController@getAllMandor');
 });
 
 Route::group(['prefix' => 'staging', 'middleware' => 'changeDBStag'], function () { # Use DB GPS_APS_EWS
 	Route::get('test', 'Api\Staging\StagController@test');
 
 	Route::post('user', 'Api\Staging\StagController@getUser');
-
-	Route::post('user2', 'Api\Staging\StagController@getUser2');
 
 	Route::post('storeMandor', 'Api\Staging\StagController@storeMandor');
 	Route::post('storeKawil', 'Api\Staging\StagController@storeKawil');
@@ -58,11 +54,10 @@ Route::group(['prefix' => 'dev', 'middleware' => 'changeDB'], function () { # Us
 
 	Route::post('user', 'Api\Dev\DevController@getUser');
 
-	Route::post('user2', 'Api\Dev\DevController@getUser2');
+	Route::post('user_test', 'Api\Dev\TestDevController@getUser');
 
 	Route::post('storeMandor', 'Api\Dev\DevController@storeMandor');
 	Route::post('storeKawil', 'Api\Dev\DevController@storeKawil');
-	Route::post('storeCA', 'Api\Dev\DevController@storeCA');
 	Route::post('storePH', 'Api\Dev\DevController@storePH');
 	Route::post('storeSPI', 'Api\Dev\DevController@storeSPI');
 
