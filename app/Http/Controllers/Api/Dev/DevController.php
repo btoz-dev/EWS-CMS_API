@@ -1065,8 +1065,20 @@ class DevController extends Controller
 					        		 	unset($pokok['blok']);
 		                                unset($pokok['plot']);
 		                                unset($pokok['baris']);
+		                                $week = $pokok['week'];
+										unset($pokok['week']);
 
 					        		 	$dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
+
+					        		 	$pokok['week'] = $week;
+				        				$allPokokPlot = $pokok;
+				      //   				unset($allPokokPlot['blok']);
+										// unset($allPokokPlot['plot']);
+										// unset($allPokokPlot['baris']);
+										// unset($allPokokPlot['noTanam']);
+										// unset($allPokokPlot['status']);
+										// unset($allPokokPlot['date']);
+				        		 		$dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
 				        			}
 			        			}
 		        				unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok']);
@@ -1099,7 +1111,7 @@ class DevController extends Controller
 	            'totalFinger' => 'nullable|integer',
 	            'totalLeaf' => 'nullable|integer',
 	            'ribbonColor' => 'nullable|between:0,10',
-	            'skimmingSize' => 'nullable|integer',
+	            'skimmingSize' => 'nullable',
 	            'tanggal' => 'required',
 	            'waktu' => 'required',
 	            'pokokAwal' => 'nullable|integer',
@@ -1108,6 +1120,11 @@ class DevController extends Controller
 
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
+	        }
+
+	        if (isset($request->skimmingSize)) {
+	        	# code...
+	        	$request->skimmingSize = str_replace(',', '.', $request->skimmingSize);
 	        }
 
 	        $date = date_create($request->tanggal.' '.$request->waktu);
@@ -1238,184 +1255,187 @@ class DevController extends Controller
 
 	    public function storeKawil (Request $request)
 	    {
-	        # validasi request
-	        $validator = Validator::make($request->all(), [
-	            'codeRKH' => 'required|between:0,25',
-	            'subJobCode' => 'required|between:0,15',
-	            'userid' => 'required',
-	            'codeTanaman' => 'required|between:0,20',
-	            'note' => 'nullable|between:0,255',
-	            'tanggal' => 'required',
-	            'waktu' => 'required',
-	            'pokokAwal' => 'nullable|integer',
-	            'pokokAkhir' => 'nullable|integer'
-	        ]);
-	        # return err ketika validasi tidak sesuai
-	        if ($validator->fails()) {
-	            return $this->errMessage(400,$validator->messages()->first());
-	        }
+	    	if (isset($request->corrective) && $request->corrective == 1) {
+	        	$validator = Validator::make($request->all(), [
+		            'codeTanaman' => 'required',
+		            'week' => 'required',
+		            'note' => 'nullable|between:0,255',
+		            'userid' => 'required|integer',
+		            'tanggal' => 'required',
+		            'waktu' => 'required'
+		        ]);
 
-	        # pembuatan tanggal
-	        $date = date_create($request->tanggal.' '.$request->waktu);
-	        # tanggal bulan tahun
-	        $created_at = date_format($date, 'Y-m-d H:i:s.B');
-	        # bikin template pesan
-	        $message = array(
-	            'code' => 200,
-	            'message' => []
-	        );
+		        if ($validator->fails()) {
+		            return $this->errMessage(400,$validator->messages()->first());
+		        }
 
-	        # kalau ada pokokAwal dan pokokAkhir
-	        if ((isset($request->pokokAwal) && !empty($request->pokokAwal)) && 
-	            ((isset($request->pokokAkhir) && !empty($request->pokokAkhir)))) {
-	            # 1. PLANTCARE, MODEL PEMUPUKAN
-	            # code...
-	            $aw = $request->pokokAwal;
-	            $ak = $request->pokokAkhir;
+		        $date = date_create($request->tanggal.' '.$request->waktu);
+		        # tanggal bulan tahun
+		        $tbt = date_format($date, 'Y-m-d H:i:s.B');
 
-	            # kalau pokokAwal lebih kecil dr pokokAkhir
-	            while ($aw <= $ak) {
-	                $aw = str_pad($aw, 3, "0", STR_PAD_LEFT); # nambahin angka 0 di setiap digit satuan
-	                $codeTanam = substr($request->codeTanaman, 0, strrpos($request->codeTanaman, '.')).'.'.$aw; #replace code pokok akhir dengan pokok skrg
+		        $data = array(
+		                'corrActKawil' => $request->note,
+		                'created_atKawil' => $tbt,
+		                'useridKawil' => $request->userid,
+		            );
 
-	                # ambil id trans mandor di tabel ews_trans_mandor brdsrkn rkhcode, subjobcode, codetanaman
-	                $array = array(
-	                        'rkhCode' => $request->codeRKH,
-	                        'subJobCode' => $request->subJobCode,
-	                        'codeTanaman' => $codeTanam
-	                    );
-	                $check = DB::table('EWS_TRANS_MANDOR')
-	                    ->where($array)
-	                    ->value('id');
-	                # cek id trans mandor
-	                if (empty($check)) 
-	                {
-	                    # jika id trans mandor tidak ada
-	                    $message['message'][] = 'Data tidak ditemukan||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$codeTanam;
-	                }
-	                else
-	                {
-	                    # ada id trans mandor
-	                    # check id trans mandor jika ada duplikat di ews_trans_kawil
-	                    $arrCheck = array('check' => $check);
-	                    $validator = Validator::make($arrCheck, [
-	                        'check' => 'unique:EWS_TRANS_KAWIL,idEWSTransMandor'
-	                    ]);
-	                    if ($validator->fails()) {
-	                        # id trans mandor duplikat
-	                        $message['message'][] = $validator->messages()->first().'||'.$check;
-	                    }else{
-	                        # id trans mandor belum di insert
-	                        # insert ke ews_trans_kawil
-	                        DB::table('EWS_TRANS_KAWIL')->insert([
-	                            'idEWSTransMandor' => $check,
-	                            'kawilNote' => $request->note,
-	                            'userid' => $request->userid,
-	                            'created_at' => $created_at
-	                        ]);
-	                        $message['message'][] = 'Data berhasil di input||'.$check.'||'.$request->note.'||'.$request->userid.'||'.$created_at;
-	                    }
-	                }
-	                # ke pokok selanjutnya
-	                $aw++;
-	            }
-	            # return pesan semua
+		    	$check = DB::table('EWS_TRANS_SPI_SENSUS')
+		    		->where('codeTanaman', $request->codeTanaman)
+		    		->where('week', $request->week)
+		    		->where('useridKawil', NULL)
+		    		->value('id');
+		        if (empty($check)) {
+		            # code...
+		            try {
+		                // DB::table('EWS_TRANS_PH_BT')->insert($data);
+		                $message['message'][] = 'Data tidak ada';
+		                // $message['message'][] = $data;
+		            } catch (\Exception  $e) {
+		                $message['message'][] = $e->getMessage();
+		            }
+		        }else{
+		            try {
+		                DB::table('EWS_TRANS_SPI_SENSUS')->where('id', $check)->update($data);
+		                $message['message'][] = 'Data berhasil di update';
+		                // $message['message'][] = $data;
+		            } catch (\Exception  $e) {
+		                $message['message'][] = $e->getMessage();
+		            }
+		        }
+
 	            return response()->json($message, 200);
 	        }
-	        # kalau tidak ada pokokAwal pokokAkhir
-	        else
-	        {
-	            # ambil id trans mandor di tabel ews_trans_mandor brdsrkn rkhcode, subjobcode, codetanaman
-	            $array = array(
-	                    'rkhCode' => $request->codeRKH,
-	                    'subJobCode' => $request->subJobCode,
-	                    'codeTanaman' => $request->codeTanaman
-	                );
-	            $idEwsTransMandor = DB::table('EWS_TRANS_MANDOR')
-	                ->where($array)
-	                ->value('id');
-	            # cek id trans mandor
-	            if (empty($idEwsTransMandor)) 
-	            {
-	                # jika id trans mandor tidak ada
-	                // $message['message'][] = 'Data tidak ditemukan||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->codeTanaman;
-	            }
-	            else
-	            {
-	                # ada id trans mandor
-	                # cek id trans mandor jika ada duplikat di ews_trans_kawil
-	                $arrCheck = array('idEwsTransMandor' => $idEwsTransMandor);
-	                $validator = Validator::make($arrCheck, [
-	                    'idEwsTransMandor' => 'unique:EWS_TRANS_KAWIL,idEWSTransMandor'
-	                ]);
-	                if ($validator->fails()) {
-	                    # id trans mandor duplikat
-	                    $message['message'][] = $validator->messages()->first().'||'.$idEwsTransMandor;
-	                }else{
-	                    # id trans mandor belum di insert
-	                    # insert ke ews_trans_kawil
-	                    DB::table('EWS_TRANS_KAWIL')->insert([
-	                        'idEWSTransMandor' => $idEwsTransMandor,
-	                        'kawilNote' => $request->note,
-	                        'userid' => $request->userid,
-	                        'created_at' => $created_at
-	                    ]);
-	                    $message['message'][] = 'Data berhasil di input||'.$idEwsTransMandor.'||'.$request->note.'||'.$request->userid.'||'.$created_at;
-	                }
-	            }
-	            return response()->json($message, 200);
+	        else {
+		        # validasi request
+		        $validator = Validator::make($request->all(), [
+		            'codeRKH' => 'required|between:0,25',
+		            'subJobCode' => 'required|between:0,15',
+		            'userid' => 'required',
+		            'codeTanaman' => 'required|between:0,20',
+		            'note' => 'nullable|between:0,255',
+		            'tanggal' => 'required',
+		            'waktu' => 'required',
+		            'pokokAwal' => 'nullable|integer',
+		            'pokokAkhir' => 'nullable|integer',
+		        ]);
+		        # return err ketika validasi tidak sesuai
+		        if ($validator->fails()) {
+		            return $this->errMessage(400,$validator->messages()->first());
+		        }
+
+
+
+		        # pembuatan tanggal
+		        $date = date_create($request->tanggal.' '.$request->waktu);
+		        # tanggal bulan tahun
+		        $created_at = date_format($date, 'Y-m-d H:i:s.B');
+		        # bikin template pesan
+		        $message = array(
+		            'code' => 200,
+		            'message' => []
+		        );
+
+		        # kalau ada pokokAwal dan pokokAkhir
+		        if ((isset($request->pokokAwal) && !empty($request->pokokAwal)) && 
+		            ((isset($request->pokokAkhir) && !empty($request->pokokAkhir)))) {
+		            # 1. PLANTCARE, MODEL PEMUPUKAN
+		            # code...
+		            $aw = $request->pokokAwal;
+		            $ak = $request->pokokAkhir;
+
+		            # kalau pokokAwal lebih kecil dr pokokAkhir
+		            while ($aw <= $ak) {
+		                $aw = str_pad($aw, 3, "0", STR_PAD_LEFT); # nambahin angka 0 di setiap digit satuan
+		                $codeTanam = substr($request->codeTanaman, 0, strrpos($request->codeTanaman, '.')).'.'.$aw; #replace code pokok akhir dengan pokok skrg
+
+		                # ambil id trans mandor di tabel ews_trans_mandor brdsrkn rkhcode, subjobcode, codetanaman
+		                $array = array(
+		                        'rkhCode' => $request->codeRKH,
+		                        'subJobCode' => $request->subJobCode,
+		                        'codeTanaman' => $codeTanam
+		                    );
+		                $check = DB::table('EWS_TRANS_MANDOR')
+		                    ->where($array)
+		                    ->value('id');
+		                # cek id trans mandor
+		                if (empty($check)) 
+		                {
+		                    # jika id trans mandor tidak ada
+		                    $message['message'][] = 'Data tidak ditemukan||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$codeTanam;
+		                }
+		                else
+		                {
+		                    # ada id trans mandor
+		                    # check id trans mandor jika ada duplikat di ews_trans_kawil
+		                    $arrCheck = array('check' => $check);
+		                    $validator = Validator::make($arrCheck, [
+		                        'check' => 'unique:EWS_TRANS_KAWIL,idEWSTransMandor'
+		                    ]);
+		                    if ($validator->fails()) {
+		                        # id trans mandor duplikat
+		                        $message['message'][] = $validator->messages()->first().'||'.$check;
+		                    }else{
+		                        # id trans mandor belum di insert
+		                        # insert ke ews_trans_kawil
+		                        DB::table('EWS_TRANS_KAWIL')->insert([
+		                            'idEWSTransMandor' => $check,
+		                            'kawilNote' => $request->note,
+		                            'userid' => $request->userid,
+		                            'created_at' => $created_at
+		                        ]);
+		                        $message['message'][] = 'Data berhasil di input||'.$check.'||'.$request->note.'||'.$request->userid.'||'.$created_at;
+		                    }
+		                }
+		                # ke pokok selanjutnya
+		                $aw++;
+		            }
+		            # return pesan semua
+		            return response()->json($message, 200);
+		        }
+		        # kalau tidak ada pokokAwal pokokAkhir
+		        else
+		        {
+		            # ambil id trans mandor di tabel ews_trans_mandor brdsrkn rkhcode, subjobcode, codetanaman
+		            $array = array(
+		                    'rkhCode' => $request->codeRKH,
+		                    'subJobCode' => $request->subJobCode,
+		                    'codeTanaman' => $request->codeTanaman
+		                );
+		            $idEwsTransMandor = DB::table('EWS_TRANS_MANDOR')
+		                ->where($array)
+		                ->value('id');
+		            # cek id trans mandor
+		            if (empty($idEwsTransMandor)) 
+		            {
+		                # jika id trans mandor tidak ada
+		                // $message['message'][] = 'Data tidak ditemukan||'.$request->codeRKH.'||'.$request->subJobCode.'||'.$request->codeTanaman;
+		            }
+		            else
+		            {
+		                # ada id trans mandor
+		                # cek id trans mandor jika ada duplikat di ews_trans_kawil
+		                $arrCheck = array('idEwsTransMandor' => $idEwsTransMandor);
+		                $validator = Validator::make($arrCheck, [
+		                    'idEwsTransMandor' => 'unique:EWS_TRANS_KAWIL,idEWSTransMandor'
+		                ]);
+		                if ($validator->fails()) {
+		                    # id trans mandor duplikat
+		                    $message['message'][] = $validator->messages()->first().'||'.$idEwsTransMandor;
+		                }else{
+		                    # id trans mandor belum di insert
+		                    # insert ke ews_trans_kawil
+		                    DB::table('EWS_TRANS_KAWIL')->insert([
+		                        'idEWSTransMandor' => $idEwsTransMandor,
+		                        'kawilNote' => $request->note,
+		                        'userid' => $request->userid,
+		                        'created_at' => $created_at
+		                    ]);
+		                    $message['message'][] = 'Data berhasil di input||'.$idEwsTransMandor.'||'.$request->note.'||'.$request->userid.'||'.$created_at;
+		                }
+		            }
+		            return response()->json($message, 200);
+		        }
 	        }
-	    }
-
-	    public function storeCA(Request $request)
-	    {
-	    	$validator = Validator::make($request->all(), [
-	            'codeTanaman' => 'required',
-	            'week' => 'required',
-	            'note' => 'nullable|between:0,255',
-	            'userid' => 'required|integer',
-	            'tanggal' => 'required',
-	            'waktu' => 'required'
-	        ]);
-
-	        if ($validator->fails()) {
-	            return $this->errMessage(400,$validator->messages()->first());
-	        }
-
-	        $date = date_create($request->tanggal.' '.$request->waktu);
-	        # tanggal bulan tahun
-	        $tbt = date_format($date, 'Y-m-d H:i:s.B');
-
-	        $data = array(
-	                'corrActKawil' => $request->note,
-	                'created_atKawil' => $tbt,
-	                'useridKawil' => $request->userid,
-	            );
-
-	    	$check = DB::table('EWS_TRANS_SPI_SENSUS')
-	    		->where('codeTanaman', $request->codeTanaman)
-	    		->where('week', $request->week)
-	    		->value('id');
-	        if (empty($check)) {
-	            # code...
-	            try {
-	                // DB::table('EWS_TRANS_PH_BT')->insert($data);
-	                $message['message'][] = 'Data tidak ada';
-	                // $message['message'][] = $data;
-	            } catch (\Exception  $e) {
-	                $message['message'][] = $e->getMessage();
-	            }
-	        }else{
-	            try {
-	                DB::table('EWS_TRANS_SPI_SENSUS')->where('id', $check)->update($data);
-	                $message['message'][] = 'Data berhasil di update';
-	                // $message['message'][] = $data;
-	            } catch (\Exception  $e) {
-	                $message['message'][] = $e->getMessage();
-	            }
-	        }
-
-            return response()->json($message, 200);
 	    }
 
 	    public function getAllPokok()
@@ -2622,7 +2642,7 @@ class DevController extends Controller
 	    	$validator = Validator::make($request->all(), [
 	            'codeTanaman' => 'required|between:0,20',
 	            'week' => 'required|integer',
-	            'girth' => 'required|integer',
+	            'girth' => 'required',
 	            'totalLeaf' => 'required|integer',
 	            'note' => 'nullable|between:0,255',
 	            'dueDate' => 'required|date_format:d-m-Y',
@@ -2634,6 +2654,8 @@ class DevController extends Controller
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
 	        }
+
+        	$request->girth = str_replace(',', '.', $request->girth);
 
 	        $created_at = date_create($request->tanggal.' '.$request->waktu);
 	        $created_at = date_format($created_at, 'Y-m-d H:i:s.B');
@@ -2692,7 +2714,7 @@ class DevController extends Controller
 	            'totalFinger' => 'nullable|integer',
 	            'totalLeaf' => 'nullable|integer',
 	            'ribbonColor' => 'nullable|between:0,10',
-	            'skimmingSize' => 'nullable|integer',
+	            'skimmingSize' => 'nullable',
 	            'tanggal' => 'required|date',
 	            'waktu' => 'required|date_format:H:i',
 	            'pokokAwal' => 'nullable|integer',
@@ -2701,6 +2723,11 @@ class DevController extends Controller
 
 	        if ($validator->fails()) {
 	            return $this->errMessage(400,$validator->messages()->first());
+	        }
+
+	        if (isset($request->skimmingSize)) {
+	        	# code...
+	        	$request->skimmingSize = str_replace(',', '.', $request->skimmingSize);
 	        }
 
 	        $date = date_create($request->tanggal.' '.$request->waktu);
@@ -3134,484 +3161,4 @@ class DevController extends Controller
             ]
         ], $code);
     }
-
-    public function getUser2 (Request $request)
-    {
-        
-        $validator = Validator::make($request->all(), [
-            'username' => 'required',
-            'password' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return $this->errMessage(400,$validator->messages()->first());
-        }
-
-        $user2 = $this->removeWhitespace3(
-                User::select(['id','name','username','password_decrypt as password','codePekerja'])
-                ->whereRaw('username = ? COLLATE Latin1_General_CS_AS', [$request->username])
-                ->whereRaw('password_decrypt = ? COLLATE Latin1_General_CS_AS', [$request->password])
-                ->first()
-            );
-        if (empty($user2)) {
-            # code...
-            return $this->errMessage(400,'Username atau Password salah.');
-        }
-        
-        $identitasPekerja = $this->removeWhitespace3(
-            Pekerja::select(['namaPekerja as nama'])->find($user2['codePekerja'])
-        );
-        if (empty($identitasPekerja)) {
-            # code...
-            return $this->errMessage(400,'Tidak ada data pekerja');
-        }
-
-        $detailRole = User::find($user2['id'])->roles->first();
-        if (empty($detailRole)) {
-            # code...
-            return $this->errMessage(400,'Tidak ada data role');
-        }
-        
-        $detailRole['desc'] = $detailRole['name'];
-        unset($detailRole['guard_name']);
-        unset($detailRole['created_at']);
-        unset($detailRole['updated_at']);
-        unset($detailRole['pivot']);
-        $user[0] = $user2;
-        $user2 = $user;
-
-        if ($detailRole['name'] == "Mandor") {
-            $validator = Validator::make($request->all(), [
-                'date' => 'required|date|date_format:d-m-Y'
-            ]);
-            if ($validator->fails()) {
-                return $this->errMessage(400,$validator->messages()->first());
-            }
-            return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
-        }
-
-        if ($detailRole['name'] == "Kawil") {
-            $validator = Validator::make($request->all(), [
-                'date' => 'required|date|date_format:d-m-Y'
-            ]);
-            if ($validator->fails()) {
-                return $this->errMessage(400,$validator->messages()->first());
-            }
-            return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
-        }
-
-        if ($detailRole['name'] == "Mandor PH") {
-            $validator = Validator::make($request->all(), [
-                'data' => [
-                    'required', 
-                    Rule::in(['bruto', 'bonggol'])
-                ],
-            ]);
-            if ($validator->fails()) {
-                return $this->errMessage(400,$validator->messages()->first());
-            }
-            return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
-        }
-
-        // if ($detailRole['id'] == 7) {
-        //     $validator = Validator::make($request->all(), [
-        //         'date' => 'required|date|date_format:d-m-Y'
-        //     ]);
-        //     if ($validator->fails()) {
-        //         return $this->errMessage(400,$validator->messages()->first());
-        //     }
-        //     return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
-        // }
-        
-        // if ($detailRole['id'] == 9) {
-        //     $validator = Validator::make($request->all(), [
-        //         'data' => [
-        //             'required', 
-        //             Rule::in(['bruto', 'bonggol'])
-        //         ],
-        //     ]);
-        //     if ($validator->fails()) {
-        //         return $this->errMessage(400,$validator->messages()->first());
-        //     }
-        //     return $this->getPH($user2, $identitasPekerja, $detailRole, $request->data);
-        // }
-    }
-
-    public function getRKMMandor2 ($user2, $identitasPekerja, $detailRole, $reqDate)
-    {
-    	$codeMandor = $this->removeWhitespace2(DB::table('EWS_MANDOR')
-            ->select('codeMandor')
-            ->where('codePekerja', '=', $user2[0]['codePekerja'])
-            ->first());
-        if (empty($codeMandor)) {
-            # code...
-            return $this->errMessage(400,'Tidak ada data kode mandor');
-        }
-
-        $tukang = $this->removeWhitespace(DB::table('EWS_PEKERJA')
-            ->join('EWS_MANDOR_PEKERJA', 'EWS_PEKERJA.codePekerja', '=', 'EWS_MANDOR_PEKERJA.codePekerja')
-            ->select('EWS_MANDOR_PEKERJA.id', 'EWS_PEKERJA.namaPekerja as nama', 'EWS_PEKERJA.codePekerja as code')
-            ->where('EWS_MANDOR_PEKERJA.codeMandor', '=', $codeMandor['codeMandor'])
-            ->where('EWS_MANDOR_PEKERJA.AccMonth', '=', date('m'))
-            ->where('EWS_MANDOR_PEKERJA.AccYear', '=', date('Y'))
-            ->orderBy('nama', 'asc')
-            ->get());
-        if (empty($tukang)) {
-            # code...
-            return $this->errMessage(400,'Tidak ada data tukang');
-        }
-
-        // $date = now();
-        $tgl = date_create($reqDate);
-        $tgl_ubah = date_format($tgl, 'Y-m-d');
-
-        $user2[0]['rkhDate'] = $tgl_ubah;
-
-        unset($identitasPekerja['idRole']);
-        $user2[0]['identitasPekerja'] = $identitasPekerja;
-        $user2[0]['identitasPekerja']['detailRole'] = $detailRole;
-        $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
-
-        $pilihTukang = array(
-            'id' => '',
-            'nama' => 'Pilih Pekerja',
-            'code' => ''
-        );
-        array_unshift($tukang, $pilihTukang); #inserts new elements into beginning of array
-        $user2[0]['identitasPekerja']['detailPekerja']['tukang'] = $tukang;
-        return $user2;
-
-        ####################################GET ALL DATA###################################################
-
-        $user2[0]['RKM'] = array();
-        # rencana kerjaan harian
-        $rkm2       = $this->removeWhitespace(DB::table('EWS_JADWAL_RKM')
-            ->join('EWS_SUB_JOB', 'EWS_JADWAL_RKM.codeAlojob', '=', 'EWS_SUB_JOB.subJobCode')
-            ->join('EWS_JOB', 'EWS_JOB.jobCode', '=', 'EWS_SUB_JOB.jobCode')
-            ->select('EWS_JADWAL_RKM.*', 'EWS_JOB.jobCode as parentJobCode', 'EWS_JOB.Description as parentJobName', 'EWS_SUB_JOB.subJobCode as childJobCode', 'EWS_SUB_JOB.Description as childJobName')
-            ->whereBetween('EWS_JADWAL_RKM.rkhDate', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
-            ->where('EWS_JADWAL_RKM.mandorCode', '=', $codeMandor['codeMandor'])
-            ->get());
-        if (empty($rkm2)) {
-            # code...
-            return $this->errMessage(400,'Tidak ada RKM untuk hari ini');
-        }
-
-        $job2       = $this->removeWhitespace(DB::table('EWS_JOB')->get());
-        $subJob2    = $this->removeWhitespace(DB::table('EWS_SUB_JOB')->get());
-        foreach ($subJob2 as $key => $value) {
-            # code...
-            $subJob2[$key]['Description'] = rtrim(preg_replace('/- [A-Z]{3}\/[A-Z]{3}/', '', $value['Description']));
-        }
-
-        foreach ($rkm2 as $key_rkm => $rkm) {
-            # code...
-            $date = date_create($rkm['rkhDate']);
-            unset($rkm2[$key_rkm]['rkhDate']);
-            # tanggal bulan tahun
-            $rkm2[$key_rkm]['rkhDate'] = date_format($date, 'd F Y');
-            # jam:menit:detik
-            $rkm2[$key_rkm]['rkhTime'] = date_format($date, 'H:i:s');
-        }
-
-        $listBlok2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-            ->select('codeBlok')
-            ->distinct('codeBlok')
-            ->orderBy('codeBlok', 'asc')
-            ->get());
-        $listPlot2  = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-            ->select('codeBlok', 'plot')
-            ->distinct('codeBlok')
-            ->orderBy('plot', 'asc')
-            ->get());
-        $listBaris2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-            ->select('codeBlok','plot', 'baris')
-            ->distinct('baris')
-            ->orderBy('baris', 'asc')
-            ->get());
-        $listPokok2 = $this->removeWhitespace(DB::table('EWS_LOK_TANAMAN')
-            ->orderBy('codeTanaman', 'asc')
-            ->get());
-
-        $newRKM = array();
-        foreach ($rkm2 as $key => $value) {
-            # code...
-            $newList = array(
-                'blok' => $value['codeBlok'],
-                'rowStart' => $value['barisStart'],
-                'rowEnd' => $value['barisEnd']
-            );
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhCode'] = $value['rkhCode'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['mandorCode'] = $value['mandorCode'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['codeAlojob'] = $value['codeAlojob'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['parentJobCode'] = $value['parentJobCode'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['parentJobName'] = $value['parentJobName'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['childJobCode'] = $value['childJobCode'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['childJobName'] = $value['childJobName'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhDate'] = $value['rkhDate'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['rkhTime'] = $value['rkhTime'];
-            $newRKM[$value['rkhCode'].'_'.$value['codeAlojob']]['listBlok'][] = $newList;
-        }
-        $rkm2 = $newRKM;
-
-        foreach ($rkm2 as $key_rkm => $rkm) {
-            # code...
-            foreach ($subJob2 as $key_sj => $subJob) {
-                # code...
-                if (isset($rkm['childJobCode'])) {
-                    # code...
-                    if ($subJob['subJobCode'] == $rkm['childJobCode']) {
-                        # code...
-                        unset($rkm['parentJobCode']);
-                        unset($rkm['parentJobName']);
-                        unset($rkm['childJobCode']);
-                        unset($rkm['childJobName']);
-                        unset($rkm['codeBlok']);
-                        unset($rkm['rowStart']);
-                        unset($rkm['rowEnd']);
-                        // array_push($subJob2[$key_sj], $rkm);
-                        $subJob2[$key_sj] = array_merge($subJob,$rkm);
-                    }
-                }
-            }
-        }
-
-        foreach ($subJob2 as $key_sj => $subJob) { # hapus subJob tak dipakai
-            # code...
-            foreach ($listBlok2 as $key_lb => $listBlok) {
-                # code...
-                if (!isset($subJob['rkhCode'])) {
-                    # code...
-                    unset($subJob2[$key_sj]);
-                }
-            }
-        }
-
-        # MASUKIN PLOT-BARIS-POKOK
-        foreach ($subJob2 as $key_sj => $subJob) { #Plot
-            # code...
-            if (isset($subJob['rkhCode'])) {
-                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-                    # code...
-                    foreach ($listPlot2 as $key_lp => $listPlot) {
-                        # code...
-                        if ($listPlot['codeBlok'] == $listBlok['blok']) {
-                            # code...
-                            unset($listPlot['codeBlok']);
-                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][] = $listPlot;
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($subJob2 as $key_sj => $subJob) {#Baris
-            # code...
-            if (isset($subJob['rkhCode'])) {
-                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-                    if (isset($listBlok['listPlot'])) {
-                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-                            foreach ($listBaris2 as $key_lb => $listBaris) {
-                                # code...
-                                if (($listBaris['codeBlok'] == $listBlok['blok']) &&
-                                    ($listBaris['plot'] == $listPlot['plot'])) {
-                                    # code...
-                                    if ($listBaris['baris'] >= $listBlok['rowStart']  && $listBaris['baris'] <= $listBlok['rowEnd']) {
-                                        # code...
-                                        unset($listBaris['codeBlok']);
-                                        unset($listBaris['plot']);
-                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
-                                    }
-
-                                    if (($listBlok['rowStart'] == 0) && ($listBlok['rowEnd'] == 0)) {
-                                        # code...
-                                        unset($listBaris['codeBlok']);
-                                        unset($listBaris['plot']);
-                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][] = $listBaris;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-            # code...
-            if (isset($subJob['rkhCode'])) {
-                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-                    # code...
-                    if (isset($listBlok['listPlot'])) {
-                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-                            if (isset($listPlot['listBaris'])) {
-                                foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-                                    foreach ($listPokok2 as $key_lpk => $listPokok) {
-                                        # code...
-                                        if (($listBlok['blok'] == $listPokok['codeBlok']) && 
-                                        ($listPlot['plot'] == $listPokok['plot']) && 
-                                        ($listBaris['baris'] == $listPokok['baris'])) {
-                                            # code...
-                                            $listPokok['status'] = 0;
-                                            $listPokok['jmlMinggu'] = $this->datediff('ww', $listPokok['PlantingDate'], now());
-                                            unset($listPokok['Description']);
-                                            unset($listPokok['codeBlok']);
-                                            unset($listPokok['plot']);
-                                            unset($listPokok['baris']);
-                                            unset($listPokok['noTanam']);
-                                            $date = date_create($listPokok['PlantingDate']);
-                                            $listPokok['date'] = date_format($date, 'd F Y');
-                                            unset($listPokok['PlantingDate']);  
-                                            $listPokok['code'] = $listPokok['codeTanaman'];
-                                            unset($listPokok['codeTanaman']);
-                                            $listPokok['week'] = $listPokok['jmlMinggu'];
-                                            unset($listPokok['jmlMinggu']);
-
-                                            // $listPokok['id'] = $subJob['rkhCode'].';'.$subJob['subJobCode'].';'.$listPokok['id'];
-                                            unset($listPokok['id']);
-
-                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][] = $listPokok;
-                                            unset($listPokok['date']);
-                                            unset($listPokok['status']);
-                                            unset($listPokok['week']);
-                                            $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listAllPokokPlot'][] = $listPokok;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        # MASUKIN BLOK-PLOT-BARIS-TANAM
-
-        # MASUKIN STATUS KE POKOK
-        # tanaman sudah dikerjakan
-        $trans_mandor2 = $this->removeWhitespace(DB::table('EWS_TRANS_MANDOR')
-            ->select('id', 'subJobCode', 'codeTanaman', 'rkhCode')
-            ->where('userid', '=', $user2[0]['id'])
-            // ->whereBetween('created_at', [$tgl_ubah, $tgl_ubah.' 23:59:59.000'])
-            ->get());
-        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-            # code...
-            if (isset($subJob['rkhCode'])) {
-                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-                    foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-                        foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-                            foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
-                                # code...
-                                // return $listPokok;
-                                foreach ($trans_mandor2 as $key_tm => $trans_mandor) {
-                                    # code...
-                                    if (($trans_mandor['rkhCode'] == $subJob['rkhCode']) && 
-                                    ($trans_mandor['codeTanaman'] == $listPokok['code']) &&
-                                    ($trans_mandor['subJobCode'] == $subJob['subJobCode'])) {
-                                        # code...
-                                        // return 'ada';
-                                        $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['listPokok'][$key_lpk]['status'] = 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        # MASUKIN STATUS KE POKOK
-
-        # MENGHITUNG TOTAL STATUS 0 || 1
-        foreach ($subJob2 as $key_sj => $subJob) {#Pokok
-            # code...
-            if (isset($subJob['rkhCode'])) {
-                foreach ($subJob['listBlok'] as $key_lt => $listBlok) {
-                    $lpDone = 0;
-                    $lpNDone = 0;
-                    if (isset($listBlok['listPlot'])) {
-                        foreach ($listBlok['listPlot'] as $key_lp => $listPlot) {
-                            $lbDone = 0;
-                            $lbNDone = 0;
-                            if (isset($listPlot['listBaris'])) {
-                                foreach ($listPlot['listBaris'] as $key_lb => $listBaris) {
-                                    $lpkDone = 0;
-                                    $lpkNDone = 0;
-                                    if (isset($listBaris['listPokok'])) {
-                                        foreach ($listBaris['listPokok'] as $key_lpk => $listPokok) {
-                                            # code...
-                                            if ($listPokok['status'] == 1) {
-                                                # code...
-                                                $lpkDone++;
-                                            }
-                                            else{
-                                                $lpkNDone++;
-                                            }
-                                        }
-                                    }
-                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokDone'] = $lpkDone;
-                                    $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb]['pokokNDone'] = $lpkNDone;
-                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokNDone');
-                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'pokokDone');
-                                    $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['listBaris'][$key_lb], 'baris');
-
-                                    $lbDone+=$lpkDone;
-                                    $lbNDone+=$lpkNDone;
-                                }
-                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowDone'] = $lbDone;
-                                $subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp]['rowNDone'] = $lbNDone;
-                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowNDone');
-                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'rowDone');
-                                $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt]['listPlot'][$key_lp], 'plot');
-
-                                $lpDone+=$lbDone;
-                                $lpNDone+=$lbNDone;
-                            }
-                        }
-                        $subJob2[$key_sj]['listBlok'][$key_lt]['plotDone'] = $lpDone;
-                        $subJob2[$key_sj]['listBlok'][$key_lt]['plotNDone'] = $lpNDone;
-                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotNDone');
-                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'plotDone');
-                        $this->move_to_top($subJob2[$key_sj]['listBlok'][$key_lt], 'blok');
-                    }
-                }
-            }
-        }
-        # MENGHITUNG TOTAL STATUS 0 || 1
-        foreach ($job2 as $key_j => $job) {
-            # code...
-            foreach ($subJob2 as $key_sj => $subJob) {
-                # code...
-                $parentJob = '';
-                switch ($job['Description']) {
-                    case 'PLANT CARE':
-                        $parentJob = 'plantCare';
-                        break;
-
-                    case 'FRUIT CARE':
-                        $parentJob = 'fruitCare';
-                        break;
-
-                    case 'PANEN':
-                        $parentJob = 'panen';
-                        break;
-                    case 'PACKING HOUSE':
-                        $parentJob = 'packingHouse';
-                        break;
-                }
-                $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                $jobdesc = ucwords(strtolower($job['Description']));
-                $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
-                if ($subJob['jobCode'] == $job['jobCode']) {
-                    # code...
-                    unset($subJob['codeAlojob']);
-                    unset($subJob['rkhTime']);
-                    $job2[$key_j][$parentJob]['listChildJob'][] = $subJob;
-                }
-            }
-            unset($job2[3]); # menghapus packing house
-            unset($job2[$key_j]['jobCode']);
-            unset($job2[$key_j]['Description']);
-        }
-
-        $user2[0]['RKM'] = $job2;
-
-        return $user2;
-    }
-
 }
