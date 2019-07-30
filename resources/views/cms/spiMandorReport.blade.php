@@ -4,7 +4,7 @@
     <div class="container">
         <hr>
         <div class="card rounded-0">
-          <h5 class="card-header">SPI Mandor Report</h5>
+          <h5 class="card-header">SPI RKH Report</h5>
           <div class="card-body">
             <form method="POST" id="search-form" class="form-inline" role="form">
 
