@@ -156,7 +156,6 @@ class DevController extends Controller
             $user2[0]['identitasPekerja']['detailPekerja'] = $codeMandor;
 
             $pilihTukang = array(
-                'id' => '',
                 'nama' => 'Pilih Pekerja',
                 'code' => ''
             );
@@ -1529,7 +1528,6 @@ class DevController extends Controller
 	            ->orderBy('namaPekerja', 'asc')
 	            ->get());
 	        $pilihTukang = array(
-	            'id' => '',
 	            'nama' => 'Pilih Pekerja',
 	            'code' => ''
 	        );
@@ -2129,7 +2127,6 @@ class DevController extends Controller
 	        	$user2[0]['identitasPekerja']['detailPekerja']['namaMandor'] = $namaMandor['namaMandor'];
 	        	# code...
 		        $pilihTukang = array(
-		            'id' => '',
 		            'nama' => 'Pilih Pekerja',
 		            'code' => ''
 		        );
