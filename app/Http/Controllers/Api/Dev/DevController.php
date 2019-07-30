@@ -1672,7 +1672,8 @@ class DevController extends Controller
 		                    $pokokPanen['stat'] = 0;
 		                    unset($pokokPanen['id']);
 		                    unset($pokokPanen['blok']);
-		                    $listHT[$lbp]['listPokok'][] = $pokokPanen; 
+                            $pokokPanen['ribClr'] = '-';
+		                    $listHT[$lbp]['listPokok'][] = $pokokPanen;
 		                }
 		            }
 		        }
@@ -1681,10 +1682,7 @@ class DevController extends Controller
 		                foreach ($listMarking as $lm => $marking) {
 		                    if ($pokok['code'] == $marking['code']) {
 		                        $listHT[$lbp]['listPokok'][$lp]['ribClr'] = $marking['ribbonColor'];
-		                    } else {
-		                        $listHT[$lbp]['listPokok'][$lp]['ribClr'] = '-';
-		                    }
-		                    
+		                    } 
 		                }
 		            }
 		        }

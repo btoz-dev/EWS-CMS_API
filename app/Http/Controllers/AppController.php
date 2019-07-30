@@ -1672,6 +1672,7 @@ class AppController extends Controller
                             $pokokPanen['stat'] = 0;
                             unset($pokokPanen['id']);
                             unset($pokokPanen['blok']);
+                            $pokokPanen['ribClr'] = '-';
                             $listHT[$lbp]['listPokok'][] = $pokokPanen; 
                         }
                     }
@@ -1681,10 +1682,7 @@ class AppController extends Controller
                         foreach ($listMarking as $lm => $marking) {
                             if ($pokok['code'] == $marking['code']) {
                                 $listHT[$lbp]['listPokok'][$lp]['ribClr'] = $marking['ribbonColor'];
-                            } else {
-                                $listHT[$lbp]['listPokok'][$lp]['ribClr'] = '-';
-                            }
-                            
+                            } 
                         }
                     }
                 }
