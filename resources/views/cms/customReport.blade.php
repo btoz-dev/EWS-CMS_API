@@ -128,6 +128,9 @@
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
+        function numberWithoutCommas(x) {
+            return x.replace(/\,/g,'');
+        }
 
         // Options header for post 
         $.ajaxSetup({
@@ -280,7 +283,7 @@
                     }
                 ],
                 processing: true,
-                serverSide: true,
+                // serverSide: true, //tidak menggunakan server side agar footer callback memberikan sum seluruh data
                 ajax: {
                     url: '{{ route('getDetilBlok') }}',
                     data: function (d) {
@@ -311,10 +314,9 @@
                         $(this.footer()).html(numberWithCommas(sum));
                     });
                     $(api.columns(4).footer()).html(function() {
-                        var total = parseFloat($(tfoot).find('th').eq(1).text());
-                        var realisasi = parseFloat($(tfoot).find('th').eq(2).text());
-                        var persentase = parseInt(realisasi * 100 / total);
-                        // console.log(persentase);
+                        var total = parseFloat(numberWithoutCommas($(tfoot).find('th').eq(1).text()));
+                        var realisasi = parseFloat(numberWithoutCommas($(tfoot).find('th').eq(2).text()));
+                        var persentase = parseFloat(realisasi * 100 / total).toFixed(2);
                         return persentase + ' %';
                     });
                 }
