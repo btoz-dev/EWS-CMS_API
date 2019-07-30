@@ -219,14 +219,14 @@
                                 <li>
                                     <a href="#spi" data-toggle="collapse" aria-expanded="{{ request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'true' : 'false' }}" class="nav-link dropdown-toggle {{ request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'active' : '' }}">
                                         <i class="far fa-chart-bar"></i>
-                                        RKH
+                                        SPI
                                     </a>
                                     <ul class="collapse list-unstyled {{ request()->is('spiMandorReport*') || request()->is('spiSensusReport*') ? 'show' : '' }}" id="spi">
                                         @can('view_spiMandorReport')
                                         <li>
                                             <a class="nav-link {{ request()->is('spiMandorReport*') ? 'active' : '' }}" href="{{ url('/spiMandorReport') }}">
                                                 <i class="far fa-chart-bar"></i>
-                                                Mandor
+                                                RKH
                                             </a>
                                         </li>
                                         @endcan
