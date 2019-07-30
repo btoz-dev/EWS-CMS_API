@@ -44,7 +44,7 @@
                         <th>Minggu</th>
                         <th>Girth</th>
                         <th>Jumlah Daun</th>
-                        <th>Korektif SPI</th>
+                        <th>Catatan SPI</th>
                         <th>Batas Akhir</th>
                         <th>Tanggal SPI</th>
                         <th>Nama SPI</th>
