@@ -459,28 +459,29 @@ class AppController extends Controller
 
             foreach ($job2 as $key_j => $job) {
                 # code...
+                $parentJob = '';
+                switch ($job['Description']) {
+                    case 'PLANT CARE':
+                        $parentJob = 'plantCare';
+                        break;
+
+                    case 'FRUIT CARE':
+                        $parentJob = 'fruitCare';
+                        break;
+
+                    case 'PANEN':
+                        $parentJob = 'panen';
+                        break;
+                    case 'PACKING HOUSE':
+                        $parentJob = 'packingHouse';
+                        break;
+                }
+                $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
+                $jobdesc = ucwords(strtolower($job['Description']));
+                $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+                $job2[$key_j][$parentJob]['listChildJob'] = array();
                 foreach ($subJob2 as $key_sj => $subJob) {
                     # code...
-                    $parentJob = '';
-                    switch ($job['Description']) {
-                        case 'PLANT CARE':
-                            $parentJob = 'plantCare';
-                            break;
-
-                        case 'FRUIT CARE':
-                            $parentJob = 'fruitCare';
-                            break;
-
-                        case 'PANEN':
-                            $parentJob = 'panen';
-                            break;
-                        case 'PACKING HOUSE':
-                            $parentJob = 'packingHouse';
-                            break;
-                    }
-                    $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                    $jobdesc = ucwords(strtolower($job['Description']));
-                    $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
                     if ($subJob['jobCode'] == $job['jobCode']) {
                         # code...
                         unset($subJob['codeAlojob']);
@@ -949,28 +950,29 @@ class AppController extends Controller
             # MENGHITUNG TOTAL STATUS 0 || 1
             foreach ($job2 as $key_j => $job) {
                 # code...
+                $parentJob = '';
+                switch ($job['Description']) {
+                    case 'PLANT CARE':
+                        $parentJob = 'plantCare';
+                        break;
+
+                    case 'FRUIT CARE':
+                        $parentJob = 'fruitCare';
+                        break;
+
+                    case 'PANEN':
+                        $parentJob = 'panen';
+                        break;
+                    case 'PACKING HOUSE':
+                        $parentJob = 'packingHouse';
+                        break;
+                }
+                $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
+                $jobdesc = ucwords(strtolower($job['Description']));
+                $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+                $job2[$key_j][$parentJob]['listChildJob'] = array();
                 foreach ($subJob2 as $key_sj => $subJob) {
                     # code...
-                    $parentJob = '';
-                    switch ($job['Description']) {
-                        case 'PLANT CARE':
-                            $parentJob = 'plantCare';
-                            break;
-
-                        case 'FRUIT CARE':
-                            $parentJob = 'fruitCare';
-                            break;
-
-                        case 'PANEN':
-                            $parentJob = 'panen';
-                            break;
-                        case 'PACKING HOUSE':
-                            $parentJob = 'packingHouse';
-                            break;
-                    }
-                    $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                    $jobdesc = ucwords(strtolower($job['Description']));
-                    $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
                     if ($subJob['jobCode'] == $job['jobCode']) {
                         # code...
                         unset($subJob['codeAlojob']);
@@ -1014,55 +1016,60 @@ class AppController extends Controller
                 ->groupBy('EWS_TRANS_SPI_SENSUS.codeTanaman', 'EWS_LOK_TANAMAN.codeBlok', 'EWS_LOK_TANAMAN.plot', 'EWS_LOK_TANAMAN.baris')
                 ->get());
 
-            # MASUKIN PLOT-BARIS-POKOK ke dalam BLOK
-            for ($a=0; $a < count($listBlokCA); $a++) { 
-                $dataBlok[$a] = $listBlokCA[$a];
-                for ($b=0; $b < count($listPlotCA); $b++) {
-                    if ($dataBlok[$a]['blok'] == $listPlotCA[$b]['blok']) {
-                        $dataBlok[$a]['listPlot'][$b] = $listPlotCA[$b];
-                        for ($c=0; $c < count($listBarisCA); $c++) { 
-                            if  (($dataBlok[$a]['listPlot'][$b]['plot'] == $listBarisCA[$c]['plot']) && 
-                                ($dataBlok[$a]['listPlot'][$b]['blok'] == $listBarisCA[$c]['blok'])) {
-                                $dataBlok[$a]['listPlot'][$b]['listBaris'][$c] = $listBarisCA[$c];
-                                for ($d=0; $d < count($listPokokCA); $d++) { 
-                                    $pokok = $listPokokCA[$d];
-                                    if  (($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok'] == $listPokokCA[$d]['blok']) &&
-                                        ($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot'] == $listPokokCA[$d]['plot']) && 
-                                        ($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['baris'] == $listPokokCA[$d]['baris'])) {
-
-                                        unset($pokok['blok']);
-                                        unset($pokok['plot']);
-                                        unset($pokok['baris']);
-                                        $week = $pokok['week'];
-                                        unset($pokok['week']);
-
-                                        $dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
-
-                                        $pokok['week'] = $week;
-                                        $allPokokPlot = $pokok;
-                      //                unset($allPokokPlot['blok']);
-                                        // unset($allPokokPlot['plot']);
-                                        // unset($allPokokPlot['baris']);
-                                        // unset($allPokokPlot['noTanam']);
-                                        // unset($allPokokPlot['status']);
-                                        // unset($allPokokPlot['date']);
-                                        $dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
-                                    }
-                                }
-                                unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok']);
-                                unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot']);
-                                $dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok']);
-                            }
-                        }
-                        unset($dataBlok[$a]['listPlot'][$b]['blok']);
-                        $dataBlok[$a]['listPlot'][$b]['listBaris'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris']);
-                    } 
-                }
-                $dataBlok[$a]['listPlot'] = array_values($dataBlok[$a]['listPlot']);
+            if (empty($listBlokCA)) {
+                # do nothing
             }
+            else{
+                # MASUKIN PLOT-BARIS-POKOK ke dalam BLOK
+                for ($a=0; $a < count($listBlokCA); $a++) { 
+                    $dataBlok[$a] = $listBlokCA[$a];
+                    for ($b=0; $b < count($listPlotCA); $b++) {
+                        if ($dataBlok[$a]['blok'] == $listPlotCA[$b]['blok']) {
+                            $dataBlok[$a]['listPlot'][$b] = $listPlotCA[$b];
+                            for ($c=0; $c < count($listBarisCA); $c++) { 
+                                if  (($dataBlok[$a]['listPlot'][$b]['plot'] == $listBarisCA[$c]['plot']) && 
+                                    ($dataBlok[$a]['listPlot'][$b]['blok'] == $listBarisCA[$c]['blok'])) {
+                                    $dataBlok[$a]['listPlot'][$b]['listBaris'][$c] = $listBarisCA[$c];
+                                    for ($d=0; $d < count($listPokokCA); $d++) { 
+                                        $pokok = $listPokokCA[$d];
+                                        if  (($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok'] == $listPokokCA[$d]['blok']) &&
+                                            ($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot'] == $listPokokCA[$d]['plot']) && 
+                                            ($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['baris'] == $listPokokCA[$d]['baris'])) {
 
-            $user2[0]['CA'] = $dataBlok;
+                                            unset($pokok['blok']);
+                                            unset($pokok['plot']);
+                                            unset($pokok['baris']);
+                                            $week = $pokok['week'];
+                                            unset($pokok['week']);
 
+                                            $dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'][$d] = $pokok;
+
+                                            $pokok['week'] = $week;
+                                            $allPokokPlot = $pokok;
+                          //                unset($allPokokPlot['blok']);
+                                            // unset($allPokokPlot['plot']);
+                                            // unset($allPokokPlot['baris']);
+                                            // unset($allPokokPlot['noTanam']);
+                                            // unset($allPokokPlot['status']);
+                                            // unset($allPokokPlot['date']);
+                                            $dataBlok[$a]['listPlot'][$b]['listAllPokokPlot'][] = $allPokokPlot;
+                                        }
+                                    }
+                                    unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['blok']);
+                                    unset($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['plot']);
+                                    $dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris'][$c]['listPokok']);
+                                }
+                            }
+                            unset($dataBlok[$a]['listPlot'][$b]['blok']);
+                            $dataBlok[$a]['listPlot'][$b]['listBaris'] = array_values($dataBlok[$a]['listPlot'][$b]['listBaris']);
+                        } 
+                    }
+                    $dataBlok[$a]['listPlot'] = array_values($dataBlok[$a]['listPlot']);
+                }
+
+                $user2[0]['CA'] = $dataBlok;
+
+            }
             return $user2;
         }
         
@@ -1671,7 +1678,7 @@ class AppController extends Controller
                             unset($pokokPanen['id']);
                             unset($pokokPanen['blok']);
                             $pokokPanen['ribClr'] = '-';
-                            $listHT[$lbp]['listPokok'][] = $pokokPanen; 
+                            $listHT[$lbp]['listPokok'][] = $pokokPanen;
                         }
                     }
                 }
@@ -2055,13 +2062,42 @@ class AppController extends Controller
                 'date' => $dateCLT
             );
 
-            try {
+            $check = DB::table('EWS_TRANS_PH_CLT')
+                        ->where('codeBlok', $data['codeBlok'])
+                        ->where('userid', $data['userid'])
+                        ->where('idProduk', $data['idProduk'])
+                        ->where('berat', $data['berat'])
+                        ->where('note', $data['note'])
+                        ->where('date', $data['date'])
+                        ->value('id');
+            if (empty($check)) {
+                # code...
                 DB::table('EWS_TRANS_PH_CLT')->insert($data);
-                $message['message'][] = 'Data berhasil di input';
-                // $message['message'][] = $data;
-            } catch (\Exception  $e) {
-                $message['message'][] = $e->getMessage();
+                    $message['message'][] = 'Data berhasil di input';
+                // try {
+                //     DB::table('EWS_TRANS_PH_CLT')->insert($data);
+                //     $message['message'][] = 'Data berhasil di input';
+                //     // $message['message'][] = $data;
+                // } catch (\Exception  $e) {
+                //     $message['message'][] = $e->getMessage();
+                // }
+            }else{
+                    $message['message'][] = 'Data sudah ada';
+                // try {
+                //     // DB::table('EWS_TRANS_PH_CLT')->where('id', $check)->update($data);
+                //     $message['message'][] = 'Data sudah ada';
+                //     // $message['message'][] = $data;
+                // } catch (\Exception  $e) {
+                //     $message['message'][] = $e->getMessage();
+                // }
             }
+            // try {
+            //     DB::table('EWS_TRANS_PH_CLT')->insert($data);
+            //     $message['message'][] = 'Data berhasil di input';
+            //     // $message['message'][] = $data;
+            // } catch (\Exception  $e) {
+            //     $message['message'][] = $e->getMessage();
+            // }
 
             return response()->json($message, 200);
         }
@@ -2441,28 +2477,29 @@ class AppController extends Controller
 
             foreach ($job2 as $key_j => $job) {
                 # code...
+                $parentJob = '';
+                switch ($job['Description']) {
+                    case 'PLANT CARE':
+                        $parentJob = 'plantCare';
+                        break;
+
+                    case 'FRUIT CARE':
+                        $parentJob = 'fruitCare';
+                        break;
+
+                    case 'PANEN':
+                        $parentJob = 'panen';
+                        break;
+                    case 'PACKING HOUSE':
+                        $parentJob = 'packingHouse';
+                        break;
+                }
+                $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
+                $jobdesc = ucwords(strtolower($job['Description']));
+                $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
+                $job2[$key_j][$parentJob]['listChildJob'] = array();
                 foreach ($subJob2 as $key_sj => $subJob) {
                     # code...
-                    $parentJob = '';
-                    switch ($job['Description']) {
-                        case 'PLANT CARE':
-                            $parentJob = 'plantCare';
-                            break;
-
-                        case 'FRUIT CARE':
-                            $parentJob = 'fruitCare';
-                            break;
-
-                        case 'PANEN':
-                            $parentJob = 'panen';
-                            break;
-                        case 'PACKING HOUSE':
-                            $parentJob = 'packingHouse';
-                            break;
-                    }
-                    $job2[$key_j][$parentJob]['jobCode'] = $job['jobCode'];
-                    $jobdesc = ucwords(strtolower($job['Description']));
-                    $job2[$key_j][$parentJob]['jenisPekerjaan'] = $jobdesc;
                     if ($subJob['jobCode'] == $job['jobCode']) {
                         # code...
                         unset($subJob['codeAlojob']);
