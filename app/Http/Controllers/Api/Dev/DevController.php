@@ -79,6 +79,13 @@ class DevController extends Controller
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
             }
+            if ($request->sensus == 1) {
+                return $this->errMessage(400,'User tidak memiliki Hak');
+            }
+            // if ($request->sensus == 0 && $detailRole['name'] == "SPI") {
+            //     return $this->errMessage(400,'User tidak memiliki Hak');
+            // }
+            
             return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
@@ -89,6 +96,12 @@ class DevController extends Controller
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
             }
+            if ($request->sensus == 1) {
+                return $this->errMessage(400,'User tidak memiliki Hak');
+            }
+            // if (isset($request->sensus) && !empty($request->sensus)) {
+            //     return $this->errMessage(400,'User tidak memiliki Hak');
+            // }
             return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
         }
 
