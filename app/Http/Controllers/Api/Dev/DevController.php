@@ -2646,9 +2646,9 @@ class DevController extends Controller
 	            'girth' => 'required',
 	            'totalLeaf' => 'required|integer',
 	            'note' => 'nullable|between:0,255',
-	            'dueDate' => 'required|date_format:d-m-Y',
+	            'dueDate' => 'nullable|date_format:d-m-Y',
 	            'tanggal' => 'required|date',
-	            'waktu' => 'required|date_format:H:i',
+	            'waktu' => 'required',
 	            'userid' => 'required',
 	        ]);
 
@@ -2661,19 +2661,22 @@ class DevController extends Controller
 	        $created_at = date_create($request->tanggal.' '.$request->waktu);
 	        $created_at = date_format($created_at, 'Y-m-d H:i:s.B');
 
-	        $dueDate = date_create($request->dueDate);
-	        $dueDate = date_format($dueDate, 'Y-m-d');
-
 	        $data = array(
 	                'codeTanaman' => $request->codeTanaman,
 	                'week' => $request->week,
 	                'girth' => $request->girth,
 	                'jumlahDaun' => $request->totalLeaf,
 	                'corrActSPI' => $request->note,
-	                'dueDate' => $dueDate,
 	                'created_atSPI' => $created_at,
 	                'useridSPI' => $request->userid,
 	            );
+
+            if (isset($request->dueDate)) {
+                # code...
+    	        $dueDate = date_create($request->dueDate);
+    	        $dueDate = date_format($dueDate, 'Y-m-d');
+                $data['dueDate'] = $dueDate;
+            }
 
 	        $check = DB::table('EWS_TRANS_SPI_SENSUS')
 	        			->where('codeTanaman', $request->codeTanaman)
@@ -2717,7 +2720,7 @@ class DevController extends Controller
 	            'ribbonColor' => 'nullable|between:0,10',
 	            'skimmingSize' => 'nullable',
 	            'tanggal' => 'required|date',
-	            'waktu' => 'required|date_format:H:i',
+	            'waktu' => 'required',
 	            'pokokAwal' => 'nullable|integer',
 	            'pokokAkhir' => 'nullable|integer'
 	        ]);
