@@ -39,11 +39,11 @@
             <div class="form-group mb-2">
                 <h2>Role Management</h2>
             </div>
-            <div class="form-group mx-sm-3 mb-2">
+            <!-- <div class="form-group mx-sm-3 mb-2">
                 @can('add_roles')
                     <a href="#" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#roleModal"> <i class="glyphicon glyphicon-plus"></i> New Role</a>
                 @endcan
-            </div>
+            </div> -->
             @if (session('alert'))
                 <div class="alert alert-info alert-dismissible" role="alert">
                     {{ session('alert') }}
