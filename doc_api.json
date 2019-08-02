@@ -85,11 +85,24 @@ body =
     "subJobCode" : "(kode pekerjaan dari child job)",
     "userid" : "(id user)",
     "codeTanaman" : "(kode tanaman satuan)",
-    "note" : "(catatan mandor (boleh kosong))",
+    "note" : "(catatan kawil (boleh kosong))",
     "tanggal" : "(tanggal dibuatnya)",
     "waktu" : "(waktu dibuatnya)",
     "pokokAwal" : "(pokok awal (boleh kosong))",
     "pokokAkhir" : "(pokok akhir (boleh kosong))",
+}
+[SYNC CA]
+/storeCA
+=> INSERT DATA CORRECTIVE ACTION DARI KAWIL
+method = POST
+body = 
+{
+    "codeTanaman" : "(kode tanaman satuan)",
+    "week" : "(week tanaman atau umur tanaman)",
+    "note" : "(catatan kawil (boleh kosong))",
+    "userid" : "(id user kawil)",
+    "tanggal" : "(tanggal dibuatnya)",
+    "waktu" : "(waktu dibuatnya)",
 }
 
 
