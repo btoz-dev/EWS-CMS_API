@@ -149,7 +149,7 @@
       <div class="col-lg-2">
         <i class="far fa-chart-bar fa-5x"></i>
         <h6>SPI</h6>
-        <p>Laporan SPI sebagai mandor</p>
+        <p>Laporan Pemeriksaan RKH</p>
         <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/spiMandorReport') }}">View details »</a></p>
       </div>
       @endcan
@@ -157,7 +157,7 @@
       <div class="col-lg-2">
         <i class="far fa-chart-bar fa-5x"></i>
         <h6>SPI</h6>
-        <p>Laporan SPI sebagai sensus</p>
+        <p>Laporan Sensus Pokok</p>
         <p><a role="button" class="btn btn-secondary btn-sm" href="{{ url('/spiSensusReport') }}">View details »</a></p>
       </div>
       @endcan
