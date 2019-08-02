@@ -92,6 +92,7 @@ class SPIExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMap
             return [
                 $SPIExport->id,
                 $SPIExport->rkhCode,
+                $SPIExport->rkhDate,
                 $SPIExport->namaSPI,
                 $SPIExport->namaMandor,
                 $SPIExport->namaTK,

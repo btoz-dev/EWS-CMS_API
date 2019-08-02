@@ -380,6 +380,11 @@ class TransReportController extends CMSController
             $report = $this->removeWhitespace($res);
 
             return DataTables::of($report)
+                ->editColumn('rkhDate', function ($report) {
+                    $tgl = date_create($report['rkhDate']);
+                    $tgl2 = date_format($tgl, 'd M Y');
+                    return $tgl2;
+                })
                 ->editColumn('created_at', function ($report) {
                     $tgl = date_create($report['created_at']);
                     $tgl2 = date_format($tgl, 'd M Y');

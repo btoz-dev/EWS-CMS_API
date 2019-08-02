@@ -41,6 +41,7 @@
                     <tr>
                         <th>#</th>
                         <th>Kode RKH</th>
+                        <th>Tgl RKH</th>
                         <th>Nama SPI</th>
                         <th>Nama Mandor</th>
                         <th>Nama TK</th>
@@ -87,6 +88,7 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'rkhCode', name: 'rkhCode'},
+                {data: 'rkhDate', name: 'rkhDate'},
                 {data: 'namaSPI', name: 'namaSPI'},
                 {data: 'namaMandor', name: 'namaMandor'},
                 {data: 'namaTK', name: 'namaTK'},
