@@ -1098,9 +1098,9 @@ class StagController extends Controller
                 'codeTukang' => 'required|between:0,20',
                 'codeTanaman' => 'required|between:0,20',
                 'note' => 'nullable|between:0,255',
-                'totalHand' => 'nullable|integer',
-                'totalFinger' => 'nullable|integer',
-                'totalLeaf' => 'nullable|integer',
+                'totalHand' => 'nullable',
+                'totalFinger' => 'nullable',
+                'totalLeaf' => 'nullable',
                 'ribbonColor' => 'nullable|between:0,10',
                 'skimmingSize' => 'nullable',
                 'tanggal' => 'required',
@@ -1116,6 +1116,21 @@ class StagController extends Controller
             if (isset($request->skimmingSize)) {
                 # code...
                 $request->skimmingSize = str_replace(',', '.', $request->skimmingSize);
+            }
+
+            if (isset($request->totalHand)) {
+                # code...
+                $request->totalHand = floor(str_replace(',', '.', $request->totalHand));
+            }
+
+            if (isset($request->totalFinger)) {
+                # code...
+                $request->totalFinger = floor(str_replace(',', '.', $request->totalFinger));
+            }
+
+            if (isset($request->totalLeaf)) {
+                # code...
+                $request->totalLeaf = floor(str_replace(',', '.', $request->totalLeaf));
             }
 
             $date = date_create($request->tanggal.' '.$request->waktu);
@@ -2660,7 +2675,7 @@ class StagController extends Controller
                 'codeTanaman' => 'required|between:0,20',
                 'week' => 'required|integer',
                 'girth' => 'required',
-                'totalLeaf' => 'required|integer',
+                'totalLeaf' => 'required',
                 'note' => 'nullable|between:0,255',
                 'dueDate' => 'nullable|date_format:d-m-Y',
                 'tanggal' => 'required|date',
@@ -2670,6 +2685,11 @@ class StagController extends Controller
 
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
+            }
+
+            if (isset($request->totalLeaf)) {
+                # code...
+                $request->totalLeaf = floor(str_replace(',', '.', $request->totalLeaf));
             }
 
             $request->girth = str_replace(',', '.', $request->girth);
@@ -2730,9 +2750,9 @@ class StagController extends Controller
                 'codeTukang' => 'required|between:0,20',
                 'codeTanaman' => 'required|between:0,20',
                 'note' => 'nullable|between:0,255',
-                'totalHand' => 'nullable|integer',
-                'totalFinger' => 'nullable|integer',
-                'totalLeaf' => 'nullable|integer',
+                'totalHand' => 'nullable',
+                'totalFinger' => 'nullable',
+                'totalLeaf' => 'nullable',
                 'ribbonColor' => 'nullable|between:0,10',
                 'skimmingSize' => 'nullable',
                 'tanggal' => 'required|date',
@@ -2748,6 +2768,21 @@ class StagController extends Controller
             if (isset($request->skimmingSize)) {
                 # code...
                 $request->skimmingSize = str_replace(',', '.', $request->skimmingSize);
+            }
+
+            if (isset($request->totalHand)) {
+                # code...
+                $request->totalHand = floor(str_replace(',', '.', $request->totalHand));
+            }
+
+            if (isset($request->totalFinger)) {
+                # code...
+                $request->totalFinger = floor(str_replace(',', '.', $request->totalFinger));
+            }
+
+            if (isset($request->totalLeaf)) {
+                # code...
+                $request->totalLeaf = floor(str_replace(',', '.', $request->totalLeaf));
             }
 
             $date = date_create($request->tanggal.' '.$request->waktu);
