@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 # API FIX EWS
-
-
-#Route::post('app/storeKawil', 'AppController@storeKawil');
-
 Route::group(['prefix' => 'app'], function () { # Use DB GPS_APS
 	Route::get('test', 'AppController@test');
 
