@@ -54,8 +54,6 @@ Route::group(['prefix' => 'dev', 'middleware' => 'changeDB'], function () { # Us
 
 	Route::post('user', 'Api\Dev\DevController@getUser');
 
-	Route::post('user_test', 'Api\Dev\TestDevController@getUser');
-
 	Route::post('storeMandor', 'Api\Dev\DevController@storeMandor');
 	Route::post('storeKawil', 'Api\Dev\DevController@storeKawil');
 	Route::post('storePH', 'Api\Dev\DevController@storePH');
@@ -72,43 +70,3 @@ Route::fallback(function(){
         'message' => 'Page Not Found. If error persists, contact admin'], 404);
 });
 # API FIX EWS
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-// Route::group(['middleware' => 'auth:api'], function(){
-// 	Route::post('details', 'APIz\UserController@details');
-// 	Route::resource('job', 'JobController');
-// });
-// Route::get('app', 'AppController@index');
-// Route::post('testLogin', 'AppController@testLogin');
-// Route::get('update', 'AppController@update');
-/*
-
-
-
-// Route::post('app/user2', 'AppController@getUser2');
-Route::get('app/users', 'AppController@getAllUser');
-
-Route::get('app/rkm/{rkm}/{date}', 'AppController@getRKMMandor');
-Route::get('app/rkmkawil/{rkmk}', 'AppController@getRKMKawil');
-
-# Mandor Kawil
-// Route::post('storeMandor', 'AppController@storeMandor2');
-
-
-# Packing House
-Route::post('app/storeBeratTandan', 'AppController@storeBT');
-Route::post('app/storeHitungTandan', 'AppController@storePH');
-Route::post('app/storeCekListTimbang', 'AppController@storeCT');
-
-# SPI
-Route::post('app/storeSensus', 'AppController@storeSENSUS');
-Route::post('app/storeCorrAct', 'AppController@storeCA');
-
-// Route::resource('plantloc', 'PlantLocController');
-// Route::get('plantloc/{block}/{plot}', 'PlantLocController@show');
-// Route::get('plantloc/{block}/{plot}/{baris}', 'PlantLocController@show');
-
-// Route::get('/users', 'UserController@all');
-*/
