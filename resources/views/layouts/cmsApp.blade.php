@@ -59,7 +59,7 @@
                                 User Management
                             </a>
                             <ul class="collapse list-unstyled {{ (request()->is('usermgmt*') || request()->is('roles*')) ? 'show' : '' }}" id="userMenu">
-                                @can('view_usermgmt')
+                                @can('view_roles')
                                 <li>
                                     <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ url('/roles') }}">
                                         <i class="fas fa-users"></i> 
@@ -67,7 +67,7 @@
                                     </a>
                                 </li>
                                 @endcan
-                                @can('view_roles')
+                                @can('view_usermgmt')
                                 <li>
                                     <a href="{{ url('/usermgmt') }}" class="nav-link {{ request()->is('usermgmt*') ? 'active' : '' }}">
                                         <i class="fas fa-users"></i>
