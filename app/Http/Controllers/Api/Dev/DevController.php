@@ -74,7 +74,8 @@ class DevController extends Controller
 
         if ($detailRole['name'] == "Mandor") {
             $validator = Validator::make($request->all(), [
-                'date' => 'required|date|date_format:d-m-Y'
+                'date' => 'required|date|date_format:d-m-Y',
+                'jobType' => 'required|integer'
             ]);
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
@@ -82,16 +83,17 @@ class DevController extends Controller
             if ($request->sensus == 1) {
                 return $this->errMessage(400,'User tidak memiliki Hak');
             }
-            // if ($request->sensus == 0 && $detailRole['name'] == "SPI") {
-            //     return $this->errMessage(400,'User tidak memiliki Hak');
-            // }
-            
-            return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
+            if ($request->jobType == 0) {
+                return $this->getRKMMandor($user2, $identitasPekerja, $detailRole, $request->date);
+            }else {
+                return $this->errMessage(400,'User tidak memiliki Hak');
+            }
         }
 
         else if ($detailRole['name'] == "Kawil") {
             $validator = Validator::make($request->all(), [
-                'date' => 'required|date|date_format:d-m-Y'
+                'date' => 'required|date|date_format:d-m-Y',
+                'jobType' => 'required|integer'
             ]);
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
@@ -99,10 +101,11 @@ class DevController extends Controller
             if ($request->sensus == 1) {
                 return $this->errMessage(400,'User tidak memiliki Hak');
             }
-            // if (isset($request->sensus) && !empty($request->sensus)) {
-            //     return $this->errMessage(400,'User tidak memiliki Hak');
-            // }
-            return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
+            if ($request->jobType == 0) {
+                return $this->getRKMKawil($user2, $identitasPekerja, $detailRole, $request->date);
+            }else {
+                return $this->errMessage(400,'User tidak memiliki Hak');
+            }
         }
 
         else if ($detailRole['name'] == "Mandor PH") {
@@ -2138,10 +2141,16 @@ class DevController extends Controller
         public function getSPI ($user2, $identitasPekerja, $detailRole, $request)
         {
             $validator = Validator::make($request->all(), [
-                'sensus' => 'required|boolean'
+                'sensus' => 'required|boolean',
+                'jobType' => 'required|integer'
             ]);
             if ($validator->fails()) {
                 return $this->errMessage(400,$validator->messages()->first());
+            }
+            if ($request->jobType == 1 || $request->jobType == 2) {
+                # do nothing...
+            }else {
+                return $this->errMessage(400,'User tidak memiliki Hak');
             }
 
             if ($request->sensus == FALSE) {
