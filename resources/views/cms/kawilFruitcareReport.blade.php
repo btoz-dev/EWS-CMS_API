@@ -22,9 +22,6 @@
                     <button type="submit" class="form-control mx-sm-3 btn btn-primary">Cari</button>
                 </div>
 
-                <!-- <div class="form-group">
-                </div> -->
-                
                 <div class="form-group">
                     <button type="button" class="form-control mx-sm-3 btn btn-success" name="export">Export</button>
                     <div class="spinner-border text-warning" role="status" style="display:none;" id="loading-export">

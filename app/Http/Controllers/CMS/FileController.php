@@ -13,7 +13,6 @@ class FileController extends CMSController
     {
         $fileRKHExist = Storage::disk('public')->exists('apk_rkh.log');
         $filePHExist = Storage::disk('public')->exists('apk_ph.log');
-        // return var_dump($fileExist);
         if (!$fileRKHExist)
         {
             Storage::put('public/apk_rkh.log', 'log apk files');
@@ -33,7 +32,6 @@ class FileController extends CMSController
     public function uploadApkRKH(Request $request)
     {
         # code...
-        // return $request;
         $path = $request->file('file')->storeAs('/public/apkfile', 'ews_rkh.apk');
 
         Storage::put('public/apk_rkh.log', $request->logapk);
@@ -49,7 +47,6 @@ class FileController extends CMSController
     public function uploadApkPH(Request $request)
     {
         # code...
-        // return $request;
         $path = $request->file('file')->storeAs('/public/apkfile', 'ews_ph.apk');
 
         Storage::put('public/apk_ph.log', $request->logapk);

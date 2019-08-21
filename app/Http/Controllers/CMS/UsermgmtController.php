@@ -26,11 +26,8 @@ class UsermgmtController extends CMSController
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            // $query = User::detail()->get();
-            // $query = User::with('roles')->all();
             $users = User::select(['id', 'name', 'username', 'created_at'])->with('roles');
             
-            // $users = $this->removeWhitespace($query);
             return DataTables::of($users)
                 ->addColumn('role', function ($users) {
                     if (isset($users->roles->first()->name)) {
@@ -91,7 +88,6 @@ class UsermgmtController extends CMSController
     {
         $data['pekerja'] = Pekerja::all()->sortBy('namaPekerja')->pluck('name_code', 'codePekerja');
         $data['role'] = Roles::pluck('name', 'id');
-        // $data['role'] = $this->removeWhitespace(DB::table('EWS_ROLE_USER')->orderBy('id', 'asc')->get());
         return view('cms.usermgmt.create', $data);
     }
 
@@ -310,7 +306,6 @@ class UsermgmtController extends CMSController
     public function postRoleDropdown(Request $request)
     {
         # code...
-        // return $request;
         if ($request->id == 8) { # mandor
             # code...
             $data = DB::table('EWS_VW_DETAIL_MANDOR')

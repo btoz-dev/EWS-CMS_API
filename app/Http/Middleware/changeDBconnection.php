@@ -18,7 +18,6 @@ class changeDBconnection
     public function handle($request, Closure $next)
     {
         Config::set('database.default', 'sqlsrv2');
-        // DB::connection('sqlsrv2');
         return $next($request);
     }
 }

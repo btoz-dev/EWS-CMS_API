@@ -22,9 +22,6 @@
                     <button type="submit" class="form-control mx-sm-3 btn btn-primary">Cari</button>
                 </div>
 
-                <!-- <div class="form-group">
-                </div> -->
-
                 <div class="form-group">
                     <button type="button" class="form-control mx-sm-3 btn btn-success" name="export">Export</button>
                     <div class="spinner-border text-warning" role="status" style="display:none;" id="loading-export">
@@ -71,17 +68,6 @@
             $("#loading-export").hide();
         });
         var oTable = $('#data-table').DataTable({
-            // buttons: [
-            //     {
-            //         extend: 'excel',
-            //         text: 'Save current page',
-            //         exportOptions: {
-            //             modifier: {
-            //                 page: 'all'
-            //             }
-            //         }
-            //     }
-            // ],
             processing: true,
             serverSide: true,
             ajax: {
@@ -104,10 +90,6 @@
                 {data: 'mandorNote', name: 'mandorNote'},
                 {data: 'created_at2', name: 'created_at2'},
             ],
-            // initComplete : function () {
-            //     oTable.buttons().container()
-            //            .appendTo( $('#search-form .form-group:eq(3)'));
-            // }
         });
 
         var headings = [];
@@ -145,8 +127,6 @@
                     date_aw: $('input[name=date_aw]').val(), 
                     date_ak: $('input[name=date_ak]').val() 
                 };
-
-            // downloadFromAjaxPost(url, params);
 
             $.ajax({
                 type: "POST",

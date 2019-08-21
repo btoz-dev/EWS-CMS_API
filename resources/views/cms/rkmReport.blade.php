@@ -32,8 +32,6 @@
             </form>
           </div>
         </div>
-        <!-- <h2>Reports</h2>
-        <hr> -->
         <div class="table-responsive">
             <table class="table table-striped table-sm" id="data-table">
                 <thead>
@@ -131,8 +129,6 @@
                     date_aw: $('input[name=date_aw]').val(), 
                     date_ak: $('input[name=date_ak]').val() 
                 };
-
-            // downloadFromAjaxPost(url, params);
 
             $.ajax({
                 type: "POST",

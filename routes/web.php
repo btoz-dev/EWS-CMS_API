@@ -22,8 +22,6 @@ Route::group( ['middleware' => ['auth']], function() {
     Route::resource('roles', 'RolesController');
 	
 	Route::resource('usermgmt', 'CMS\UsermgmtController');
-	// Route::post('usermgmtPostRoleDropdown', 'CMS\UsermgmtController@postRoleDropdown')->name('usermgmt.postRoleDropdown');
-	// Route::post('usermgmtCallDropdownEdit', 'CMS\UsermgmtController@callDropdownEdit')->name('usermgmt.callDropdownEdit');
 	Route::resource('clt', 'CMS\CLTController');
 
 	Route::get('mandorPlantcareReport', 'CMS\TransReportController@mandorPlantcare')->name('mandorPlantcareReport.index');

@@ -132,8 +132,6 @@
                     date_ak: $('input[name=date_ak]').val() 
                 };
 
-            // downloadFromAjaxPost(url, params);
-
             $.ajax({
                 type: "POST",
                 url: url,

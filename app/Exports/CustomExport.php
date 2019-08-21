@@ -38,13 +38,7 @@ class CustomExport implements FromCollection, ShouldAutoSize, WithHeadings, With
     {
         $query =  Trans::custom($this->job, $this->arr);
 
-        // if ($this->date_aw != NULL) {
-        //     # code...
-        //     $query->whereBetween('created_at', [$this->date_aw, $this->date_ak." 23:59:59.000"]);
-        // }
-
         return $query;
-        // return $query->get();
     }
 
     public function headings(): array
