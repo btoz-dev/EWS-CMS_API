@@ -214,11 +214,17 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('brutoDate', function ($report) {
+                    if ($report['brutoDate'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['brutoDate']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
                 })
                 ->editColumn('bonggolDate', function ($report) {
+                    if ($report['bonggolDate'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['bonggolDate']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
@@ -249,6 +255,9 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('brutoDate', function ($report) {
+                    if ($report['brutoDate'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['brutoDate']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
@@ -279,6 +288,9 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('bonggolDate', function ($report) {
+                    if ($report['bonggolDate'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['bonggolDate']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
@@ -309,6 +321,9 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('date', function ($report) {
+                    if ($report['date'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['date']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
@@ -339,6 +354,9 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('date', function ($report) {
+                    if ($report['date'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['date']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
@@ -381,11 +399,17 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('rkhDate', function ($report) {
+                    if ($report['rkhDate'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['rkhDate']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
                 })
                 ->editColumn('created_at', function ($report) {
+                    if ($report['created_at'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['created_at']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
@@ -418,16 +442,25 @@ class TransReportController extends CMSController
 
             return DataTables::of($report)
                 ->editColumn('dueDate', function ($report) {
+                    if ($report['dueDate'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['dueDate']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
                 })
                 ->editColumn('created_atSPI', function ($report) {
+                    if ($report['created_atSPI'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['created_atSPI']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
                 })
                 ->editColumn('created_atKawil', function ($report) {
+                    if ($report['created_atKawil'] == NULL) {
+                        return NULL;
+                    }
                     $tgl = date_create($report['created_atKawil']);
                     $tgl2 = date_format($tgl, 'd M Y');
                     return $tgl2;
