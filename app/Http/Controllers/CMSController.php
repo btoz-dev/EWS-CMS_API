@@ -20,7 +20,7 @@ class CMSController extends Controller
         # code...
         ini_set('max_execution_time', '3600');
         // ini_set('max_execution_time', '1');
-        ini_set('memory_limit', '1G');
+        ini_set('memory_limit', '10G');
         // ini_set('memory_limit', '100M');
     }
 
