@@ -66,7 +66,7 @@
         $(document).ajaxStop(function(e,x,o){
             $("#loading-export").hide();
         });
-        $.fn.dataTable.ext.errMode = 'none';
+        // $.fn.dataTable.ext.errMode = 'none';
         var oTable = $('#data-table').DataTable({
             processing: true,
             serverSide: true,

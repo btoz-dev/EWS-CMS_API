@@ -287,6 +287,24 @@
         </div>
     </div>
 
+    <div id="modalSessionExp" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Session Expired</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Your session has expired</p>
+                    <p class="text-center">Please login again.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <!-- jQuery -->
@@ -303,6 +321,18 @@
     <script type="text/javascript" src="{{ asset('js/datatables.min.js') }}"></script>
 
     <script defer src="{{ asset('js/all.js') }}"></script>
+    <script type="text/javascript">
+        $.fn.dataTable.ext.errMode = 'none';
+        $.fn.dataTable.ext.errMode = function ( settings, helpPage, message ) { 
+            if (settings.jqXHR.status == 401) {
+                $('#modalSessionExp').modal('show')
+                $('#modalSessionExp').on('hidden.bs.modal', function (e) {
+                    window.location.reload();
+                })
+            }
+        };
+    </script>
+
     @yield('script')
     <script>
       var msg = '{{Session::get('alert')}}';
