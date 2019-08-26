@@ -128,8 +128,19 @@
         });
 
         $('#search-form').on('submit', function(e) {
-            oTable.draw();
             e.preventDefault();
+            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+            var firstDate = new Date($('#date_aw').val());
+            var secondDate = new Date($('#date_ak').val());
+
+            var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
+            if (diffDays > 31) {
+                alert('\n WARNING! \n Harap memilih tanggal dibawah 31 hari. \n Dikarenakan data yang besar, dapat menyebabkan kesalahan sistem');
+            }
+            else {
+                oTable.draw();
+            }
+            // console.log(diffDays);
         });
 
         $('#date_aw').on('change', function(e) {
