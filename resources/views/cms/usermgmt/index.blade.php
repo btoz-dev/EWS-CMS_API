@@ -104,7 +104,7 @@
 
                 $.get('{{route('usermgmt.show', [''])}}/'+$(this).data('id'), function (e) {
                     // body...
-                    $('.modal-content').html(e);
+                    $('#showDetailModal').find('.modal-content').html(e);
                     $('#showDetailModal').modal('show');
                 })
             });

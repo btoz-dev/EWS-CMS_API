@@ -238,7 +238,7 @@ class UsermgmtController extends CMSController
             # code...
             $this->validate($request, [
                 'name' => 'bail|required|min:2|max:255',
-                'username' => 'required|max:255',
+                'username' => 'required|max:255|unique:users',
                 'roles' => 'required|min:1',
                 'codePekerja' => 'required|integer',
             ]);
