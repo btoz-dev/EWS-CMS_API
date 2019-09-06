@@ -136,7 +136,7 @@
             var url = '{{route('exportSPI')}}';
             var params = { 
                     heading: headings, 
-                    job: "MANDOR", 
+                    job: "SENSUS", 
                     date_aw: $('input[name=date_aw]').val(), 
                     date_ak: $('input[name=date_ak]').val() 
                 };

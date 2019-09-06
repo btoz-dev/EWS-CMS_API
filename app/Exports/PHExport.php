@@ -144,7 +144,6 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
         if ($this->job == 'HT') {
             # code...
             return [
-                $phExport->id,
                 $phExport->codeTanaman,
                 $phExport->name,
                 $phExport->namaPekerja,
@@ -169,7 +168,7 @@ class PHExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapp
                 $phExport->FingerHand10,
                 $phExport->FingerHandAkhir,
                 $phExport->Notes,
-                $phExport->date
+                $phExport->date,
             ];
         }
 
