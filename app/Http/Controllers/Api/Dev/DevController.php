@@ -2554,7 +2554,7 @@ class DevController extends Controller
                 'codeTanaman' => 'required|between:0,20',
                 'week' => 'required|integer',
                 'girth' => 'required',
-                'totalLeaf' => 'required',
+                'totalLeaf' => 'nullable',
                 'note' => 'nullable|between:0,255',
                 'dueDate' => 'nullable|date_format:d-m-Y',
                 'tanggal' => 'required|date',
